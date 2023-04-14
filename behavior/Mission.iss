@@ -21,13 +21,13 @@ objectdef obj_Configuration_Agents inherits obj_Configuration_Base
 
 	member:int AgentIndex(string name)
 	{
-		;Logger:Log["obj_Configuration_Agents: AgentIndex ${name}"]
-		return ${This.AgentRef[${name}].FindSetting[AgentIndex, 9591]}
+		Logger:Log["obj_Configuration_Agents: AgentIndex ${name}"]
+		return ${This.AgentRef[${name}].FindSetting[AgentIndex, 9494]}
 	}
 
 	method SetAgentIndex(string name, int value)
 	{
-		;Logger:Log["obj_Configuration_Agents: SetAgentIndex ${name} ${value}"]
+		Logger:Log["obj_Configuration_Agents: SetAgentIndex ${name} ${value}"]
 		if !${This.ConfigRef.FindSet[${name}](exists)}
 		{
 			This.ConfigRef:AddSet[${name}]
@@ -38,13 +38,13 @@ objectdef obj_Configuration_Agents inherits obj_Configuration_Base
 
 	member:int AgentID(string name)
 	{
-		;Logger:Log["obj_Configuration_Agents: AgentID ${name}"]
-		return ${This.AgentRef[${name}].FindSetting[AgentID, 3018920]}
+		Logger:Log["obj_Configuration_Agents: AgentID ${name}"]
+		return ${This.AgentRef[${name}].FindSetting[AgentID, 3012267]}
 	}
 
 	method SetAgentID(string name, int value)
 	{
-		;Logger:Log["obj_Configuration_Agents: SetAgentID ${name} ${value}"]
+		Logger:Log["obj_Configuration_Agents: SetAgentID ${name} ${value}"]
 		if !${This.ConfigRef.FindSet[${name}](exists)}
 		{
 			This.ConfigRef:AddSet[${name}]
@@ -55,7 +55,7 @@ objectdef obj_Configuration_Agents inherits obj_Configuration_Base
 
 	member:int NextDeclineableTime(string name)
 	{
-		; Logger:Log["obj_Configuration_Agents", "NextDeclineableTime ${name} ${This.AgentRef[${name}].FindSetting[NextDeclineableTime, 0]}", "", LOG_DEBUG]
+		Logger:Log["obj_Configuration_Agents", "NextDeclineableTime ${name} ${This.AgentRef[${name}].FindSetting[NextDeclineableTime, 0]}", "", LOG_DEBUG]
 		return ${This.AgentRef[${name}].FindSetting[NextDeclineableTime, 0]}
 	}
 
@@ -208,7 +208,7 @@ objectdef obj_Mission inherits obj_StateQueue
 		This[parent]:Initialize
 
 		DynamicAddBehavior("Mission", "Combat Missions")
-		This.PulseFrequency:Set[500]
+		This.PulseFrequency:Set[3500]
 
 		This.LogInfoColor:Set["g"]
 		This.LogLevelBar:Set[${Config.LogLevelBar}]
@@ -393,6 +393,7 @@ objectdef obj_Mission inherits obj_StateQueue
 
 					if ${DamageType.Element[${missionName}](exists)}
 					{
+						echo ${EVE.Agent[${currentAgentIndex}].Index}
 						This:LogInfo["Accepting mission \ao${missionName}"]
 						This:InsertState["Cleanup"]
 						This:InsertState["CheckForWork"]
@@ -426,7 +427,7 @@ objectdef obj_Mission inherits obj_StateQueue
 							This:Clear
 							This:InsertState["Cleanup"]
 							This:InsertState["Repair"]
-							This:InsertState["CompleteMission", 1500]
+							This:InsertState["CompleteMission", 3000]
 							return TRUE
 						}
 
@@ -471,6 +472,7 @@ objectdef obj_Mission inherits obj_StateQueue
 								if !${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipCargo](exists)} || ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipCargo].Capacity} < 0
 								{
 									EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipCargo]:MakeActive
+									Client:Wait[5000]
 									return FALSE
 								}
 
@@ -506,6 +508,7 @@ objectdef obj_Mission inherits obj_StateQueue
 								if !${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipCargo](exists)} || ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipCargo].Capacity} < 0
 								{
 									EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipCargo]:MakeActive
+									Client:Wait[5000]
 									return FALSE
 								}
 
@@ -544,7 +547,7 @@ objectdef obj_Mission inherits obj_StateQueue
 										secondaryAmmo:Set[${Config.KineticAmmoSecondary}]
 									else
 										secondaryAmmo:Set[""]
-									useDroneRace:Set[DRONE_RACE_CALDARI]
+									useDroneRace:Set[DRONE_RACE_MINMATAR]
 									break
 								case em
 									ammo:Set[${Config.EMAmmo}]
@@ -552,7 +555,7 @@ objectdef obj_Mission inherits obj_StateQueue
 										secondaryAmmo:Set[${Config.EMAmmoSecondary}]
 									else
 										secondaryAmmo:Set[""]
-									useDroneRace:Set[DRONE_RACE_AMARR]
+									useDroneRace:Set[DRONE_RACE_MINMATAR]
 									break
 								case thermal
 									ammo:Set[${Config.ThermalAmmo}]
@@ -560,7 +563,7 @@ objectdef obj_Mission inherits obj_StateQueue
 										secondaryAmmo:Set[${Config.ThermalAmmoSecondary}]
 									else
 										secondaryAmmo:Set[""]
-									useDroneRace:Set[DRONE_RACE_GALLENTE]
+									useDroneRace:Set[DRONE_RACE_MINMATAR]
 									break
 								case explosive
 									ammo:Set[${Config.ExplosiveAmmo}]
@@ -605,7 +608,7 @@ objectdef obj_Mission inherits obj_StateQueue
 						reload:Set[FALSE]
 						This:InsertState["CheckForWork"]
 						isLoadingFallbackDrones:Set[FALSE]
-						This:InsertState["ReloadAmmoAndDrones"]
+						This:InsertState["ReloadAmmoAndDrones", 3000]
 						if !${haveGateKeyInCargo}
 						{
 							This:InsertState["TryBringGateKey"]
@@ -839,6 +842,7 @@ objectdef obj_Mission inherits obj_StateQueue
 		Lootables:RequestUpdate
 		Ship.ModuleList_ActiveResists:ActivateAll
 		variable index:bookmark BookmarkIndex
+		variable index:bookmark BookmarkIndex2
 
 		if ${Me.ToEntity.Mode} == MOVE_WARPING
 		{
@@ -849,7 +853,7 @@ objectdef obj_Mission inherits obj_StateQueue
 		variable bool allowSiegeModule
 		variable iterator targetIterator
 		allowSiegeModule:Set[TRUE]
-		if ${Config.DeactivateSiegeModuleEarly} && (${NPCs.TargetList.Used} < 2) && !${Entity[${targetToDestroy}]}
+		if ${Config.DeactivateSiegeModuleEarly} && (${NPCs.TargetList.Used} < 1) && !${Entity[${targetToDestroy}]}
 		{
 			allowSiegeModule:Set[FALSE]
 			NPCs.TargetList:GetIterator[targetIterator]
@@ -986,6 +990,7 @@ objectdef obj_Mission inherits obj_StateQueue
 						}
 
 						variable index:item items
+						Client:Wait[5000]
 						EVEWindow[Inventory].ChildWindow[${currentLootContainer}]:GetItems[items]
 						if ${items.Used}
 						{
@@ -1026,11 +1031,13 @@ objectdef obj_Mission inherits obj_StateQueue
 							if !${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipCargo](exists)} || ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipCargo].Capacity} < 0
 							{
 								EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipCargo]:MakeActive
+								Client:Wait[5000]
 								return FALSE
 							}
 
 							variable index:item cargo
 							variable iterator cargoIterator
+							Client:Wait[5000]
 							EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipCargo]:GetItems[cargo]
 							cargo:GetIterator[cargoIterator]
 							if ${cargoIterator:First(exists)}
@@ -1134,6 +1141,7 @@ objectdef obj_Mission inherits obj_StateQueue
 			maxAttackTime:Set[0]
 		}
 
+		
 		variable iterator lockedTargetIterator
 		variable iterator activeJammerIterator
 		Ship:BuildActiveJammerList
@@ -1444,10 +1452,11 @@ objectdef obj_Mission inherits obj_StateQueue
 			This:InsertState["PerformMission"]
 			return TRUE
 		}
-
+		
+		
 		if ${Entity[Type = "Acceleration Gate"]} && !${EVEWindow[byName, modal].Text.Find[This gate is locked!]}
 		{
-			if ${Lootables.TargetList.Used} && ${Config.SalvagePrefix.NotNULLOrEmpty}
+			if (${Lootables.TargetList.Used} > 23 && ${Config.SalvagePrefix.NotNULLOrEmpty}) || (${Lootables.TargetList.Used} > 5 && ${Entity[Name =- "Imperial"](exists)}) || (${Lootables.TargetList.Used} > 5 && ${Entity[Name =- "State"](exists)})
 			{
 				EVE:GetBookmarks[BookmarkIndex]
 				BookmarkIndex:RemoveByQuery[${LavishScript.CreateQuery[SolarSystemID == ${Me.SolarSystemID}]}, FALSE]
@@ -1455,7 +1464,11 @@ objectdef obj_Mission inherits obj_StateQueue
 				BookmarkIndex:Collapse
 
 				if !${BookmarkIndex.Used}
-					Lootables.TargetList.Get[1]:CreateBookmark["${Config.SalvagePrefix} ${EVE.Agent[${currentAgentIndex}].Name} ${Me.Name} ${EVETime.Time.Left[5]}", "", "Corporation Locations", 1]
+				{
+					;THIS IS BROKEN UNTIL CT LIVES AGAIN
+					Lootables.TargetList.Get[1]:CreateBookmark["${Config.SalvagePrefix} ${Lootables.TargetList.Used} ${EVETime.Time.Left[5]}", "", "Salvaging", 1]
+									
+				}
 			}
 
 			currentTarget:Set[0]
@@ -1467,24 +1480,32 @@ objectdef obj_Mission inherits obj_StateQueue
 			This:InsertState["ReloadWeapons"]
 			return TRUE
 		}
-
-		if ${Lootables.TargetList.Used} && ${Config.SalvagePrefix.NotNULLOrEmpty}
+		
+		
+		echo ${Lootables.TargetList.Used}
+		
+		if (${Lootables.TargetList.Used} > 23 && ${Config.SalvagePrefix.NotNULLOrEmpty}) || (${Lootables.TargetList.Used} > 5 && ${Entity[Name =- "Imperial"](exists)}) || (${Lootables.TargetList.Used} > 5 && ${Entity[Name =- "State"](exists)})
 		{
-			EVE:GetBookmarks[BookmarkIndex]
-			BookmarkIndex:RemoveByQuery[${LavishScript.CreateQuery[SolarSystemID == ${Me.SolarSystemID}]}, FALSE]
-			BookmarkIndex:RemoveByQuery[${LavishScript.CreateQuery[Distance < 200000]}, FALSE]
-			BookmarkIndex:Collapse
+			EVE:GetBookmarks[BookmarkIndex2]
+			BookmarkIndex2:RemoveByQuery[${LavishScript.CreateQuery[SolarSystemID == ${Me.SolarSystemID}]}, FALSE]
+			BookmarkIndex2:RemoveByQuery[${LavishScript.CreateQuery[Distance < 200000]}, FALSE]
+			BookmarkIndex2:Collapse
 
-			if !${BookmarkIndex.Used}
-				Lootables.TargetList.Get[1]:CreateBookmark["${Config.SalvagePrefix} ${EVE.Agent[${currentAgentIndex}].Name} ${EVETime.Time.Left[5]}", "", "Corporation Locations", 1]
+				{
+					;THIS IS BROKEN UNTIL CT LIVES AGAIN
+					Lootables.TargetList.Get[1]:CreateBookmark["${Config.SalvagePrefix} ${Lootables.TargetList.Used} ${EVETime.Time.Left[5]}", "", "Salvaging", 1]
+										
+				}
 		}
 
 		; Check mission complete for World Collide and Extravaganza before activating an extra gate
-		variable index:agentmission missions
-		variable iterator missionIterator
-		variable string missionName
-		EVE:GetAgentMissions[missions]
-		missions:GetIterator[missionIterator]
+		;variable index:agentmission missions
+		;variable iterator missionIterator
+		;variable string missionName
+		;EVE:GetAgentMissions[missions]
+		;missions:GetIterator[missionIterator]
+		
+		;Lootables:AddQueryString["(GroupID = GROUP_WRECK || GroupID = GROUP_CARGOCONTAINER) && !IsMoribund"]
 
 		if ${missionIterator:First(exists)}
 		{
@@ -1530,7 +1551,7 @@ objectdef obj_Mission inherits obj_StateQueue
 							This:Clear
 							This:InsertState["Cleanup"]
 							This:InsertState["Repair"]
-							This:InsertState["CompleteMission", 1500]
+							This:InsertState["CompleteMission", 3000]
 							return TRUE
 						}
 					}
@@ -1538,7 +1559,7 @@ objectdef obj_Mission inherits obj_StateQueue
 			}
 			while ${missionIterator:Next(exists)}
 		}
-
+		
 
 		currentTarget:Set[0]
 		This:InsertState["CheckForWork"]
@@ -1601,7 +1622,7 @@ objectdef obj_Mission inherits obj_StateQueue
 			This:LogInfo["Need to be at agent station to complete mission"]
 			This:LogInfo["Setting course for \ao${EVE.Station[${EVE.Agent[${currentAgentIndex}].StationID}].Name}"]
 			Move:Agent[${currentAgentIndex}]
-			This:InsertState["CompleteMission", 1500]
+			This:InsertState["CompleteMission", 3000]
 			This:InsertState["Traveling"]
 			return TRUE
 		}
@@ -1659,7 +1680,7 @@ objectdef obj_Mission inherits obj_StateQueue
 		}
 
 		halt:Set[FALSE]
-		This:InsertState["DropOffLoot"]
+		This:InsertState["DropOffLoot", 20000]
 		This:InsertState["Cleanup"]
 		This:InsertState["Repair"]
 		return TRUE
@@ -1773,7 +1794,7 @@ objectdef obj_Mission inherits obj_StateQueue
 			; This:LogInfo["agent ${EVE.Agent[${currentAgentIndex}].Name} availability: ${Agents.CanDeclineMission[${EVE.Agent[${currentAgentIndex}].Name}]}"]
 			; This:LogInfo["agent ${EVE.Agent[${currentAgentIndex}].Name} wait time: ${Agents.SecondsTillDeclineable[${EVE.Agent[${currentAgentIndex}].Name}]}"]
 
-			; Client:Wait[1000]
+			; Client:Wait[5000]
 
 			return FALSE
 		}
@@ -1842,12 +1863,14 @@ objectdef obj_Mission inherits obj_StateQueue
 			if !${EVEWindow[Inventory].ChildWindow[StationCorpHangar](exists)}
 			{
 				EVEWindow[Inventory].ChildWindow[StationCorpHangars]:MakeActive
+				Client:Wait[5000]
 				return FALSE
 			}
 
 			if !${EVEWindow[Inventory].ChildWindow["StationCorpHangar", ${Config.MunitionStorageFolder}](exists)}
 			{
 				EVEWindow[Inventory].ChildWindow["StationCorpHangar", ${Config.MunitionStorageFolder}]:MakeActive
+				Client:Wait[5000]
 				return FALSE
 			}
 
@@ -1869,9 +1892,10 @@ objectdef obj_Mission inherits obj_StateQueue
 			; 	}
 			; 	while ${itemIterator:Next(exists)}
 			; }
-
+			Client:Wait[5000]
 			EVEWindow[Inventory].ChildWindow["StationCorpHangar", ${Config.MunitionStorageFolder}]:StackAll
-
+			Client:Wait[5000]
+			
 			if ${Config.DropOffToContainer} && ${Config.DropOffContainerName.NotNULLOrEmpty}
 			{
 				EVEWindow[Inventory].ChildWindow["StationCorpHangar", ${Config.MunitionStorageFolder}]:GetItems[items]
@@ -1883,6 +1907,7 @@ objectdef obj_Mission inherits obj_StateQueue
 			{
 
 				EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems]:MakeActive
+				Client:Wait[5000]
 				return FALSE
 			}
 
@@ -1904,7 +1929,7 @@ objectdef obj_Mission inherits obj_StateQueue
 			; 	}
 			; 	while ${itemIterator:Next(exists)}
 			; }
-
+			
 			EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems]:StackAll
 
 			if ${Config.DropOffToContainer} && ${Config.DropOffContainerName.NotNULLOrEmpty}
@@ -1929,6 +1954,7 @@ objectdef obj_Mission inherits obj_StateQueue
 						(${EVEWindow[Inventory].ChildWindow[${dropOffContainerID}].Capacity} < 0)
 					{
 						EVEWindow[Inventory].ChildWindow[${dropOffContainerID}]:MakeActive
+						Client:Wait[5000]
 						return FALSE
 					}
 
@@ -1953,6 +1979,7 @@ objectdef obj_Mission inherits obj_StateQueue
 				if ${Iter.Value.Name.Equal[StationCorpHangars]}
 				{
 					Iter.Value:MakeActive
+					Client:Wait[5000]
 				}
 			}
 			while ${Iter:Next(exists)}
@@ -2002,7 +2029,7 @@ objectdef obj_Mission inherits obj_StateQueue
 			EVE:Execute[OpenInventory]
 			return FALSE
 		}
-
+		Client:Wait[5000]
 		variable index:item items
 		variable iterator itemIterator
 		variable int64 dropOffContainerID = 0;
@@ -2014,6 +2041,7 @@ objectdef obj_Mission inherits obj_StateQueue
 				if !${EVEWindow[Inventory].ChildWindow[StationCorpHangar](exists)}
 				{
 					EVEWindow[Inventory].ChildWindow[StationCorpHangars]:MakeActive
+					Client:Wait[5000]
 					return FALSE
 				}
 
@@ -2021,8 +2049,10 @@ objectdef obj_Mission inherits obj_StateQueue
 				{
 
 					EVEWindow[Inventory].ChildWindow["StationCorpHangar", ${Config.MunitionStorageFolder}]:MakeActive
+					Client:Wait[5000]
 					return FALSE
 				}
+				Client:Wait[5000]
 				EVEWindow[Inventory].ChildWindow["StationCorpHangar", ${Config.MunitionStorageFolder}]:GetItems[items]
 			}
 			elseif ${Config.MunitionStorage.Equal[Personal Hangar]}
@@ -2030,6 +2060,7 @@ objectdef obj_Mission inherits obj_StateQueue
 				if !${EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems](exists)}
 				{
 					EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems]:MakeActive
+					Client:Wait[5000]
 					return FALSE
 				}
 				EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems]:GetItems[items]
@@ -2052,6 +2083,7 @@ objectdef obj_Mission inherits obj_StateQueue
 							(${EVEWindow[Inventory].ChildWindow[${dropOffContainerID}].Capacity} < 0)
 						{
 							EVEWindow[Inventory].ChildWindow[${dropOffContainerID}]:MakeActive
+							Client:Wait[5000]
 							return FALSE
 						}
 						break
@@ -2064,9 +2096,10 @@ objectdef obj_Mission inherits obj_StateQueue
 		if !${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipCargo](exists)}
 		{
 			EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipCargo]:MakeActive
+			Client:Wait[5000]
 			return FALSE
 		}
-
+		Client:Wait[5000]
 		EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipCargo]:GetItems[items]
 		items:GetIterator[itemIterator]
 		if ${itemIterator:First(exists)}
@@ -2087,9 +2120,9 @@ objectdef obj_Mission inherits obj_StateQueue
 				   ; Anomaly gate key
 				   !${itemIterator.Value.Name.Equal["Oura Madusaari"]} && \
 				   !${itemIterator.Value.Group.Equal["Acceleration Gate Keys"]} && \
-				   !${itemIterator.Value.Name.Find["Script"]} && \
+				   !${itemIterator.Value.Name.Find["Script"]} 
 				   ; Insignias for Extravaganza missions
-				   !${itemIterator.Value.Name.Find["Diamond"]}
+				   ;!${itemIterator.Value.Name.Find["Diamond"]}
 				{
 					if ${Config.DropOffToContainer} && ${Config.DropOffContainerName.NotNULLOrEmpty} && ${dropOffContainerID} > 0
 					{
@@ -2101,12 +2134,14 @@ objectdef obj_Mission inherits obj_StateQueue
 						if !${EVEWindow[Inventory].ChildWindow[StationCorpHangar](exists)}
 						{
 							EVEWindow[Inventory].ChildWindow[StationCorpHangars]:MakeActive
+							Client:Wait[5000]
 							return FALSE
 						}
 
 						if !${EVEWindow[Inventory].ChildWindow["StationCorpHangar", ${Config.MunitionStorageFolder}](exists)}
 						{
 							EVEWindow[Inventory].ChildWindow["StationCorpHangar", ${Config.MunitionStorageFolder}]:MakeActive
+							Client:Wait[5000]
 							return FALSE
 						}
 
@@ -2118,6 +2153,7 @@ objectdef obj_Mission inherits obj_StateQueue
 						if !${EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems](exists)}
 						{
 							EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems]:MakeActive
+							Client:Wait[5000]
 							return FALSE
 						}
 						itemIterator.Value:MoveTo[MyStationHangar, Hangar]
@@ -2128,7 +2164,7 @@ objectdef obj_Mission inherits obj_StateQueue
 			while ${itemIterator:Next(exists)}
 		}
 
-		This:InsertState["StackHangars"]
+		This:InsertState["StackHangars", 3000]
 		return TRUE
 	}
 
@@ -2148,6 +2184,7 @@ objectdef obj_Mission inherits obj_StateQueue
 		if !${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipCargo](exists)} || ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipCargo].Capacity} < 0
 		{
 			EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipCargo]:MakeActive
+			Client:Wait[5000]
 			return FALSE
 		}
 
@@ -2168,12 +2205,14 @@ objectdef obj_Mission inherits obj_StateQueue
 			if !${EVEWindow[Inventory].ChildWindow[StationCorpHangar](exists)}
 			{
 				EVEWindow[Inventory].ChildWindow[StationCorpHangars]:MakeActive
+				Client:Wait[5000]
 				return FALSE
 			}
 
 			if !${EVEWindow[Inventory].ChildWindow["StationCorpHangar", ${Config.MunitionStorageFolder}](exists)}
 			{
 				EVEWindow[Inventory].ChildWindow["StationCorpHangar", ${Config.MunitionStorageFolder}]:MakeActive
+				Client:Wait[5000]
 				return FALSE
 			}
 
@@ -2184,6 +2223,7 @@ objectdef obj_Mission inherits obj_StateQueue
 			if !${EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems](exists)}
 			{
 				EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems]:MakeActive
+				Client:Wait[5000]
 				return FALSE
 			}
 
@@ -2224,6 +2264,7 @@ objectdef obj_Mission inherits obj_StateQueue
 		if !${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipCargo](exists)} || ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipCargo].Capacity} < 0
 		{
 			EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipCargo]:MakeActive
+			Client:Wait[5000]
 			return FALSE
 		}
 
@@ -2237,6 +2278,7 @@ objectdef obj_Mission inherits obj_StateQueue
 		if !${EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems](exists)}
 		{
 			EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems]:MakeActive
+			Client:Wait[5000]
 			return FALSE
 		}
 
@@ -2295,6 +2337,7 @@ objectdef obj_Mission inherits obj_StateQueue
 			if (!${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipDroneBay](exists)} || ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipDroneBay].Capacity} < 0)
 			{
 				EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipDroneBay]:MakeActive
+				Client:Wait[5000]
 				return FALSE
 			}
 
@@ -2304,7 +2347,8 @@ objectdef obj_Mission inherits obj_StateQueue
 			{
 				fallbackDroneType:Set[${Config.DroneType}]
 			}
-
+			
+			Client:Wait[5000]
 			EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipDroneBay]:GetItems[items]
 			items:GetIterator[itemIterator]
 			if ${itemIterator:First(exists)}
@@ -2316,6 +2360,7 @@ objectdef obj_Mission inherits obj_StateQueue
 						if !${EVEWindow[Inventory].ChildWindow[StationCorpHangar](exists)}
 						{
 							EVEWindow[Inventory].ChildWindow[StationCorpHangars]:MakeActive
+							Client:Wait[5000]
 							return FALSE
 						}
 
@@ -2323,6 +2368,7 @@ objectdef obj_Mission inherits obj_StateQueue
 						{
 
 							EVEWindow[Inventory].ChildWindow["StationCorpHangar", ${Config.MunitionStorageFolder}]:MakeActive
+							Client:Wait[5000]
 							return FALSE
 						}
 
@@ -2337,6 +2383,7 @@ objectdef obj_Mission inherits obj_StateQueue
 						if !${EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems](exists)}
 						{
 							EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems]:MakeActive
+							Client:Wait[5000]
 							return FALSE
 						}
 
@@ -2363,6 +2410,7 @@ objectdef obj_Mission inherits obj_StateQueue
 		if !${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipCargo](exists)} || ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipCargo].Capacity} < 0
 		{
 			EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipCargo]:MakeActive
+			Client:Wait[5000]
 			return FALSE
 		}
 
@@ -2381,6 +2429,7 @@ objectdef obj_Mission inherits obj_StateQueue
 					if (!${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipDroneBay](exists)} || ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipDroneBay].Capacity} < 0)
 					{
 						EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipDroneBay]:MakeActive
+						Client:Wait[5000]
 						return FALSE
 					}
 
@@ -2421,6 +2470,7 @@ objectdef obj_Mission inherits obj_StateQueue
 						if !${EVEWindow[Inventory].ChildWindow[StationCorpHangar](exists)}
 						{
 							EVEWindow[Inventory].ChildWindow[StationCorpHangars]:MakeActive
+							Client:Wait[5000]
 							return FALSE
 						}
 
@@ -2428,6 +2478,7 @@ objectdef obj_Mission inherits obj_StateQueue
 						{
 
 							EVEWindow[Inventory].ChildWindow["StationCorpHangar", ${Config.MunitionStorageFolder}]:MakeActive
+							Client:Wait[5000]
 							return FALSE
 						}
 
@@ -2439,6 +2490,7 @@ objectdef obj_Mission inherits obj_StateQueue
 						if !${EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems](exists)}
 						{
 							EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems]:MakeActive
+							Client:Wait[5000]
 							return FALSE
 						}
 
@@ -2456,12 +2508,14 @@ objectdef obj_Mission inherits obj_StateQueue
 			if !${EVEWindow[Inventory].ChildWindow[StationCorpHangar](exists)}
 			{
 				EVEWindow[Inventory].ChildWindow[StationCorpHangars]:MakeActive
+				Client:Wait[5000]
 				return FALSE
 			}
 
 			if !${EVEWindow[Inventory].ChildWindow["StationCorpHangar", ${Config.MunitionStorageFolder}](exists)}
 			{
 				EVEWindow[Inventory].ChildWindow["StationCorpHangar", ${Config.MunitionStorageFolder}]:MakeActive
+				Client:Wait[5000]
 				return FALSE
 			}
 
@@ -2472,6 +2526,7 @@ objectdef obj_Mission inherits obj_StateQueue
 			if !${EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems](exists)}
 			{
 				EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems]:MakeActive
+				Client:Wait[5000]
 				return FALSE
 			}
 
@@ -2538,6 +2593,7 @@ objectdef obj_Mission inherits obj_StateQueue
 		if (!${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipDroneBay](exists)} || ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipDroneBay].Capacity} < 0)
 		{
 			EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipDroneBay]:MakeActive
+			Client:Wait[5000]
 			return FALSE
 		}
 

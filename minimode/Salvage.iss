@@ -81,15 +81,16 @@ objectdef obj_Salvage inherits obj_StateQueue
 		WrecksToLock:ClearQueryString
 
 		variable string group = "(Group = \"Wreck\")"
-		if ${Ship.ModuleList_TractorBeams.Count} > 0 && ${Ship.ModuleList_Salvagers.Count} > 0
+		echo ${Ship.ModuleList_TractorBeams.Count} TRACTOR BEEEEAMS
+		if ${Ship.ModuleList_TractorBeams.Count} >= 0
 		{
 			group:Set["(Group = \"Wreck\" || ((Group = \"Cargo Container\") && (Distance >= 2500)))"]
 		}
-		elseif ${Ship.ModuleList_Salvagers.Count} > 0
+		elseif ${Ship.ModuleList_Salvagers.Count} >= 0
 		{
 			group:Set["(Group = \"Wreck\")"]
 		}
-		elseif ${Ship.ModuleList_TractorBeams.Count} > 0
+		elseif ${Ship.ModuleList_TractorBeams.Count} >= 0
 		{
 			group:Set["((Group = \"Cargo Container\") && (Distance >= 2500))"]
 		}
@@ -166,7 +167,7 @@ objectdef obj_Salvage inherits obj_StateQueue
 			lootYellow:Set[""]
 		}
 
-		WrecksNoLock:AddQueryString["${group} ${canLoot} ${lootYellow} && !IsMoribund ${Size} && Distance < 2500"]
+		WrecksNoLock:AddQueryString["Name =- \"Wreck" && !IsWreckEmpty && !IsMoribund && Distance < 2500"]
 		WrecksNoLock.AutoLock:Set[FALSE]
 		WrecksNoLock:RequestUpdate
 	}
@@ -257,11 +258,11 @@ objectdef obj_Salvage inherits obj_StateQueue
 			while ${wreckIterator:Next(exists)}
 		}
 		; Something is no locked
-		elseif ${Wrecks.TargetList.Used}
+		elseif ${WrecksToLock.TargetList.Used} > 0
 		{
 			This.IsBusy:Set[FALSE]
 			Busy:UnsetBusy["Salvage"]
-			return FALSE
+			;return FALSE
 		}
 		else
 		{

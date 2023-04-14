@@ -10,6 +10,7 @@
       <Setting Name="2446" Type="Ogre II" Volume="25" Race="8" />
       <Setting Name="2476" Type="Berserker I" Volume="25" Race="2" />
       <Setting Name="2478" Type="Berserker II" Volume="25" Race="2" />
+      <Setting Name="31884" Type="Federation Navy Ogre" Volume="25" Race="8" />	  
     </Set>
     <Set Name="Medium Scout Drones">
       <Setting Name="2173" Type="Infiltrator I" Volume="10" Race="4" />
@@ -20,7 +21,18 @@
       <Setting Name="15510" Type="Valkyrie I" Volume="10" Race="2" />
       <Setting Name="21638" Type="Vespa II" Volume="10" Race="1" />
       <Setting Name="21640" Type="Valkyrie II" Volume="10" Race="2" />
+      <Setting Name="28298" Type="'Integrated' Vespa" Volume="10" Race="1" />
+      <Setting Name="28300" Type="'Augmented' Vespa" Volume="10" Race="1" />
       <Setting Name="31874" Type="Caldari Navy Vespa" Volume="10" Race="1" />
+      <Setting Name="31866" Type="Imperial Navy Infiltrator" Volume="10" Race="4" />
+      <Setting Name="28282" Type="'Integrated' Infiltrator" Volume="10" Race="4" />
+      <Setting Name="28284" Type="'Augmented' Infiltrator" Volume="10" Race="4" />
+      <Setting Name="31882" Type="Federation Navy Hammerhead" Volume="10" Race="8" />
+      <Setting Name="28270" Type="'Integrated' Hammerhead" Volume="10" Race="8" />
+      <Setting Name="28272" Type="'Augmented' Hammerhead" Volume="10" Race="8" />
+      <Setting Name="31890" Type="Republic Fleet Valkyrie" Volume="10" Race="2" />
+      <Setting Name="28294" Type="'Integrated' Valkyrie" Volume="10" Race="2" />
+      <Setting Name="28296" Type="'Augmented' Valkyrie" Volume="10" Race="2" />
     </Set>
     <Set Name="Light Scout Drones">
       <Setting Name="2203" Type="Acolyte I" Volume="5" Race="4" />
@@ -62,6 +74,7 @@
       <Setting Name="31864" Type="Imperial Navy Acolyte" Volume="5" Race="4" />
       <Setting Name="31866" Type="Imperial Navy Infiltrator" Volume="10" Race="4" />
       <Setting Name="31870" Type="Imperial Navy Praetor" Volume="25" Race="4" />
+      <Setting Name="31874" Type="Caldari Navy Vespa" Volume="10" Race="1" />	  
       <Setting Name="31872" Type="Caldari Navy Hornet" Volume="5" Race="1" />
       <Setting Name="31876" Type="Caldari Navy Wasp" Volume="25" Race="1" />
       <Setting Name="31880" Type="Federation Navy Hobgoblin" Volume="5" Race="8" />

@@ -6,6 +6,7 @@ objectdef obj_Module inherits obj_StateQueue
 
 	variable string Ammo
 	variable string LongRangeAmmo
+	variable string XtraLongRangeAmmo
 
 	variable int _lastDeactivationTimestamp
 	variable int _deactivationRetryInterval = 2000
@@ -40,7 +41,7 @@ objectdef obj_Module inherits obj_StateQueue
 		This[parent]:Initialize
 		This.NonGameTiedPulse:Set[TRUE]
 		ModuleID:Set[${ID}]
-		PulseFrequency:Set[100]
+		PulseFrequency:Set[1000]
 	 	RandomDelta:Set[100]
 		LogModuleName:Set["${This.Name}"]
 
@@ -162,13 +163,14 @@ objectdef obj_Module inherits obj_StateQueue
 		This:_resetTimers
 	}
 
-	method ConfigureAmmo(string shortRangeAmmo, string longRangeAmmo)
+	method ConfigureAmmo(string shortRangeAmmo, string longRangeAmmo, string xtraLongRangeAmmo)
 	{
-		if (${shortRangeAmmo.NotNULLOrEmpty} && !${shortRangeAmmo.Equal[${Ammo}]}) || (${longRangeAmmo.NotNULLOrEmpty} && !${longRangeAmmo.Equal[${LongRangeAmmo}]})
+		if (${shortRangeAmmo.NotNULLOrEmpty} && !${shortRangeAmmo.Equal[${Ammo}]}) || (${longRangeAmmo.NotNULLOrEmpty} && !${longRangeAmmo.Equal[${LongRangeAmmo}]}) || (${xtraLongRangeAmmo.NotNULLOrEmpty} && !${xtraLongRangeAmmo.Equal[${XtraLongRangeAmmo}]})
 		{
-			This:LogDebug["${This.Name} configured ammo as ${shortRangeAmmo} + ${longRangeAmmo}"]
+			This:LogDebug["${This.Name} configured ammo as ${shortRangeAmmo} + ${longRangeAmmo} + ${xtraLongRangeAmmo}"]
 			Ammo:Set[${shortRangeAmmo}]
 			LongRangeAmmo:Set[${longRangeAmmo}]
+			XtraLongRangeAmmo:Set[${xtraLongRangeAmmo}]
 		}
 	}
 
@@ -557,6 +559,9 @@ objectdef obj_Module inherits obj_StateQueue
 		{
 			case GROUP_PROJECTILEWEAPON
 			case GROUP_ENERGYWEAPON
+			case GROUP_HYBRIDWEAPON
+			case GROUP_PRECURSORWEAPON
+			case GROUP_VORTONWEAPON
 				return ${This._pickOptimalAmmoForTurret[${InstructionTargetID}]}
 			case GROUP_TRACKINGCOMPUTER
 				return ${This._pickOptimalScriptTrackingComputerScript[${InstructionTargetID}]}
@@ -595,12 +600,42 @@ objectdef obj_Module inherits obj_StateQueue
 		{
 			return ""
 		}
+		if ${This.ToItem.TypeID.Equal[TYPE_VORTON_WEAPON]} && \
+		    ${Entity[${targetID}].Distance} < 40000
+		{
+			return "ElectroPunch Ultra L"
+		}
+		if ${This.ToItem.TypeID.Equal[TYPE_VORTON_WEAPON]} && \
+		    ${Entity[${targetID}].Distance} > 40000
+		{
+			return "StrikeSnipe Ultra L"
+		}
+		
+		if ${This.ToItem.TypeID.Equal[TYPE_VORTON_WEAPON_MED]} && \
+		    ${Entity[${targetID}].Distance} < 32000
+		{
+			return "ElectroPunch Ultra M"
+		}
+		if ${This.ToItem.TypeID.Equal[TYPE_VORTON_WEAPON_MED]} && \
+		    ${Entity[${targetID}].Distance} > 32000 && ${Entity[${targetID}].Distance} < 49000
+		{
+			return "GalvaSurge Condenser Pack M"
+		}
+		if ${This.ToItem.TypeID.Equal[TYPE_VORTON_WEAPON_MED]} && \
+		    ${Entity[${targetID}].Distance} > 49000
+		{
+			return "StrikeSnipe Ultra M"
+		}
+
 
 		variable string shortRangeAmmo
 		shortRangeAmmo:Set[${This._getDefaultAmmo}]
 
 		variable string longRangeAmmo
 		longRangeAmmo:Set[${This._getDefaultLongRangeAmmo}]
+		
+		variable string xtraLongRangeAmmo
+		xtraLongRangeAmmo:Set[${This._getDefaultXtraLongRangeAmmo}]
 
 		if ${This.Charge(exists)} && ${This.Charge.Type.Equal[${shortRangeAmmo}]}
 		{
@@ -868,6 +903,18 @@ objectdef obj_Module inherits obj_StateQueue
 			return "${LongRangeAmmo}"
 		}
 	}
+	
+	member:string _getDefaultXtraLongRangeAmmo()
+	{
+		if !${xtraLongRangeAmmo.NotNULLOrEmpty} || (!${MyShip.Cargo[${xtraLongRangeAmmo}].Quantity} && !${This.Charge.Type.Equal[${xtraLongRangeAmmo}]})
+		{
+			return ${This.FallbackXtraLongRangeAmmo}
+		}
+		else
+		{
+			return "${xtraLongRangeAmmo}"
+		}
+	}
 
 	method _findAndChangeAmmo(string ammo)
 	{
@@ -1004,6 +1051,12 @@ objectdef obj_Module inherits obj_StateQueue
 				return "Hail L"
 			case TYPE_XLARGE_ANCILLARY_SHIELD_BOOSTER
 				return "Cap Booster 400"
+			case TYPE_RAPID_HEAVY_LAUNCHER
+				return "Inferno Heavy Missile"
+			case TYPE_VORTON_WEAPON
+				return "ElectroPunch Ultra L"
+			case TYPE_VORTON_WEAPON_MED
+				return "ElectroPunch Ultra M"				
 		}
 
 		return ""
@@ -1019,6 +1072,29 @@ objectdef obj_Module inherits obj_StateQueue
 				return "Scourge Javelin Torpedo"
 			case TYPE_800MM_REPEATING_CANNON
 				return "Barrage L"
+			case TYPE_VORTON_WEAPON
+				return "GalvaSurge Condenser Pack M"
+			case TYPE_VORTON_WEAPON_MED
+				return "GalvaSurge Condenser Pack M"
+		}
+
+		return ""
+	}
+	
+	member:string FallbackXtraLongRangeAmmo()
+	{
+		switch ${This.ToItem.TypeID}
+		{
+			case TYPE_MEGA_PULSE_LASER
+				return "Scorch L"
+			case TYPE_TORPEDO_LAUNCHER
+				return "Scourge Javelin Torpedo"
+			case TYPE_800MM_REPEATING_CANNON
+				return "Barrage L"
+			case TYPE_VORTON_WEAPON
+				return "StrikeSnipe Ultra L"
+			case TYPE_VORTON_WEAPON_MED
+				return "StrikeSnipe Ultra L"
 		}
 
 		return ""
@@ -1031,6 +1107,7 @@ objectdef obj_Module inherits obj_StateQueue
 			case GROUP_ENERGYWEAPON
 			case GROUP_PROJECTILEWEAPON
 			case GROUP_HYBRIDWEAPON
+			case GROUP_PRECURSORWEAPON
 				return ${This.TurretChanceToHit[${targetID}]}
 			case GROUP_MISSILELAUNCHERRAPIDHEAVY
 			case GROUP_MISSILELAUNCHER
@@ -1071,7 +1148,14 @@ objectdef obj_Module inherits obj_StateQueue
 		turretOptimalRange:Set[${This.OptimalRange}]
 
 		variable float64 turretFalloff
-		turretFalloff:Set[${This.AccuracyFalloff}]
+		if ${This.AccuracyFalloff} >= 1
+		{
+			turretFalloff:Set[${This.AccuracyFalloff}]
+		}
+		else
+		{
+			turretFalloff:Set[1]
+		}
 
 		variable float64 decay
 		decay:Set[${Math.Calc[${targetDistance} - ${turretOptimalRange}]}]

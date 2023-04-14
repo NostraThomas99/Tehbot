@@ -47,6 +47,7 @@
 #include behavior/MiniMode.iss
 #include behavior/Salvager.iss
 #include behavior/Mission.iss
+#include behavior/Abyssal.iss
 
 #include minimode/Automate.iss
 #include minimode/AutoModule.iss
@@ -54,6 +55,8 @@
 #include minimode/DroneControl.iss
 #include minimode/InstaWarp.iss
 #include minimode/FightOrFlight.iss
+#include minimode/RemoteRepManagement.iss
+#include minimode/TargetManager.iss
 #include minimode/Salvage.iss
 #include minimode/UndockWarp.iss
 
@@ -88,12 +91,15 @@ function main(string Character="")
 	declarevariable Salvager obj_Salvager script
 	declarevariable MissionParser obj_MissionParser script
 	declarevariable Mission obj_Mission script
+	declarevariable Abyssal obj_Abyssal script
 
 	declarevariable Automate obj_Automate script
 	declarevariable AutoModule obj_AutoModule script
 	declarevariable AutoThrust obj_AutoThrust script
 	declarevariable InstaWarp obj_InstaWarp script
 	declarevariable FightOrFlight obj_FightOrFlight script
+	declarevariable RemoteRepManagement obj_RemoteRepManagement script
+	declarevariable TargetManager	obj_TargetManager script
 	declarevariable UndockWarp obj_UndockWarp script
 	declarevariable Salvage obj_Salvage script
 	declarevariable DroneControl obj_DroneControl script
@@ -117,6 +123,19 @@ function main(string Character="")
 	declarevariable Cargo obj_Cargo script
 	declarevariable RefineData obj_Configuration_RefineData script
 	declarevariable Drones obj_Drones script
+	
+	;Just what everyone likes, global variables. Need these for information sharing between Offense Manager, Position Manager, and Target Manager
+	declarevariable CurrentOffenseRange int global
+	declarevariable CurrentRepRange int global
+	declarevariable CurrentOffenseTarget int64 global
+	declarevariable CurrentRepTarget int64 global
+	
+	;More global variables, this is for keeping track of when we last attempted (successfully or not) to use a drug
+	declarevariable SynthBluePillTime int64 global
+	declarevariable HardshellTime int64 global
+	
+	;More global variable(s), lets see if this fixes our orbit problems
+	declarevariable orbitTarget = 0 int64 global
 
 
 	Logger:Log["Tehbot", "Module initialization complete", "y"]

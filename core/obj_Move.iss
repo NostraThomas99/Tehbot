@@ -875,7 +875,7 @@ objectdef obj_Move inherits obj_StateQueue
 		ApproachModule:QueueState["CheckApproach", 1000, "${ID}, ${distance}"]
 	}
 
-	variable int64 orbitTarget = 0
+
 	method Orbit(int64 ID, int distance=0)
 	{
 		if ${Me.ToEntity.Mode} == MOVE_WARPING || !${Entity[${ID}](exists)}

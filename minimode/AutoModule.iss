@@ -69,11 +69,12 @@ objectdef obj_AutoModule inherits obj_StateQueue
 	variable bool SafetyOveride=FALSE
 	variable bool DropCloak=FALSE
 
+
 	method Initialize()
 	{
 		This[parent]:Initialize
 		This.NonGameTiedPulse:Set[TRUE]
-		This.PulseFrequency:Set[100]
+		This.PulseFrequency:Set[2000]
 		DynamicAddMiniMode("AutoModule", "AutoModule")
 
 		This.LogLevelBar:Set[${CommonConfig.LogLevelBar}]
@@ -274,7 +275,11 @@ objectdef obj_AutoModule inherits obj_StateQueue
 			This:LogInfo["Activating DroneControlUnit"]
 			Ship.ModuleList_DroneControlUnit:ActivateAll
 		}
-
+		
+		if ${MyShip.ArmorPct} < 40 && ${MyShip.ArmorPct} > 0
+		{
+			Ship.ModuleList_DamageControl:Activate
+		}
 		return FALSE
 	}
 

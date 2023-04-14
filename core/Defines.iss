@@ -12,6 +12,9 @@
 #define TYPE_TORPEDO_LAUNCHER                                                                                   2420
 #define TYPE_800MM_REPEATING_CANNON                                                                             2929
 #define TYPE_XLARGE_ANCILLARY_SHIELD_BOOSTER                                                                    32780
+#define TYPE_RAPID_HEAVY_LAUNCHER																				33450
+#define TYPE_VORTON_WEAPON																						54753
+#define TYPE_VORTON_WEAPON_MED																					54748
 
 ; Module group id
 #define GROUPID_CONTROL_TOWER                                                                                   365
@@ -20,6 +23,7 @@
 #define GROUP_HYBRIDWEAPON 																						74
 #define GROUP_PRECURSORWEAPON																					1986
 #define GROUP_PROJECTILEWEAPON 																					55
+#define GROUP_VORTONWEAPON																						4060
 #define GROUP_MISSILEGUIDANCECOMPUTER																			1396
 #define GROUP_MISSILELAUNCHER 																					56
 #define GROUP_MISSILELAUNCHERASSAULT 																			511
@@ -35,6 +39,7 @@
 #define GROUP_MISSILELAUNCHERRAPIDHEAVY																			1245
 #define GROUP_SHIELD_TRANSPORTER         																		41
 #define GROUP_ARMOR_PROJECTOR	         																		325
+#define GROUP_MUTADAPTIVE_PROJECTOR	         																	2018
 #define GROUP_CLOAKING_DEVICE		 																			330
 #define GROUP_GANGLINK 																							316
 #define GROUP_STRIPMINER 																						464
@@ -79,6 +84,11 @@
 #define GROUP_SUN 																								6
 #define GROUP_SCOUT_DRONE 																						100
 #define GROUP_COMBAT_DRONE 																						549
+
+#define GROUP_ENERGYNEUT																						71
+#define GROUP_WEAPONDISRUPTOR																					291
+#define GROUP_ECM																								201
+#define GROUP_RSD																								208
 
 ; Drone race
 #define DRONE_RACE_CALDARI 																						1

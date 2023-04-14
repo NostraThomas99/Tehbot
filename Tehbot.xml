@@ -54,8 +54,8 @@
 		<Border>0</Border>
 		<X>200</X>
 		<Y>300</Y>
-		<Width>1100</Width>
-		<Height>640</Height>
+		<Width>1200</Width>
+		<Height>750</Height>
 		<TitleBar>
 			<Width>100%</Width>
 			<Height>40</Height>

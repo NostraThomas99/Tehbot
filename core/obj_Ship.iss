@@ -42,11 +42,12 @@ objectdef obj_Ship inherits obj_StateQueue
 		This.LogLevelBar:Set[${CommonConfig.LogLevelBar}]
 
 		This.NonGameTiedPulse:Set[TRUE]
-		This:AddModuleList[ArmorProjectors, "ToItem.GroupID = GROUP_ARMOR_PROJECTOR"]
+		This:AddModuleList[ArmorProjectors, "ToItem.GroupID = GROUP_ARMOR_PROJECTOR || ToItem.GroupID = GROUP_MUTADAPTIVE_PROJECTOR"]
 		This:AddModuleList[ShieldTransporters, "ToItem.GroupID = GROUP_SHIELD_TRANSPORTER"]
 		This:AddModuleList[MiningLaser, "ToItem.GroupID = GROUP_MININGLASER || ToItem.GroupID = GROUP_STRIPMINER || ToItem.GroupID = GROUP_FREQUENCYMININGLASER"]
-		This:AddModuleList[Weapon, "ToItem.GroupID = GROUP_PRECURSORWEAPON || ToItem.GroupID = GROUP_ENERGYWEAPON || ToItem.GroupID = GROUP_PROJECTILEWEAPON || ToItem.GroupID = GROUP_HYBRIDWEAPON || ToItem.GroupID = GROUP_MISSILELAUNCHERRAPIDHEAVY || ToItem.GroupID = GROUP_MISSILELAUNCHER || ToItem.GroupID = GROUP_MISSILELAUNCHERASSAULT || ToItem.GroupID = GROUP_MISSILELAUNCHERBOMB || ToItem.GroupID = GROUP_MISSILELAUNCHERCITADEL || ToItem.GroupID = GROUP_MISSILELAUNCHERCRUISE || ToItem.GroupID = GROUP_MISSILELAUNCHERDEFENDER || ToItem.GroupID = GROUP_MISSILELAUNCHERHEAVY || ToItem.GroupID = GROUP_MISSILELAUNCHERHEAVYASSAULT || ToItem.GroupID = GROUP_MISSILELAUNCHERROCKET || ToItem.GroupID = GROUP_MISSILELAUNCHERTORPEDO || ToItem.GroupID = GROUP_MISSILELAUNCHERSTANDARD"]
-		This:AddModuleList[Turret, "ToItem.GroupID = GROUP_ENERGYWEAPON || ToItem.GroupID = GROUP_PROJECTILEWEAPON || ToItem.GroupID = GROUP_HYBRIDWEAPON"]
+		This:AddModuleList[Weapon, "ToItem.GroupID = GROUP_VORTONWEAPON || ToItem.GroupID = GROUP_PRECURSORWEAPON || ToItem.GroupID = GROUP_ENERGYWEAPON || ToItem.GroupID = GROUP_PROJECTILEWEAPON || ToItem.GroupID = GROUP_HYBRIDWEAPON || ToItem.GroupID = GROUP_MISSILELAUNCHERRAPIDHEAVY || ToItem.GroupID = GROUP_MISSILELAUNCHER || ToItem.GroupID = GROUP_MISSILELAUNCHERASSAULT || ToItem.GroupID = GROUP_MISSILELAUNCHERBOMB || ToItem.GroupID = GROUP_MISSILELAUNCHERCITADEL || ToItem.GroupID = GROUP_MISSILELAUNCHERCRUISE || ToItem.GroupID = GROUP_MISSILELAUNCHERDEFENDER || ToItem.GroupID = GROUP_MISSILELAUNCHERHEAVY || ToItem.GroupID = GROUP_MISSILELAUNCHERHEAVYASSAULT || ToItem.GroupID = GROUP_MISSILELAUNCHERROCKET || ToItem.GroupID = GROUP_MISSILELAUNCHERTORPEDO || ToItem.GroupID = GROUP_MISSILELAUNCHERSTANDARD"]
+		This:AddModuleList[Turret, "ToItem.GroupID = GROUP_PRECURSORWEAPON || ToItem.GroupID = GROUP_ENERGYWEAPON || ToItem.GroupID = GROUP_PROJECTILEWEAPON || ToItem.GroupID = GROUP_HYBRIDWEAPON"]
+		This:AddModuleList[VortonWeapon, "ToItem.GroupID = GROUP_VORTONWEAPON"]
 		This:AddModuleList[MissileLauncher, "ToItem.GroupID = GROUP_MISSILELAUNCHERRAPIDHEAVY || ToItem.GroupID = GROUP_MISSILELAUNCHER || ToItem.GroupID = GROUP_MISSILELAUNCHERASSAULT || ToItem.GroupID = GROUP_MISSILELAUNCHERBOMB || ToItem.GroupID = GROUP_MISSILELAUNCHERCITADEL || ToItem.GroupID = GROUP_MISSILELAUNCHERCRUISE || ToItem.GroupID = GROUP_MISSILELAUNCHERDEFENDER || ToItem.GroupID = GROUP_MISSILELAUNCHERHEAVY || ToItem.GroupID = GROUP_MISSILELAUNCHERHEAVYASSAULT || ToItem.GroupID = GROUP_MISSILELAUNCHERROCKET || ToItem.GroupID = GROUP_MISSILELAUNCHERTORPEDO || ToItem.GroupID = GROUP_MISSILELAUNCHERSTANDARD"]
 		This:AddModuleList[ECCM, "ToItem.GroupID = GROUP_ECCM"]
 		This:AddModuleList[ActiveResists, "ToItem.GroupID = GROUP_SHIELD_HARDENER || ToItem.GroupID = GROUP_ARMOR_HARDENERS || ToItem.GroupID = GROUP_ARMOR_RESISTANCE_SHIFT_HARDENER"]
@@ -59,11 +60,8 @@ objectdef obj_Ship inherits obj_StateQueue
 		This:AddModuleList[Salvagers, "ToItem.GroupID = GROUP_SALVAGER"]
 		This:AddModuleList[TractorBeams, "ToItem.GroupID = GROUP_TRACTOR_BEAM"]
 		This:AddModuleList[Cloaks, "ToItem.GroupID = GROUP_CLOAKING_DEVICE"]
-		This:AddModuleList[Scrambler, "ToItem.GroupID = GROUP_SCRAMBLER"]
 		This:AddModuleList[SurveyScanner, "ToItem.GroupID = GROUP_SURVEYSCANNER"]
 		This:AddModuleList[CommandBurst, "ToItem.GroupID = GROUP_COMMANDBURST"]
-		This:AddModuleList[StasisWeb, "ToItem.GroupID = GROUP_STASIS_WEB"]
-		This:AddModuleList[StasisGrap, "ToItem.GroupID = GROUP_STASIS_GRAPPLER"]
 		This:AddModuleList[SensorBoost, "ToItem.GroupID = GROUP_SENSORBOOSTER"]
 		This:AddModuleList[TargetPainter, "ToItem.GroupID = GROUP_TARGETPAINTER"]
 		This:AddModuleList[EnergyVampire, "ToItem.GroupID = GROUP_ENERGY_VAMPIRE"]
@@ -73,6 +71,30 @@ objectdef obj_Ship inherits obj_StateQueue
 		This:AddModuleList[EnergyTransfer, "ToItem.GroupID = GROUP_ENERGY_TRANSFER"]
 		This:AddModuleList[AutoTarget, "ToItem.GroupID = GROUP_AUTOMATED_TARGETING_SYSTEM"]
 		This:AddModuleList[Siege, "ToItem.GroupID = GROUP_SIEGEMODULE"]
+		
+		This:AddModuleList[Disruptor, "ToItem.GroupID = GROUP_SCRAMBLER && Name =- Disruptor"]
+		This:AddModuleList[Scrambler, "ToItem.GroupID = GROUP_SCRAMBLER && Name =- Scrambler"]
+		This:AddModuleList[StasisWeb, "ToItem.GroupID = GROUP_STASIS_WEB"]
+		This:AddModuleList[StasisGrap, "ToItem.GroupID = GROUP_STASIS_GRAPPLER"]
+		This:AddModuleList[WarpDFG, "ToItem.GroupID = 899"]		
+		
+		This:AddModuleList[EnergyNeut, "ToItem.GroupID = GROUP_ENERGYNEUT"]
+		
+		This:AddModuleList[WeaponDisruptor, "ToItem.GroupID = GROUP_WEAPONDISRUPTOR"]
+		This:AddModuleList[TurretDisruptor, "ToItem.GroupID = GROUP_WEAPONDISRUPTOR && Name =- Tracking"]
+		This:AddModuleList[MissileDisruptor, "ToItem.GroupID = GROUP_WEAPONDISRUPTOR && Name =- Guidance"]
+		
+		This:AddModuleList[ECM, "ToItem.GroupID = GROUP_ECM"]
+		This:AddModuleList[ECMR, "ToItem.GroupID = GROUP_ECM && Name =- Radar"]		
+		This:AddModuleList[ECMG, "ToItem.GroupID = GROUP_ECM && Name =- Gravimetric"]		
+		This:AddModuleList[ECML, "ToItem.GroupID = GROUP_ECM && Name =- Ladar"]		
+		This:AddModuleList[ECMM, "ToItem.GroupID = GROUP_ECM && Name =- Magnetometric']	
+		This:AddModuleList[ECMMS, "ToItem.GroupID = GROUP_ECM && Name =- Multispectrum']			
+		This:AddModuleList[ECMB, "ToItem.GroupID = 80']
+		
+		This:AddModuleList[RSD, "ToItem.GroupID = GROUP_RSD']
+
+		
 		This:AddModuleList[TargetModules, "MaxRange>0"]
 		; This:AddModuleList[Passive, "!IsActivatable"]
 		This:Clear

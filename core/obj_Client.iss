@@ -1,6 +1,6 @@
 objectdef obj_Client
 {
-	variable int PulseIntervalInMilliseconds = 500
+	variable int PulseIntervalInMilliseconds = 2000
 	variable int NextPulse
 
 	variable bool Ready=TRUE

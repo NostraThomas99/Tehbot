@@ -21,16 +21,17 @@ objectdef obj_Configuration_DroneControl inherits obj_Configuration_Base
 objectdef obj_DroneControl inherits obj_StateQueue
 {
 	variable obj_Configuration_DroneControl Config
-	variable obj_TargetList ActiveNPC
+	variable obj_TargetList ActiveNPCs
+	variable obj_TargetList NPC
 	variable int64 currentTarget = 0
 	variable bool IsBusy
-	variable int droneEngageRange = 30000
+	variable int droneEngageRange = 60000
 	variable bool RecallActive=FALSE
 
 	method Initialize()
 	{
 		This[parent]:Initialize
-		PulseFrequency:Set[1000]
+		PulseFrequency:Set[2000]
 		This.NonGameTiedPulse:Set[TRUE]
 		DynamicAddMiniMode("DroneControl", "DroneControl")
 	}
@@ -44,7 +45,16 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		{
 			case Frigate
 			case Destroyer
-
+				if ${MyShip.ToEntity.Type.Find[Rattlesnake]}
+				{
+					DroneType:Set[${Drones.Data.FindType["Heavy Attack Drones"]}]
+					{
+					if ${DroneType} != -1
+						{
+							return ${DroneType}
+						}
+					}
+				}
 				DroneType:Set[${Drones.Data.FindType["Light Scout Drones"]}]
 				if ${DroneType} != -1
 				{
@@ -55,11 +65,20 @@ objectdef obj_DroneControl inherits obj_StateQueue
 				if ${DroneType} != -1
 				{
 					return ${DroneType}
-				}
+				}				
 
 			case Cruiser
 			case BattleCruiser
-
+				if ${MyShip.ToEntity.Type.Find[Rattlesnake]}
+				{
+					DroneType:Set[${Drones.Data.FindType["Heavy Attack Drones"]}]
+					{
+					if ${DroneType} != -1
+						{
+							return ${DroneType}
+						}
+					}
+				}
 				DroneType:Set[${Drones.Data.FindType["Fighters"]}]
 				if ${DroneType} != -1
 				{
@@ -77,6 +96,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 				{
 					return ${DroneType}
 				}
+
 
 			case Battleship
 
@@ -208,14 +228,14 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		if ${This.IsIdle}
 		{
 			This:LogInfo["Starting."]
-			ActiveNPC.MaxRange:Set[${droneEngageRange}]
+			ActiveNPCs.MaxRange:Set[${droneEngageRange}]
 			variable int MaxTarget = ${MyShip.MaxLockedTargets}
 			if ${Me.MaxLockedTargets} < ${MyShip.MaxLockedTargets}
 				MaxTarget:Set[${Me.MaxLockedTargets}]
 			MaxTarget:Dec[2]
 
-			ActiveNPC.MinLockCount:Set[${MaxTarget}]
-			ActiveNPC.AutoLock:Set[TRUE]
+			ActiveNPCs.MinLockCount:Set[${MaxTarget}]
+			ActiveNPCs.AutoLock:Set[TRUE]
 			This:QueueState["DroneControl"]
 		}
 	}
@@ -223,7 +243,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 	method Stop()
 	{
 		This:LogInfo["Stopping."]
-		ActiveNPC.AutoLock:Set[FALSE]
+		ActiveNPCs.AutoLock:Set[FALSE]
 		This:Clear
 	}
 
@@ -281,14 +301,14 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		return TRUE
 	}
 
-	method BuildActiveNPC()
+	method BuildActiveNPCs()
 	{
 		variable iterator classIterator
 		variable iterator groupIterator
 		variable string groups = ""
 		variable string seperator = ""
 
-		ActiveNPC:ClearQueryString
+		ActiveNPCs:ClearQueryString
 
 		variable int range = ${Math.Calc[${MyShip.MaxTargetRange} * .95]}
 
@@ -355,8 +375,8 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		}
 		while ${attackerIterator:Next(exists)}
 
-		ActiveNPC:AddQueryString["Distance < ${droneEngageRange} && IsNPC && !IsMoribund && (${groups})"]
-		ActiveNPC:AddQueryString["Distance < ${droneEngageRange} && IsNPC && !IsMoribund && IsWarpScramblingMe"]
+		ActiveNPCs:AddQueryString["Distance < ${droneEngageRange} && IsNPC && !IsMoribund && (${groups})"]
+		ActiveNPCs:AddQueryString["Distance < ${droneEngageRange} && IsNPC && !IsMoribund && IsWarpScramblingMe"]
 
 		; Add potential jammers.
 		seperator:Set[""]
@@ -371,7 +391,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 			}
 			while ${groupIterator:Next(exists)}
 		}
-		ActiveNPC:AddQueryString["Distance < ${droneEngageRange} && IsNPC && IsTargetingMe && !IsMoribund && (${groups})"]
+		ActiveNPCs:AddQueryString["Distance < ${droneEngageRange} && IsNPC && !IsMoribund && (${groups})"]
 
 		seperator:Set[""]
 		groups:Set[""]
@@ -385,7 +405,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 			}
 			while ${groupIterator:Next(exists)}
 		}
-		ActiveNPC:AddQueryString["Distance < ${droneEngageRange} && IsNPC && IsTargetingMe && !IsMoribund && (${groups})"]
+		ActiveNPCs:AddQueryString["Distance < ${droneEngageRange} && IsNPC && !IsMoribund && (${groups})"]
 
 		seperator:Set[""]
 		groups:Set[""]
@@ -399,7 +419,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 			}
 			while ${groupIterator:Next(exists)}
 		}
-		ActiveNPC:AddQueryString["Distance < ${droneEngageRange} && IsNPC && IsTargetingMe && !IsMoribund && (${groups})"]
+		ActiveNPCs:AddQueryString["Distance < ${droneEngageRange} && IsNPC && !IsMoribund && (${groups})"]
 
 		NPCData.BaseRef:GetSetIterator[classIterator]
 		if ${classIterator:First(exists)}
@@ -418,12 +438,12 @@ objectdef obj_DroneControl inherits obj_StateQueue
 					}
 					while ${groupIterator:Next(exists)}
 				}
-				ActiveNPC:AddQueryString["Distance < ${droneEngageRange} && IsNPC && IsTargetingMe && !IsMoribund && (${groups})"]
+				ActiveNPCs:AddQueryString["Distance < ${droneEngageRange} && IsNPC && !IsMoribund && (${groups})"]
 			}
 			while ${classIterator:Next(exists)}
 		}
 
-		ActiveNPC:AddTargetingMe
+		ActiveNPCs:AddAllNPCs
 	}
 
 	member:bool DroneControl()
@@ -434,19 +454,25 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		variable iterator DroneTypesIter
 		variable int MaxDroneCount = ${Config.MaxDroneCount}
 
-		This:BuildActiveNPC
-		ActiveNPC:RequestUpdate
+		This:BuildActiveNPCs
+		ActiveNPCs:RequestUpdate
 
-		if ${MaxDroneCount} > ${Me.MaxActiveDrones}
-		{
-			MaxDroneCount:Set[${Me.MaxActiveDrones}]
-		}
 
-		ActiveNPC.MinLockCount:Set[${Config.LockCount}]
+		ActiveNPCs.MinLockCount:Set[${Config.LockCount}]
 
 		if !${Client.InSpace}
 		{
 			return FALSE
+		}
+		
+		if ${MaxDroneCount} > ${Me.MaxActiveDrones} && !${MyShip.ToEntity.Type.Find[Rattlesnake]} && !${MyShip.ToEntity.Type.Find[Gila]}
+		{
+			MaxDroneCount:Set[${Me.MaxActiveDrones}]
+		}
+
+		if ${MyShip.ToEntity.Type.Find[Rattlesnake]} || ${MyShip.ToEntity.Type.Find[Gila]}
+		{
+			MaxDroneCount:Set[2]
 		}
 
 		if ${Me.ToEntity.Mode} == MOVE_WARPING
@@ -480,13 +506,13 @@ objectdef obj_DroneControl inherits obj_StateQueue
 			do
 			{
 				CurrentDroneHealth:Set[${Math.Calc[${DroneIterator.Value.ToEntity.ShieldPct.Int} + ${DroneIterator.Value.ToEntity.ArmorPct.Int} + ${DroneIterator.Value.ToEntity.StructurePct.Int}]}]
-				if ${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]} && ${CurrentDroneHealth} < ${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]}
+				if ${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]} && ${CurrentDroneHealth} < ${Math.Calc[${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]} - 10]}
 				{
-					; echo recalling ID ${DroneIterator.Value.ID}
+					echo recalling ID ${DroneIterator.Value.ID}
 					Drones:Recall["ID = ${DroneIterator.Value.ID}", 1]
 				}
 				Drones.DroneHealth:Set[${DroneIterator.Value.ID}, ${CurrentDroneHealth.Int}]
-				; echo drone refreshed cached health ${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]}
+				echo drone refreshed cached health ${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]}
 			}
 			while ${DroneIterator:Next(exists)}
 		}
@@ -539,11 +565,11 @@ objectdef obj_DroneControl inherits obj_StateQueue
 			}
 			; May switch target more than once so use this flag to avoid log spamming.
 			variable bool switched
-			if !${finalized} && !${Ship.IsHardToDealWithTarget[${currentTarget}]} && ${ActiveNPC.LockedTargetList.Used}
+			if !${finalized} && !${Ship.IsHardToDealWithTarget[${currentTarget}]} && ${ActiveNPCs.LockedTargetList.Used}
 			{
 				; Switch to difficult target for the ship
 				switched:Set[FALSE]
-				ActiveNPC.LockedTargetList:GetIterator[lockedTargetIterator]
+				ActiveNPCs.LockedTargetList:GetIterator[lockedTargetIterator]
 				do
 				{
 					if ${Entity[${lockedTargetIterator.Value}].Distance} < ${droneEngageRange} && ${Ship.IsHardToDealWithTarget[${lockedTargetIterator.Value}]} && \
@@ -565,7 +591,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 			currentTarget:Set[${FightOrFlight.currentTarget}]
 			This:LogInfo["Engaging ganker \ar${Entity[${currentTarget}].Name}"]
 		}
-		elseif ${ActiveNPC.LockedTargetList.Used}
+		elseif ${ActiveNPCs.LockedTargetList.Used}
 		{
 			; Need to re-pick from locked target
 			if ${Ship.ActiveJammerList.Used}
@@ -585,7 +611,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 
 			if ${currentTarget} == 0
 			{
-				ActiveNPC.LockedTargetList:GetIterator[lockedTargetIterator]
+				ActiveNPCs.LockedTargetList:GetIterator[lockedTargetIterator]
 				do
 				{
 					if ${Entity[${lockedTargetIterator.Value}].Distance} < ${droneEngageRange} && \
@@ -609,12 +635,16 @@ objectdef obj_DroneControl inherits obj_StateQueue
 			if ${Drones.ActiveDroneCount["ToEntity.GroupID = GROUP_SCOUT_DRONE || ToEntity.GroupID = GROUP_COMBAT_DRONE"]} > 0 && \
 			   ${Entity[${currentTarget}].Distance} < ${Me.DroneControlDistance}
 			{
-				; echo ${MaxDroneCount} drones engaging
+				echo ${MaxDroneCount} drones engaging
 				Drones:Engage["ToEntity.GroupID = GROUP_SCOUT_DRONE || ToEntity.GroupID = GROUP_COMBAT_DRONE", ${currentTarget}]
 			}
 
 			if ${MaxDroneCount} > ${Drones.ActiveDroneCount}
 			{
+				if ${MyShip.ToEntity.Type.Find[Rattlesnake]}
+				{
+					Drones:Deploy["TypeID = ${Drones.Data.FindType[Heavy Attack Drones]}", ${Math.Calc[${MaxDroneCount} - ${Drones.ActiveDroneCount}]}]
+				}
 				if ${Entity[${currentTarget}].Distance} > ${Me.DroneControlDistance}
 				{
 					Drones:Deploy["TypeID = ${Drones.Data.FindType[Fighters]}", ${Math.Calc[${MaxDroneCount} - ${Drones.ActiveDroneCount}]}]

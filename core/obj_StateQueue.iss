@@ -30,7 +30,7 @@ objectdef obj_StateQueue inherits obj_Logger
 	variable obj_State CurState
 
 	variable int NextPulse
-	variable int PulseFrequency = 2000
+	variable int PulseFrequency = 3000
 	variable bool NonGameTiedPulse = FALSE
 	variable bool IsIdle
 	variable int RandomDelta = 500

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ISUI>
+	<template name='Information.Font'>
+		<Name>Segoe</Name>
+		<Size>24</Size>
+		<Color>FFFFFFFF</Color>
+	</template>
+
+	<window name='Tehbot_TargetManager'>
+		<Visible>1</Visible>
+		<BackGroundColor></BackGroundColor>
+		<Border>0</Border>
+		<X>200</X>
+		<Y>300</Y>
+		<Width>1600</Width>
+		<Height>1200</Height>
+		<TitleBar>
+			<Width>100%</Width>
+			<Height>40</Height>
+			<Border>0</Border>
+			<BackgroundColor>FF000000</BackgroundColor>
+			<Children>
+				<Text name='Tehbot_TargetManager_TitleBar_Title'>
+					<X>0</X>
+					<Y>3</Y>
+					<Width>100%</Width>
+					<Height>40</Height>
+					<Alignment>Center</Alignment>
+					<Text>TargetManager Configuration</Text>
+				</Text>
+				<button	Name='Close'>
+					<X>r80</X>
+					<Y>0</Y>
+					<Width>80</Width>
+					<Height>40</Height>
+					<Text>Close</Text>
+					<OnLeftClick>
+						ui -unload "&filepath;/TargetManager"
+					</OnLeftClick>
+				</button>
+			</Children>
+		</TitleBar>
+		<Children name="Tehbot_TargetManager_Children">
+			<Frame name="Tehbot_TargetManager_Frame">
+				<X>0</X>
+				<Y>30</Y>
+				<Width>100%</Width>
+				<Height>100%</Height>
+				<BackgroundColor>FF000000</BackgroundColor>
+				<Border>1</Border>
+				<BorderColor>FFFFFFFF</BorderColor>
+				<Children name="Tehbot_TargetManager_Frame_Children">
+					<Text name='obj_GridWatcherInformation'>
+						<Font template='Information.Font' />
+						<X>1%</X>
+						<Y>1%</Y>
+						<Width>98%</Width>
+						<Height>18%</Height>
+						<Wrap />
+						<Text>Remote Rep Manager.</Text>
+					</Text>
+
+					<Text name='LogLevelLabel'>
+						<X>1%</X>
+						<Y>7%</Y>
+						<Width>30%</Width>
+						<Height>3%</Height>
+						<Text>Log level: 0 - DEBUG, 1 - INFO, ... 4 - NONE</Text>
+					</Text>
+					<Slider name='LogLevel'>
+						<X>1%</X>
+						<Y>11%</Y>
+						<Width>20%</Width>
+						<Height>3%</Height>
+						<Border>1</Border>
+						<Range>3</Range>
+						<OnLoad>
+							This:SetValue[${Script[Tehbot].VariableScope.TargetManager.Config.LogLevelBar:Dec}]
+						</OnLoad>
+						<OnChange>
+							Script[Tehbot].VariableScope.TargetManager.Config:SetLogLevelBar[${This.Value:Inc}]
+						</OnChange>
+					</Slider>
+					<Checkbox name='IgnoreNPCTargets'>
+						<X>1%</X>
+						<Y>21%</Y>
+						<Width>30%</Width>
+						<Height>3%</Height>
+						<Text>Ignore NPC Targets</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.TargetManager.Config.IgnoreNPCTargets}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope..TargetManager.Config:SetIgnoreNPCTargets[${This.Checked}]
+						</OnLeftClick>
+					</Checkbox>
+					<Checkbox name='IgnorePCTargets'>
+						<X>1%</X>
+						<Y>25%</Y>
+						<Width>30%</Width>
+						<Height>3%</Height>
+						<Text>Ignore PC Targets</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.TargetManager.Config.IgnorePCTargets}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope..TargetManager.Config:SetIgnorePCTargets[${This.Checked}]
+						</OnLeftClick>
+					</Checkbox>
+					<Checkbox name='BroadCastPriorityTargets'>
+						<X>1%</X>
+						<Y>29%</Y>
+						<Width>30%</Width>
+						<Height>3%</Height>
+						<Text>Broadcast Priority Targets</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.TargetManager.Config.BroadCastPriorityTargets}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope..TargetManager.Config:SetBroadCastPriorityTargets[${This.Checked}]
+						</OnLeftClick>
+					</Checkbox>
+					<Checkbox name='UseSecondaryTargetList'>
+						<X>1%</X>
+						<Y>33%</Y>
+						<Width>30%</Width>
+						<Height>3%</Height>
+						<Text>Gank Spoil Mode</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.TargetManager.Config.UseSecondaryTargetList}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope..TargetManager.Config:SetUseSecondaryTargetList[${This.Checked}]
+						</OnLeftClick>
+					</Checkbox>
+				</Children>
+			</Frame>
+		</Children>
+	</window>
+
+</ISUI>

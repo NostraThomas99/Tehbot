@@ -126,6 +126,13 @@ objectdef obj_TargetList inherits obj_StateQueue
 	{
 		variable string QueryString="CategoryID = CATEGORYID_ENTITY && IsNPC && !IsMoribund && !("
 
+		; Abyssal switch for ignoring the really distant cans if we aren't using an MTU
+		if !${Abyssal.Config.UseMTU}
+		{
+			QueryString:Concat["TypeID = 49663 ||"]
+			QueryString:Concat["TypeID = 49662 ||"]
+			QueryString:Concat["TypeID = 49661 ||"]
+		}
 		;Exclude Groups here
 		QueryString:Concat["GroupID = GROUP_CONCORDDRONE ||"]
 		QueryString:Concat["GroupID = GROUP_CONVOYDRONE ||"]
@@ -137,8 +144,24 @@ objectdef obj_TargetList inherits obj_StateQueue
 		QueryString:Concat["GroupID = GROUP_DEADSPACEOVERSEERSSTRUCTURE ||"]
 		QueryString:Concat["GroupID = GROUP_LARGECOLLIDABLESTRUCTURE ||"]
 		; Somehow the non hostile Orca and Drone ship in the Anomaly mission is in this group
+		QueryString:Concat["GroupID = 288 ||"]		
+		QueryString:Concat["GroupID = 446 ||"]		
+		QueryString:Concat["GroupID = 182 ||"]	
+		QueryString:Concat["GroupID = 4028 ||"]
+		QueryString:Concat["GroupID = 383 ||"]
+		QueryString:Concat["GroupID = 4034 ||"]
+		QueryString:Concat["GroupID = 1803 ||"]
+		QueryString:Concat["GroupID = 1896 ||"]
+		QueryString:Concat["GroupID = 1765 ||"]
+		QueryString:Concat["GroupID = 1766 ||"]
+		QueryString:Concat["GroupID = 1764 ||"]
+		QueryString:Concat["GroupID = 1767 ||"]
+		QueryString:Concat["GroupID = 99 ||"]
+		QueryString:Concat["TypeID = 48253 ||"]
 		QueryString:Concat["GroupID = GROUP_ANCIENTSHIPSTRUCTURE ||"]
 		QueryString:Concat["GroupID = GROUP_PRESSURESOLO)"]
+
+		
 
 		This:AddQueryString["${QueryString.Escape}"]
 	}

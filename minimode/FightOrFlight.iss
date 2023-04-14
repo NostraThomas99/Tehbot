@@ -244,7 +244,7 @@ objectdef obj_FightOrFlight inherits obj_StateQueue
 			return TRUE
 		}
 
-		This:DetectOtherPilots[3]
+		This:DetectOtherPilots[69]
 		if ${IsOtherPilotsDetected}
 		{
 			This:UnlockNPCsAndLockPCs
@@ -469,7 +469,7 @@ objectdef obj_FightOrFlight inherits obj_StateQueue
 			}
 		}
 
-		This:DetectOtherPilots[1]
+		This:DetectOtherPilots[69]
 		if ${IsOtherPilotsDetected}
 		{
 			; Remain vigilant once entered engage stage.
