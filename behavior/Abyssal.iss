@@ -213,13 +213,6 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			Ship.ModuleList_VortonWeapon:SetOverloadHPThreshold[10]
 			OverheatSetup:Set[TRUE]
 		}
-		; We have hit the halt button, might want to like, stop the bot or something.
-		if ${Me.InStation} && (${Config.Halt} || ${Halt})
-		{
-			This:LogInfo["Halt Requested"]
-			This:InsertState["HaltBot"]
-			return TRUE
-		}
 		; We are in space, in a pod. Might figure out something more complicated for this later.
 		if ${Client.InSpace} && ${MyShip.ToEntity.Type.Equal[Capsule]}
 		{
@@ -280,6 +273,13 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			This:QueueState["Repair"]
 			This:QueueState["DropOffLoot", 5000]
 			This:InsertState["ReloadAmmoAndDrones", 3000]
+			return TRUE
+		}
+		; We have hit the halt button, might want to like, stop the bot or something.
+		if ${Me.InStation} && (${Config.Halt} || ${Halt})
+		{
+			This:LogInfo["Halt Requested"]
+			This:InsertState["HaltBot"]
 			return TRUE
 		}
 		; We are in station and everything is good, time to go.
@@ -648,6 +648,8 @@ objectdef obj_Abyssal inherits obj_StateQueue
 		; Enemies are gone, cleanup and move on to the next room.
 		if !${This.JerksPresent} && ${This.InAbyss}
 		{
+			; Good place to reload, probably.
+			EVE:Execute[CmdReloadAmmo]
 			; If we have an MTU out, but there is still reasonable loot in reach, chillax a bit.
 			if ${Config.UseMTU} && ${This.MTUDeployed} && ${This.LootboxesPresent}
 			{
