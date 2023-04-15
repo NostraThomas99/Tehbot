@@ -213,6 +213,13 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			Ship.ModuleList_VortonWeapon:SetOverloadHPThreshold[10]
 			OverheatSetup:Set[TRUE]
 		}
+		; We have hit the halt button, might want to like, stop the bot or something.
+		if ${Me.InStation} && (${Config.Halt} || ${Halt})
+		{
+			This:LogInfo["Halt Requested"]
+			This:InsertState["HaltBot"]
+			return TRUE
+		}
 		; We are in space, in a pod. Might figure out something more complicated for this later.
 		if ${Client.InSpace} && ${MyShip.ToEntity.Type.Equal[Capsule]}
 		{
