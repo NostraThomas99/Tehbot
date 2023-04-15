@@ -471,7 +471,7 @@ objectdef obj_TargetManager inherits obj_StateQueue
 					Ship.ModuleList_Siege:ActivateOne
 				}
 			}
-			elseif !${Ship.ModuleList_Weapon.IsUsingLongRangeAmmo}
+			elseif !${Ship.ModuleList_Weapon.IsUsingLongRangeAmmo} && ${Abyssal.UseSecondaryAmmo}
 			{
 				This:LogDebug["Far switch ammo to long"]
 				; Activate weapon to switch ammo to long.
