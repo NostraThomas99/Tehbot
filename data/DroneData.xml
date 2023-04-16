@@ -85,6 +85,7 @@
       <Setting Name="31890" Type="Republic Fleet Valkyrie" Volume="10" Race="2" />
       <Setting Name="31892" Type="Republic Fleet Berserker" Volume="25" Race="2" />
       <Setting Name="32465" Type="Civilian Hobgoblin" Volume="5" Race="8" />
+	  <Setting Name="60479" Type="Medium Mutated Drone" Volume="10" Race="1" />
     </Set>
     <Set Name="Sentry Drones">
       <Setting Name="31868" Type="Imperial Navy Curator" Volume="25" Race="4" />
