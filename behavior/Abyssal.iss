@@ -604,13 +604,13 @@ objectdef obj_Abyssal inherits obj_StateQueue
 				}
 				if ${MyShip.Cargo[Standard Blue Pill Booster](exists)} && ${LavishScript.RunningTime} >= ${BluePillTime}
 				{
-					MyShip.Cargo[Synth Blue Pill Booster]:ConsumeBooster
+					MyShip.Cargo[Standard Blue Pill Booster]:ConsumeBooster
 					SynthBluePillTime:Set[${Math.Calc[${LavishScript.RunningTime} + 1800000]}]
 					This:LogInfo["Using Standard Blue Pill."]
 				}
 				if ${MyShip.Cargo[Strong Blue Pill Booster](exists)} && ${LavishScript.RunningTime} >= ${BluePillTime}
 				{
-					MyShip.Cargo[Synth Blue Pill Booster]:ConsumeBooster
+					MyShip.Cargo[Strong Blue Pill Booster]:ConsumeBooster
 					SynthBluePillTime:Set[${Math.Calc[${LavishScript.RunningTime} + 1800000]}]
 					This:LogInfo["Using Strong Blue Pill."]
 				}
