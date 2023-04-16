@@ -325,6 +325,15 @@ objectdef obj_Ship inherits obj_StateQueue
 							ActiveJammerList:Insert[${attackerIterator.Value.ID}]
 						}
 					}
+					elseif ${jamsIterator.Value.Lower.Find["guidance"]}
+					{
+						; Missile Disruptor
+						if !${ActiveJammerSet.Contains[${attackerIterator.Value.ID}]}
+						{
+							ActiveJammerSet:Add[${attackerIterator.Value.ID}]
+							ActiveJammerList:Insert[${attackerIterator.Value.ID}]
+						}
+					}
 					else
 					{
 						This:LogInfo["unknown EW ${jamsIterator.Value}", "r"]

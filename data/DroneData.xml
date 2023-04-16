@@ -33,6 +33,7 @@
       <Setting Name="31890" Type="Republic Fleet Valkyrie" Volume="10" Race="2" />
       <Setting Name="28294" Type="'Integrated' Valkyrie" Volume="10" Race="2" />
       <Setting Name="28296" Type="'Augmented' Valkyrie" Volume="10" Race="2" />
+	  <Setting Name="60479" Type="Medium Mutated Drone" Volume="10" Race="1" />
     </Set>
     <Set Name="Light Scout Drones">
       <Setting Name="2203" Type="Acolyte I" Volume="5" Race="4" />
