@@ -506,9 +506,17 @@ objectdef obj_DroneControl inherits obj_StateQueue
 			do
 			{
 				CurrentDroneHealth:Set[${Math.Calc[${DroneIterator.Value.ToEntity.ShieldPct.Int} + ${DroneIterator.Value.ToEntity.ArmorPct.Int} + ${DroneIterator.Value.ToEntity.StructurePct.Int}]}]
-				if ${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]} && ${CurrentDroneHealth} < ${Math.Calc[${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]} - 10]}
+				;This is for abyss, if we've got edencom lightning blasters we need drones to ignore more damage or we will get looped.
+				if ${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]} && ${CurrentDroneHealth} < ${Math.Calc[${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]} - 30]} && \
+				${Entity[Name =- "Skybreaker" || Name =- "Stormbringer" || Name =- "Thunderchild"](exists)}
 				{
-					echo recalling ID ${DroneIterator.Value.ID}
+					;echo recalling ID ${DroneIterator.Value.ID}
+					Drones:Recall["ID = ${DroneIterator.Value.ID}", 1]
+				}
+				if ${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]} && ${CurrentDroneHealth} < ${Math.Calc[${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]} - 10]} && \
+				!${Entity[Name =- "Skybreaker" || Name =- "Stormbringer" || Name =- "Thunderchild"](exists)}
+				{
+					;echo recalling ID ${DroneIterator.Value.ID}
 					Drones:Recall["ID = ${DroneIterator.Value.ID}", 1]
 				}
 				Drones.DroneHealth:Set[${DroneIterator.Value.ID}, ${CurrentDroneHealth.Int}]
