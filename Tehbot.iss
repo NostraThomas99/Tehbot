@@ -131,7 +131,7 @@ function main(string Character="")
 	declarevariable CurrentRepTarget int64 global
 	
 	;More global variables, this is for keeping track of when we last attempted (successfully or not) to use a drug
-	declarevariable SynthBluePillTime int64 global
+	declarevariable BluePillTime int64 global
 	declarevariable HardshellTime int64 global
 	
 	;More global variable(s), lets see if this fixes our orbit problems

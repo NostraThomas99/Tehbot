@@ -29,4 +29,8 @@ A return to station will be triggered if you are missing drones. For a Gila that
 A return to station will be triggered if you have used up all your available Filaments. The bot will go through more runs if you happen to keep picking up more of the filament you are using while it is running.
 A return to station will be triggered if you have used up your drugs (unlikely).
 A return to station will be triggered if you are configured to use an MTU and have lost it (don't do it, don't use an MTU yet).
+
+Important sidenote. If you are not going to use a gila (its a really stupid idea to not use a gila) ensure that your ship can hit out to the approximate edge of the safe zone keeping in mind that some of these abyssal rats rather enjoy their EWAR.
+Functionality for approaching things outside your range is not implemented except for the case of those battleships that hug the edge of the safe zone. Keep your 10km rocket fits at home.
+
 As always, let me know in the Discord if things don't behave correctly.

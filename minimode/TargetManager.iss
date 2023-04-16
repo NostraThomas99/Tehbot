@@ -168,6 +168,11 @@ objectdef obj_TargetManager inherits obj_StateQueue
 						groups:Concat[${seperator}ID =- "${attackerIterator.Value.ID}"]
 						seperator:Set[" || "]
 					}
+					elseif ${jamsIterator.Value.Lower.Find["ewGuidanceDisrupt"]}
+					{
+						groups:Concat[${seperator}ID =- "${attackerIterator.Value.ID}"]
+						seperator:Set[" || "]
+					}					
 					else
 					{
 						This:LogCritical["unknown EW ${jamsIterator.Value}"]

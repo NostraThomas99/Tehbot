@@ -744,7 +744,63 @@
 							Script[Tehbot].VariableScope.Abyssal.Config:SetDrugsToUse[${This.SelectedItem.Text}]
 						</OnSelect>
 						<OnMouseEnter>
-							UIElement[Information@InformationFrame@Tehbot_Abyssal_Frame@Tehbot_Abyssal]:SetText["This configures the type of drone the bot will top off before a mission."]
+							UIElement[Information@InformationFrame@Tehbot_Abyssal_Frame@Tehbot_Abyssal]:SetText["Drug choice 1"]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@Tehbot_Abyssal_Frame@Tehbot_Abyssal]:SetText[""]
+						</OnMouseExit>
+					</combobox>
+					
+					<combobox Name="DrugsToUse2">
+						<Font template='Information.Font' />
+						<BackgroundColor>FF000000</BackgroundColor>
+						<X>66%</X>
+						<Y>53%</Y>
+						<Width>30%</Width>
+						<Height>5%</Height>
+						<OnLoad>
+							if !${Script[Tehbot].VariableScope.Abyssal.Config.UseDrugs}
+								This:Hide
+							variable index:item cargo
+							variable iterator c
+							EVEWindow[Inventory].ChildWindow[${Me.ShipID},ShipCargo]:GetItems[cargo]
+							cargo:RemoveByQuery[${LavishScript.CreateQuery[Group == "Booster"]}, FALSE]
+							cargo:GetIterator[c]
+							if ${c:First(exists)}
+								do
+								{
+									if !${This.ItemByText[${c.Value.Type}](exists)}
+									{
+										This:AddItem[${c.Value.Type}]
+									}
+								}
+								while ${c:Next(exists)}
+							if ${Me.Station(exists)}
+							{
+								EVEWindow[Inventory].ChildWindow[${Me.Station.ID},StationItems]:GetItems[cargo]
+								cargo:RemoveByQuery[${LavishScript.CreateQuery[Group == "Booster"]}, FALSE]
+								cargo:GetIterator[c]
+								if ${c:First(exists)}
+									do
+									{
+										if !${This.ItemByText[${c.Value.Type}](exists)}
+											This:AddItem[${c.Value.Type}]
+									}
+									while ${c:Next(exists)}
+							}
+							if ${Script[Tehbot].VariableScope.Abyssal.Config.DrugsToUse.NotNULLOrEmpty}
+							{
+								if !${This.ItemByText[${Script[Tehbot].VariableScope.Abyssal.Config.DrugsToUse2}](exists)}
+									This.ItemByText[${Script[Tehbot].VariableScope.Abyssal.Config.DrugsToUse2}]:Select
+							}
+							This.ItemByText[${Script[Tehbot].VariableScope.Abyssal.Config.DrugsToUse2}]:Select
+							This:SetZOrder[movetop]
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.Abyssal.Config:SetDrugsToUse2[${This.SelectedItem.Text}]
+						</OnSelect>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@Tehbot_Abyssal_Frame@Tehbot_Abyssal]:SetText["Drug choice 2"]
 						</OnMouseEnter>
 						<OnMouseExit>
 							UIElement[Information@InformationFrame@Tehbot_Abyssal_Frame@Tehbot_Abyssal]:SetText[""]
@@ -942,7 +998,7 @@
 						<X>36%</X>
 						<Y>60%</Y>
 						<Width>30%</Width>
-						<Height>5%</Height>
+						<Height>6%</Height>
 						<Alignment>Center</Alignment>
 						<Text>Ammo/Drone Storage</Text>
 					</Text>
@@ -952,9 +1008,9 @@
 						<Border>1</Border>
 						<BorderColor>FFFFFFFF</BorderColor>
 						<X>36%</X>
-						<Y>62%</Y>
+						<Y>66%</Y>
 						<Width>30%</Width>
-						<Height>5%</Height>
+						<Height>9%</Height>
 						<Items>
 							<Item>Personal Hangar</Item>
 							<Item>Corporation Hangar</Item>
@@ -1108,7 +1164,7 @@
 
 					<Checkbox name='DropOffToContainer'>
 						<X>36%</X>
-						<Y>68%</Y>
+						<Y>75%</Y>
 						<Width>30%</Width>
 						<Height>5%</Height>
 						<Text>Unload Loot To Container</Text>

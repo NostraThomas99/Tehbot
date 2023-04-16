@@ -14,6 +14,7 @@ objectdef obj_Configuration_Abyssal inherits obj_Configuration_Base
 		This.ConfigRef:AddSetting[FilamentAmount, 1]
 		This.ConfigRef:AddSetting[UseDrugs, FALSE]
 		This.ConfigRef:AddSetting[DrugsToUse, ""]
+		This.ConfigRef:AddSetting[DrugsToUse2, ""]
 		This.ConfigRef:AddSetting[UseMTU, FALSE]
 		This.ConfigRef:AddSetting[MTUType, ""]
 		This.ConfigRef:AddSetting[OverloadThrust, FALSE]
@@ -35,6 +36,7 @@ objectdef obj_Configuration_Abyssal inherits obj_Configuration_Base
 	Setting(bool, Overheat, SetOverheat)
 	Setting(bool, UseDrugs, SetUseDrugs)
 	Setting(string, DrugsToUse, SetDrugsToUse)
+	Setting(string, DrugsToUse2, SetDrugsToUse2)
 	Setting(int, NanitesToLoad, SetNanitesToLoad)	
 	Setting(string, HomeBase, SetHomeBase)
 	Setting(string, FilamentSite, SetFilamentSite)
@@ -415,6 +417,14 @@ objectdef obj_Abyssal inherits obj_StateQueue
 				This:InsertState["CheckForWork", 5000]
 				return TRUE
 			}
+			if !${MyShip.Cargo[${Config.DrugsToUse2}](exists)}
+			{
+				This:LogInfo["${Config.DrugsToUse}2 are out"]
+				StatusGreen:Set[FALSE]
+				StatusChecked:Set[TRUE]
+				This:InsertState["CheckForWork", 5000]
+				return TRUE
+			}
 		}
 		; Check to see if we have our nanite paste, at least 40% of the initial amount.
 		if ${Config.Overheat}
@@ -559,18 +569,50 @@ objectdef obj_Abyssal inherits obj_StateQueue
 		; Doing T3s in either a Stormbringer or a Missile based cruiser with a good tank and with decent range.
 		if ${This.JerksPresent} && ${This.InAbyss}
 		{
-			; Need drugs
-			if ${MyShip.ShieldPct} < 30
+			; Threshold for defensive shield drugs is 40%, stick to the safe ones so you don't kneecap yourself by removing all your cap or whatever the hell.
+			if ${MyShip.ShieldPct} < 40
 			{
-				if ${DrugsToUse.Find[Agency 'Hardshell' TB3 Dose I]} && ${LavishScript.RunningTime} >= ${HardshellTime}
+				if ${MyShip.Cargo[Agency 'Hardshell' TB3 Dose I](exists)} && ${LavishScript.RunningTime} >= ${HardshellTime}
 				{
 					MyShip.Cargo[Agency 'Hardshell' TB3 Dose I]:ConsumeBooster
 					HardshellTime:Set[${Math.Calc[${LavishScript.RunningTime} + 1800000]}]
+					This:LogInfo["Using Agency 'Hardshell' TB3 Dose I."]
 				}
-				if ${DrugsToUse.Find[Synth Blue Pill Booster]} && ${LavishScript.RunningTime} >= ${SynthBluePillTime}
+				if ${MyShip.Cargo[Agency 'Hardshell' TB5 Dose II](exists)} && ${LavishScript.RunningTime} >= ${HardshellTime}
+				{
+					MyShip.Cargo[Agency 'Hardshell' TB5 Dose II]:ConsumeBooster
+					HardshellTime:Set[${Math.Calc[${LavishScript.RunningTime} + 1800000]}]
+					This:LogInfo["Using Agency 'Hardshell' TB5 Dose II."]
+				}
+				if ${MyShip.Cargo[Agency 'Hardshell' TB7 Dose III](exists)} && ${LavishScript.RunningTime} >= ${HardshellTime}
+				{
+					MyShip.Cargo[Agency 'Hardshell' TB7 Dose III]:ConsumeBooster
+					HardshellTime:Set[${Math.Calc[${LavishScript.RunningTime} + 1800000]}]
+					This:LogInfo["Using Agency 'Hardshell' TB7 Dose III."]
+				}
+				if ${MyShip.Cargo[Agency 'Hardshell' TB9 Dose IV](exists)} && ${LavishScript.RunningTime} >= ${HardshellTime}
+				{
+					MyShip.Cargo[Agency 'Hardshell' TB9 Dose IV]:ConsumeBooster
+					HardshellTime:Set[${Math.Calc[${LavishScript.RunningTime} + 1800000]}]
+					This:LogInfo["Using Agency 'Hardshell' TB9 Dose IV."]
+				}
+				if ${MyShip.Cargo[Synth Blue Pill Booster](exists)} && ${LavishScript.RunningTime} >= ${BluePillTime}
 				{
 					MyShip.Cargo[Synth Blue Pill Booster]:ConsumeBooster
 					SynthBluePillTime:Set[${Math.Calc[${LavishScript.RunningTime} + 1800000]}]
+					This:LogInfo["Using Synth Blue Pill."]
+				}
+				if ${MyShip.Cargo[Standard Blue Pill Booster](exists)} && ${LavishScript.RunningTime} >= ${BluePillTime}
+				{
+					MyShip.Cargo[Synth Blue Pill Booster]:ConsumeBooster
+					SynthBluePillTime:Set[${Math.Calc[${LavishScript.RunningTime} + 1800000]}]
+					This:LogInfo["Using Standard Blue Pill."]
+				}
+				if ${MyShip.Cargo[Strong Blue Pill Booster](exists)} && ${LavishScript.RunningTime} >= ${BluePillTime}
+				{
+					MyShip.Cargo[Synth Blue Pill Booster]:ConsumeBooster
+					SynthBluePillTime:Set[${Math.Calc[${LavishScript.RunningTime} + 1800000]}]
+					This:LogInfo["Using Strong Blue Pill."]
 				}
 			}
 			GrabbedLoot:Set[FALSE]
@@ -1257,7 +1299,6 @@ objectdef obj_Abyssal inherits obj_StateQueue
 							This:LogInfo["17th wait."]
 							return FALSE
 						}
-						This:LogInfo["${itemIterator.value.Type} to hangar"]
 						itemIterator.Value:MoveTo[MyStationHangar, Hangar]
 						; return FALSE
 					}
@@ -1313,6 +1354,12 @@ objectdef obj_Abyssal inherits obj_StateQueue
 		variable int Drugz
 		; One for now and one for later
 		Drugz:Set[2]
+		
+		variable string Druggery2
+		Druggery2:Set[${Config.DrugsToUse2}]
+		variable int Drugz2
+		; One for now and one for later
+		Drugz2:Set[2]
 
 		if (!${EVEWindow[Inventory](exists)})
 		{
@@ -1412,6 +1459,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 		Filamental:Dec[${This.InventoryItemQuantity[${Filamento}, ${Me.ShipID}, "ShipCargo"]}]
 		Nanos:Dec[${This.InventoryItemQuantity[${NanomachinesSon}, ${Me.ShipID}, "ShipCargo"]}]
 		Drugz:Dec[${This.InventoryItemQuantity[${Druggery}, ${Me.ShipID}, "ShipCargo"]}]
+		Drugz2:Dec[${This.InventoryItemQuantity[${Druggery2}, ${Me.ShipID}, "ShipCargo"]}]
 		This:LogInfo["Checkpoint 1"]
 
 		EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipCargo]:GetItems[items]
@@ -1671,6 +1719,21 @@ objectdef obj_Abyssal inherits obj_StateQueue
 						return FALSE
 					}
 				}
+				if ${Drugz2} > 0 && ${itemIterator.Value.Name.Equal[${Druggery2}]}
+				{
+					if ${itemIterator.Value.Quantity} >= ${Drugz2}
+					{
+						itemIterator.Value:MoveTo[${MyShip.ID}, CargoHold, ${Drugz2}]
+						Drugz2:Set[0]
+						return FALSE
+					}
+					else
+					{
+						itemIterator.Value:MoveTo[${MyShip.ID}, CargoHold, ${itemIterator.Value.Quantity}]
+						Drugz2:Dec[${itemIterator.Value.Quantity}]
+						return FALSE
+					}
+				}
 			}
 			while ${itemIterator:Next(exists)}
 		}
@@ -1782,6 +1845,12 @@ objectdef obj_Abyssal inherits obj_StateQueue
 		elseif ${Drugz} > 0 && ${Config.UseDrugs}
 		{
 			This:LogCritical["You're out of ${Druggery}, halting."]
+			This:Stop
+			return TRUE
+		}
+		elseif ${Drugz2} > 0 && ${Config.UseDrugs}
+		{
+			This:LogCritical["You're out of ${Druggery2}, halting."]
 			This:Stop
 			return TRUE
 		}
