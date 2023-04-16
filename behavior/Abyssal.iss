@@ -726,7 +726,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 				if ${Entity[Name =- "Cache Wreck" && !IsMoribund && !IsWreckEmpty](exists)}
 				{
 					This:LogInfo["CONDITION PURPLE"]
-					Move:Approach[${Entity[Name =- "Cache Wreck" && !IsMoribund && !IsWreckEmpty]}, 1000]
+					Move:Approach[${Entity[Name =- "Cache Wreck" && !IsMoribund && !IsWreckEmpty]}, 2000]
 				}
 			}
 			if ((!${Config.UseMTU} || ${AbandonMTU}) && ${This.LootboxesPresent} ) && \
@@ -856,7 +856,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			{
 				if ${Entity[Name == "Cargo Container"].Distance} > 2500 && !${MyShip.ToEntity.Approaching.ID.Equal[${Entity[Name =- "Cargo Container"].ID}]}
 				{
-					Move:Approach[${Entity[Name == "Cargo Container"]}, 1000]
+					Move:Approach[${Entity[Name == "Cargo Container"]}, 2000]
 				}
 				if ${Entity[Name == "Cargo Container"].Distance} < 2500
 				{
