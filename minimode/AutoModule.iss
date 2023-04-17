@@ -277,7 +277,7 @@ objectdef obj_AutoModule inherits obj_StateQueue
 		}
 		if ${Ship.ModuleList_Repair_Armor.Count} > 1 && ${Ship.ModuleList_AssaultDamageControl.Count} > 1
 		{
-			if ${MyShip.ArmorPct.Int} < 30 && ${MyShip.ArmorPct.Int} > 0
+			if ${MyShip.ArmorPct.Int} < 30 && ${MyShip.ArmorPct.Int} >= 0
 			{
 				This:LogInfo["Activating Assault DC"]
 				Ship.ModuleList_AssaultDamageControl:ActivateAll
