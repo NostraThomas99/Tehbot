@@ -74,7 +74,7 @@ objectdef obj_AutoModule inherits obj_StateQueue
 	{
 		This[parent]:Initialize
 		This.NonGameTiedPulse:Set[TRUE]
-		This.PulseFrequency:Set[2000]
+		This.PulseFrequency:Set[1500]
 		DynamicAddMiniMode("AutoModule", "AutoModule")
 
 		This.LogLevelBar:Set[${CommonConfig.LogLevelBar}]
@@ -275,10 +275,21 @@ objectdef obj_AutoModule inherits obj_StateQueue
 			This:LogInfo["Activating DroneControlUnit"]
 			Ship.ModuleList_DroneControlUnit:ActivateAll
 		}
-		
-		if ${MyShip.ArmorPct} < 40 && ${MyShip.ArmorPct} > 0
+		if ${Ship.ModuleList_Repair_Armor.Count} > 1 && ${Ship.ModuleList_AssaultDamageControl.Count} > 1
 		{
-			Ship.ModuleList_DamageControl:Activate
+			if ${MyShip.ArmorPct.Int} < 30 && ${MyShip.ArmorPct.Int} > 0
+			{
+				This:LogInfo["Activating Assault DC"]
+				Ship.ModuleList_AssaultDamageControl:ActivateAll
+			}
+		}
+		if ${Ship.ModuleList_Repair_Armor.Count} < 1 && ${Ship.ModuleList_AssaultDamageControl.Count} > 1
+		{
+			if ${MyShip.ShieldPct.Int} < 30
+			{
+				This:LogInfo["Activating Assault DC"]
+				Ship.ModuleList_AssaultDamageControl:ActivateAll
+			}
 		}
 		return FALSE
 	}
