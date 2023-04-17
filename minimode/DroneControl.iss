@@ -45,7 +45,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		{
 			case Frigate
 			case Destroyer
-				if ${MyShip.ToEntity.Type.Find[Rattlesnake]}
+				if ${MyShip.ToEntity.Type.Find[Rattlesnake]} || ${MyShip.ToEntity.Type.Find[Ishtar]}
 				{
 					DroneType:Set[${Drones.Data.FindType["Heavy Attack Drones"]}]
 					{
@@ -71,7 +71,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 			case BattleCruiser
 				if ${MyShip.ToEntity.Type.Find[Rattlesnake]}
 				{
-					DroneType:Set[${Drones.Data.FindType["Heavy Attack Drones"]}]
+					DroneType:Set[${Drones.Data.FindType["Heavy Attack Drones"]}] || ${MyShip.ToEntity.Type.Find[Ishtar]}
 					{
 					if ${DroneType} != -1
 						{
@@ -649,7 +649,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 
 			if ${MaxDroneCount} > ${Drones.ActiveDroneCount}
 			{
-				if ${MyShip.ToEntity.Type.Find[Rattlesnake]}
+				if ${MyShip.ToEntity.Type.Find[Rattlesnake]} || ${MyShip.ToEntity.Type.Find[Ishtar]}
 				{
 					Drones:Deploy["TypeID = ${Drones.Data.FindType[Heavy Attack Drones]}", ${Math.Calc[${MaxDroneCount} - ${Drones.ActiveDroneCount}]}]
 				}

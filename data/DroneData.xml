@@ -10,7 +10,16 @@
       <Setting Name="2446" Type="Ogre II" Volume="25" Race="8" />
       <Setting Name="2476" Type="Berserker I" Volume="25" Race="2" />
       <Setting Name="2478" Type="Berserker II" Volume="25" Race="2" />
-      <Setting Name="31884" Type="Federation Navy Ogre" Volume="25" Race="8" />	  
+      <Setting Name="31884" Type="Federation Navy Ogre" Volume="25" Race="8" />
+      <Setting Name="28266" Type="'Integrated' Berserker" Volume="25" Race="2" />
+      <Setting Name="28268" Type="'Augmented' Berserker" Volume="25" Race="2" />
+      <Setting Name="28286" Type="'Integrated' Ogre" Volume="25" Race="8" />
+      <Setting Name="28288" Type="'Augmented' Ogre" Volume="25" Race="8" />
+      <Setting Name="28306" Type="'Integrated' Wasp" Volume="25" Race="1" />
+      <Setting Name="28308" Type="'Augmented' Wasp" Volume="25" Race="1" />
+      <Setting Name="31876" Type="Caldari Navy Wasp" Volume="25" Race="1" />
+      <Setting Name="31892" Type="Republic Fleet Berserker" Volume="25" Race="2" />
+	  <Setting Name="60480" Type="Heavy Mutated Drone" Volume="25" Race="1" />
     </Set>
     <Set Name="Medium Scout Drones">
       <Setting Name="2173" Type="Infiltrator I" Volume="10" Race="4" />
@@ -86,6 +95,7 @@
       <Setting Name="31892" Type="Republic Fleet Berserker" Volume="25" Race="2" />
       <Setting Name="32465" Type="Civilian Hobgoblin" Volume="5" Race="8" />
 	  <Setting Name="60479" Type="Medium Mutated Drone" Volume="10" Race="1" />
+	  <Setting Name="60480" Type="Heavy Mutated Drone" Volume="25" Race="1" />
     </Set>
     <Set Name="Sentry Drones">
       <Setting Name="31868" Type="Imperial Navy Curator" Volume="25" Race="4" />
