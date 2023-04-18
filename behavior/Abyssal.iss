@@ -716,7 +716,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			{
 				This:LogInfo["Room Complete, Proceed."]
 				EVE:Execute[CmdStopShip]
-				This:QueueState["RoomTransition"]
+				This:QueueState["RoomTransition", 4000]
 				return TRUE
 			}
 			; If we do not use MTUs, and there is a lootable with stuff in it still, we should go to it to grab it (if it is a reasonable distance away).
@@ -742,7 +742,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			{
 				This:LogInfo["Room Complete, Proceed."]
 				EVE:Execute[CmdStopShip]
-				This:QueueState["RoomTransition"]
+				This:QueueState["RoomTransition", 4000]
 				return TRUE
 			}
 			This:InsertState["RunTheAbyss"]
@@ -884,7 +884,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			Move:Approach[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)"]}]
 			This:LogInfo["Approaching conduit"]
 		}
-		if ${Entity[Name == "Transfer Conduit (Triglavian)"].Distance} < 2000 && ${Entity[Name == "Transfer Conduit (Triglavian)"](exists)}
+		if ${Entity[Name == "Transfer Conduit (Triglavian)"].Distance} < 3000 && ${Entity[Name == "Transfer Conduit (Triglavian)"](exists)}
 		{
 			This:LogInfo["Going to Next Room"]
 			Entity[Name == "Transfer Conduit (Triglavian)"]:Activate
@@ -892,7 +892,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			This:QueueState["RunTheAbyss"]
 			return TRUE
 		}
-		if ${Entity[Name == "Origin Conduit (Triglavian)"].Distance} < 2000 && ${Entity[Name == "Origin Conduit (Triglavian)"](exists)}
+		if ${Entity[Name == "Origin Conduit (Triglavian)"].Distance} < 3000 && ${Entity[Name == "Origin Conduit (Triglavian)"](exists)}
 		{
 			
 			Entity[Name == "Origin Conduit (Triglavian)"]:Activate
@@ -902,7 +902,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			This:QueueState["CheckForWork", 5000]
 			return TRUE
 		}
-		This:QueueState["RoomTransition"]
+		This:QueueState["RoomTransition", 4000]
 		return TRUE
 	}
 	; Just returns a bool for if we are in the Abyss or not. Probably works fine unless we end up in an abyss without a conduit somehow.
