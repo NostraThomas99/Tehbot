@@ -950,6 +950,7 @@ objectdef obj_Approach inherits obj_StateQueue
 		if ${Me.ToEntity.Mode} == MOVE_WARPING || !${Entity[${ID}](exists)}
 		{
 			return TRUE
+			Logger:Log["Move", "This thing we are approaching doesn't exist"]
 		}
 
 		;	Find out if we need to approach the target

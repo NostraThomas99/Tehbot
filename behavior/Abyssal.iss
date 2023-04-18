@@ -553,7 +553,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 	{
 
 		; Get this dang window out of my way, if it is even there in the first place.
-		if ${Entity[Name == "Transfer Conduit (Triglavian)"](exists)} || ${Entity[Name == "Origin Conduit (Triglavian)"](exists)}
+		if ${Entity[Name == "Transfer Conduit (Triglavian)" && Distance !~ NULL](exists)} || ${Entity[Name == "Origin Conduit (Triglavian)" && Distance !~ NULL](exists)}
 		{
 			if ${EVEWindow[KeyActivationWindow](exists)}
 			{
@@ -624,9 +624,9 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			; Distance from both the enemy and the conduit.
 			if ${Config.UseMTU} && ${This.DistantTrash} && !${AbandonMTU}
 			{
-				if ${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)"](exists)}
+				if ${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL](exists)}
 				{
-					if !${MyShip.ToEntity.Approaching.ID.Equal[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)"].ID}]} || ${MyShip.ToEntity.Mode} == MOVE_STOPPED
+					if !${MyShip.ToEntity.Approaching.ID.Equal[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL].ID}]} || ${MyShip.ToEntity.Mode} == MOVE_STOPPED
 					{
 						Move:Approach[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)"]}, 0]
 					}
@@ -879,9 +879,9 @@ objectdef obj_Abyssal inherits obj_StateQueue
 	member:bool RoomTransition()
 	{
 		if ${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)"].Distance} > 2000 && \
-		(!${MyShip.ToEntity.Approaching.ID.Equal[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)"]}]} || ${MyShip.ToEntity.Mode} == MOVE_STOPPED)
+		(!${MyShip.ToEntity.Approaching.ID.Equal[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL]}]} || ${MyShip.ToEntity.Mode} == MOVE_STOPPED)
 		{
-			Move:Approach[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)"]}]
+			Move:Approach[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL]}]
 			This:LogInfo["Approaching conduit"]
 		}
 		if ${Entity[Name == "Transfer Conduit (Triglavian)"].Distance} < 3000 && ${Entity[Name == "Transfer Conduit (Triglavian)"](exists)}
@@ -917,7 +917,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 		;{
 		;	return FALSE
 		;}
-		if ${Entity[Name == "Transfer Conduit (Triglavian)"](exists)} || ${Entity[Name == "Origin Conduit (Triglavian)"](exists)}
+		if ${Entity[Name == "Transfer Conduit (Triglavian)" && Distance !~ NULL](exists)} || ${Entity[Name == "Origin Conduit (Triglavian)" && Distance !~ NULL](exists)}
 		{
 			return TRUE
 		}
