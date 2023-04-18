@@ -10,12 +10,16 @@ objectdef obj_Configuration_DroneControl inherits obj_Configuration_Base
 		This.ConfigRef:AddSetting[Sentries, FALSE]
 		This.ConfigRef:AddSetting[SentryRange, 30]
 		This.ConfigRef:AddSetting[MaxDroneCount, 5]
+		This.ConfigRef:AddSetting[ArmorDrones, FALSE]
+		This.ConfigRef:AddSetting[ShieldDrones, FALSE]
 	}
 
 	Setting(bool, Sentries, SetSentries)
 	Setting(int, SentryRange, SetSentryRange)
 	Setting(int, MaxDroneCount, SetDroneCount)
 	Setting(bool, UseIPC, SetUseIPC)
+	Setting(bool, ArmorDrones, SetArmorDrones)
+	Setting(bool, ShieldDrones, SetShieldDrones)
 }
 
 objectdef obj_DroneControl inherits obj_StateQueue
@@ -505,22 +509,66 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		{
 			do
 			{
-				CurrentDroneHealth:Set[${Math.Calc[${DroneIterator.Value.ToEntity.ShieldPct.Int} + ${DroneIterator.Value.ToEntity.ArmorPct.Int} + ${DroneIterator.Value.ToEntity.StructurePct.Int}]}]
-				;This is for abyss, if we've got edencom lightning blasters we need drones to ignore more damage or we will get looped.
-				if ${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]} && ${CurrentDroneHealth} < ${Math.Calc[${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]} - 30]} && \
-				${Entity[Name =- "Skybreaker" || Name =- "Stormbringer" || Name =- "Thunderchild"](exists)}
+				; If someone didn't set either of the new configs in DroneControl then we use the original setup for drone recalls. Alternatively, some joker checked both boxes.
+				if (!${Config.ArmorDrones} && !${Config.ShieldDrones}) || ( ${Config.ArmorDrones} && ${Config.ShieldDrones} )
 				{
-					;echo recalling ID ${DroneIterator.Value.ID}
-					Drones:Recall["ID = ${DroneIterator.Value.ID}", 1]
+					CurrentDroneHealth:Set[${Math.Calc[${DroneIterator.Value.ToEntity.ShieldPct.Int} + ${DroneIterator.Value.ToEntity.ArmorPct.Int} + ${DroneIterator.Value.ToEntity.StructurePct.Int}]}]
+					;This is for abyss, if we've got edencom lightning blasters we need drones to ignore more damage or we will get looped.
+					if ${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]} && ${CurrentDroneHealth} < ${Math.Calc[${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]} - 30]} && \
+					${Entity[Name =- "Skybreaker" || Name =- "Stormbringer" || Name =- "Thunderchild"](exists)}
+					{
+						;echo recalling ID ${DroneIterator.Value.ID}
+						Drones:Recall["ID = ${DroneIterator.Value.ID}", 1]
+					}
+					if ${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]} && ${CurrentDroneHealth} < ${Math.Calc[${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]} - 15]} && \
+					!${Entity[Name =- "Skybreaker" || Name =- "Stormbringer" || Name =- "Thunderchild"](exists)}
+					{
+						;echo recalling ID ${DroneIterator.Value.ID}
+						Drones:Recall["ID = ${DroneIterator.Value.ID}", 1]
+					}
+					Drones.DroneHealth:Set[${DroneIterator.Value.ID}, ${CurrentDroneHealth.Int}]
+					echo drone refreshed cached health ${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]}
 				}
-				if ${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]} && ${CurrentDroneHealth} < ${Math.Calc[${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]} - 10]} && \
-				!${Entity[Name =- "Skybreaker" || Name =- "Stormbringer" || Name =- "Thunderchild"](exists)}
+				; We are using my new configs, this denotes we have drones that are primarily Armor HP heavy - We will mostly ignore shield damage because otherwise we will recall our drones nonstop.
+				if ${Config.ArmorDrones}
 				{
-					;echo recalling ID ${DroneIterator.Value.ID}
-					Drones:Recall["ID = ${DroneIterator.Value.ID}", 1]
+					CurrentDroneHealth:Set[${Math.Calc[( ${DroneIterator.Value.ToEntity.ShieldPct.Int} * 0.12 ) + ${DroneIterator.Value.ToEntity.ArmorPct.Int} + ${DroneIterator.Value.ToEntity.StructurePct.Int}]}]
+					;This is for abyss, if we've got edencom lightning blasters we need drones to ignore more damage or we will get looped.
+					if ${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]} && ${CurrentDroneHealth} < ${Math.Calc[${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]} - 30]} && \
+					${Entity[Name =- "Skybreaker" || Name =- "Stormbringer" || Name =- "Thunderchild"](exists)}
+					{
+						;echo recalling ID ${DroneIterator.Value.ID}
+						Drones:Recall["ID = ${DroneIterator.Value.ID}", 1]
+					}
+					if ${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]} && ${CurrentDroneHealth} < ${Math.Calc[${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]} - 15]} && \
+					!${Entity[Name =- "Skybreaker" || Name =- "Stormbringer" || Name =- "Thunderchild"](exists)}
+					{
+						;echo recalling ID ${DroneIterator.Value.ID}
+						Drones:Recall["ID = ${DroneIterator.Value.ID}", 1]
+					}
+					Drones.DroneHealth:Set[${DroneIterator.Value.ID}, ${CurrentDroneHealth.Int}]
+					echo drone refreshed cached health ${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]}
 				}
-				Drones.DroneHealth:Set[${DroneIterator.Value.ID}, ${CurrentDroneHealth.Int}]
-				echo drone refreshed cached health ${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]}
+				; We are using my new configs, this denotes we have drones that are primarily Shield HP heavy - We will allow slightly more shield HP damage per loop, less recalling.
+				if ${Config.ShieldDrones}
+				{
+					CurrentDroneHealth:Set[${Math.Calc[(${DroneIterator.Value.ToEntity.ShieldPct.Int} *1.25) + ${DroneIterator.Value.ToEntity.ArmorPct.Int} + ${DroneIterator.Value.ToEntity.StructurePct.Int}]}]
+					;This is for abyss, if we've got edencom lightning blasters we need drones to ignore more damage or we will get looped.
+					if ${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]} && ${CurrentDroneHealth} < ${Math.Calc[${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]} - 30]} && \
+					${Entity[Name =- "Skybreaker" || Name =- "Stormbringer" || Name =- "Thunderchild"](exists)}
+					{
+						;echo recalling ID ${DroneIterator.Value.ID}
+						Drones:Recall["ID = ${DroneIterator.Value.ID}", 1]
+					}
+					if ${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]} && ${CurrentDroneHealth} < ${Math.Calc[${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]} - 15]} && \
+					!${Entity[Name =- "Skybreaker" || Name =- "Stormbringer" || Name =- "Thunderchild"](exists)}
+					{
+						;echo recalling ID ${DroneIterator.Value.ID}
+						Drones:Recall["ID = ${DroneIterator.Value.ID}", 1]
+					}
+					Drones.DroneHealth:Set[${DroneIterator.Value.ID}, ${CurrentDroneHealth.Int}]
+					echo drone refreshed cached health ${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]}
+				}	
 			}
 			while ${DroneIterator:Next(exists)}
 		}
@@ -528,6 +576,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 
 		if !${Entity[${currentTarget}](exists)} || ${Entity[${currentTarget}].IsMoribund} || (!${Entity[${currentTarget}].IsLockedTarget} && !${Entity[${currentTarget}].BeingTargeted}) || ${Entity[${currentTarget}].Distance} > ${droneEngageRange}
 		{
+			finalizedDC:Set[FALSE]
 			currentTarget:Set[0]
 		}
 
@@ -537,18 +586,16 @@ objectdef obj_DroneControl inherits obj_StateQueue
 
 		if ${currentTarget} != 0
 		{
-			; Finalized decision
-			variable bool finalized
-			finalized:Set[FALSE]
+			
 
 			if ${FightOrFlight.IsEngagingGankers} && !${FightOrFlight.currentTarget.Equal[0]} && !${FightOrFlight.currentTarget.Equal[${currentTarget}]}
 			{
 				currentTarget:Set[${FightOrFlight.currentTarget}]
 				This:LogInfo["Switching target to ganker \ar${Entity[${currentTarget}].Name}"]
-				finalized:Set[TRUE]
+				finalizedDC:Set[TRUE]
 			}
 
-			if !${finalized} && ${Ship.ActiveJammerList.Used}
+			if !${finalizedDC} && ${Ship.ActiveJammerList.Used}
 			{
 				if !${Ship.ActiveJammerSet.Contains[${currentTarget}]}
 				{
@@ -560,7 +607,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 						{
 							currentTarget:Set[${activeJammerIterator.Value}]
 							This:LogInfo["Switching target to activate jammer \ar${Entity[${currentTarget}].Name}"]
-							finalized:Set[TRUE]
+							finalizedDC:Set[TRUE]
 							break
 						}
 					}
@@ -568,12 +615,12 @@ objectdef obj_DroneControl inherits obj_StateQueue
 				}
 				else
 				{
-					finalized:Set[TRUE]
+					finalizedDC:Set[TRUE]
 				}
 			}
 			; May switch target more than once so use this flag to avoid log spamming.
 			variable bool switched
-			if !${finalized} && !${Ship.IsHardToDealWithTarget[${currentTarget}]} && ${ActiveNPCs.LockedTargetList.Used}
+			if !${finalizedDC} && !${Ship.IsHardToDealWithTarget[${currentTarget}]} && ${ActiveNPCs.LockedTargetList.Used}
 			{
 				; Switch to difficult target for the ship
 				switched:Set[FALSE]

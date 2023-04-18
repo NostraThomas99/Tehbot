@@ -294,6 +294,7 @@ objectdef obj_TargetManager inherits obj_StateQueue
 		
 		if !${Entity[${CurrentOffenseTarget}]} || ${Entity[${CurrentOffenseTarget}].IsMoribund} || !(${Entity[${CurrentOffenseTarget}].IsLockedTarget} || ${Entity[${CurrentOffenseTarget}].BeingTargeted})
 		{
+			finalizedTM:Set[FALSE]
 			CurrentOffenseTarget:Set[0]
 			maxAttackTime:Set[0]
 		}
@@ -314,9 +315,8 @@ objectdef obj_TargetManager inherits obj_StateQueue
 		
 		if ${CurrentOffenseTarget} != 0
 		{
-			; Finalized decision
-			variable bool finalized
-			finalized:Set[FALSE]
+
+
 			if ${Ship.ActiveJammerList.Used}
 			{
 				if !${Ship.ActiveJammerSet.Contains[${CurrentOffenseTarget}]}
@@ -330,7 +330,7 @@ objectdef obj_TargetManager inherits obj_StateQueue
 							CurrentOffenseTarget:Set[${activeJammerIterator.Value}]
 							maxAttackTime:Set[${Math.Calc[${LavishScript.RunningTime} + (${switchTargetAfter} * 1000)]}]
 							This:LogInfo["Switching target to activate jammer \ar${Entity[${CurrentOffenseTarget}].Name}"]
-							finalized:Set[TRUE]
+							finalizedTM:Set[TRUE]
 							break
 						}
 					}
@@ -338,11 +338,11 @@ objectdef obj_TargetManager inherits obj_StateQueue
 				}
 				else
 				{
-					finalized:Set[TRUE]
+					finalizedTM:Set[TRUE]
 				}
 			}
 
-			if !${finalized} && ${ActiveNPCs.LockedTargetList.Used} && (${Ship.IsHardToDealWithTarget[${CurrentOffenseTarget}]} || ${This.IsStructure[${CurrentOffenseTarget}]})
+			if !${finalizedTM} && ${ActiveNPCs.LockedTargetList.Used} && (${Ship.IsHardToDealWithTarget[${CurrentOffenseTarget}]} || ${This.IsStructure[${CurrentOffenseTarget}]})
 			{
 				ActiveNPCs.LockedTargetList:GetIterator[lockedTargetIterator]
 				if ${lockedTargetIterator:First(exists)}

@@ -136,6 +136,9 @@ function main(string Character="")
 	
 	;More global variable(s), lets see if this fixes our orbit problems
 	declarevariable orbitTarget = 0 int64 global
+	;Another two global variables, these are supposed to indicate when the target choice is FINAL for both TargetManager and DroneControl | Let us see what happens.
+	declarevariable finalizedTM bool global
+	declarevariable finalizedDC bool global
 
 
 	Logger:Log["Tehbot", "Module initialization complete", "y"]

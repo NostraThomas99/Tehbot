@@ -12,8 +12,8 @@
 		<Border>0</Border>
 		<X>200</X>
 		<Y>300</Y>
-		<Width>1600</Width>
-		<Height>1200</Height>
+		<Width>1100</Width>
+		<Height>650</Height>
 		<TitleBar>
 			<Width>100%</Width>
 			<Height>40</Height>
@@ -57,8 +57,40 @@
 						<Width>98%</Width>
 						<Height>18%</Height>
 						<Wrap />
-						<Text>DroneControl is a mini-mode that continously scans surrounding space for enemies and attacks them. This module will only attack frigates and destroyers that approach within 15km.</Text>
+						<Text>DroneControl is a mini-mode that continously scans surrounding space for enemies and attacks them. This module has been greatly modified by Elusif so we can do abyssals.</Text>
 					</Text>
+					<Checkbox name='IgnoreNPCTargets'>
+						<X>1%</X>
+						<Y>21%</Y>
+						<Width>30%</Width>
+						<Height>3%</Height>
+						<Text>Using Armor Tanked Drones</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.DroneControl.Config.ArmorDrones}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.DroneControl.Config:SetArmorDrones[${This.Checked}]
+						</OnLeftClick>
+					</Checkbox>
+					<Checkbox name='IgnorePCTargets'>
+						<X>1%</X>
+						<Y>25%</Y>
+						<Width>30%</Width>
+						<Height>3%</Height>
+						<Text>Using Shield Tanked Drones</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.DroneControl.Config.ShieldDrones}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.DroneControl.Config:SetShieldDrones[${This.Checked}]
+						</OnLeftClick>
+					</Checkbox>
 				</Children>
 			</Frame>
 		</Children>
