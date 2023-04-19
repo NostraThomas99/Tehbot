@@ -899,7 +899,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			This:LogInfo["All done, leaving the abyss."]
 			GrabbedLoot:Set[FALSE]
 			StatusChecked:Set[FALSE]
-			This:QueueState["CheckForWork", 5000]
+			This:QueueState["CheckForWork", 10000]
 			return TRUE
 		}
 		This:QueueState["RoomTransition", 4000]
@@ -917,10 +917,10 @@ objectdef obj_Abyssal inherits obj_StateQueue
 		;{
 		;	return FALSE
 		;}
-		;if ${Entity[Name == "Transfer Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000](exists)} == NULL || ${Entity[Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000](exists)} == NULL
-		;{
-		;	return FALSE
-		;}
+		if ${Entity[Name == "Unstable Abyssal Depths" && Distance !~ NULL && Distance < 200000](exists)}
+		{
+			return TRUE
+		}
 		if ${Entity[Name == "Transfer Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000](exists)} || ${Entity[Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000](exists)}
 		{
 			return TRUE
