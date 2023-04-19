@@ -913,14 +913,14 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			return FALSE
 		}
 		; Troubleshooting something weird
-		if ${Universe[${Me.SolarSystemID}].Security} !~ NULL
-		{
-			return FALSE
-		}
-		;if ${Entity[Name == "Transfer Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000](exists)} == NULL || ${Entity[Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000](exists)} == NULL
+		;if ${Universe[${Me.SolarSystemID}].Security} !~ NULL
 		;{
 		;	return FALSE
 		;}
+		if ${Entity[Name == "Transfer Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000](exists)} == NULL || ${Entity[Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000](exists)} == NULL
+		{
+			return FALSE
+		}
 		if ${Entity[Name == "Transfer Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000](exists)} || ${Entity[Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000](exists)}
 		{
 			return TRUE
