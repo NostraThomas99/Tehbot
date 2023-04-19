@@ -917,6 +917,10 @@ objectdef obj_Abyssal inherits obj_StateQueue
 		;{
 		;	return FALSE
 		;}
+		if ${EVE.Bookmark[${Config.HomeBase}](exists)} && ${EVE.Bookmark[${Config.HomeBase}].JumpsTo} < 1000
+		{
+			return FALSE
+		}
 		if ${Entity[Name == "Unstable Abyssal Depths" && Distance !~ NULL && Distance < 200000](exists)}
 		{
 			return TRUE
