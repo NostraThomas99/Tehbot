@@ -96,7 +96,8 @@ objectdef obj_Abyssal inherits obj_StateQueue
 		
 		;We need to disable the ISXEVE entity cache because going to the abyss and back makes it buggy apparently?
 		;Correction, cache rules everything around me
-		ISXEVE:Debug_SetEntityCacheDisabled[FALSE]
+		;I lied, cache must be disabled
+		ISXEVE:Debug_SetEntityCacheDisabled[TRUE]
 
 		DynamicAddBehavior("Abyssal", "Abyssal Runner")
 		This.PulseFrequency:Set[3500]
