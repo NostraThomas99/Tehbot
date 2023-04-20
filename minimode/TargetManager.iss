@@ -61,6 +61,7 @@ objectdef obj_TargetManager inherits obj_StateQueue
 	variable obj_TargetList ActiveNPCs
 	variable obj_TargetList PCs
 	variable obj_TargetList Marshalz
+	variable obj_TargetList RemoteRepJerks
 
 	variable int maxAttackTime
 	variable int switchTargetAfter = 120
@@ -112,10 +113,12 @@ objectdef obj_TargetManager inherits obj_StateQueue
 		variable string groups = ""
 		variable string seperator = ""
 
+		RemoteRepJerks:ClearQueryString
 		Marshalz:ClearQueryString
 		ActiveNPCs:ClearQueryString
 		
-		Marshalz:AddQueryString["(TypeID == 56177 || TypeID == 56176 || TypeID == 56178) && !IsMoribund"]
+		Marshalz:AddQueryString["TypeID == 56177 || TypeID == 56176 || TypeID == 56178 && !IsMoribund"]
+		RemoteRepJerks:AddQueryString["Name =- \"Renewing\" || Name =- \"Fieldweaver\" || Name =- \"Plateforger\" && !IsMoribund"]
 
 		variable int range = ${Math.Calc[${MyShip.MaxTargetRange} * .95]}
 
@@ -319,7 +322,6 @@ objectdef obj_TargetManager inherits obj_StateQueue
 		
 		if ${CurrentOffenseTarget} != 0
 		{
-
 			if ${Marshalz.Used}
 			{
 				This:LogInfo["Debug - Marshal - TM"]
@@ -583,7 +585,7 @@ objectdef obj_TargetManager inherits obj_StateQueue
 					CurrentOffenseTarget:Set[0]
 			}
 			;This:InsertState["PerformMission"]
-			;return TRUE
+			return TRUE
 		}
 		if ${Entity[${targetToDestroy}]}
 		{
@@ -614,7 +616,7 @@ objectdef obj_TargetManager inherits obj_StateQueue
 					Ship.ModuleList_TrackingComputer:ActivateAll[${CurrentOffenseTarget}]
 				}
 			}
-			This:InsertState["PerformMission"]
+			;This:InsertState["PerformMission"]
 			return TRUE
 		}
 	}
@@ -651,10 +653,16 @@ objectdef obj_TargetManager inherits obj_StateQueue
 		}
 
 		This:BuildNpcQueries
-		Marshalz:RequestUpdate
 		Marshalz.AutoLock:Set[TRUE]
+		Marshalz:RequestUpdate
+		RemoteRepJerks:RequestUpdate
+		if ${RemoteRepJerks.Used}
+		{
+			This:LogInfo["Debug - Remote Rep Jerks Detected! Test Successful!"]
+		}
 		NPCs.AutoLock:Set[TRUE]
 		ActiveNPCs.AutoLock:Set[TRUE]
+		ActiveNPCs:RequestUpdate
 		This:PlagiarisedOffense
 		
 		return FALSE
