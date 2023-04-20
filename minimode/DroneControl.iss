@@ -613,6 +613,17 @@ objectdef obj_DroneControl inherits obj_StateQueue
 				}
 			}
 			
+			if ${RemoteRepJerkz.TargetList.Used} && !${Marshal.TargetList.Used}
+			{
+				This:LogInfo["Debug - RRJerks - DC"]
+				if ${RemoteRepJerkz.LockedTargetList.Used}
+				{
+					currentTarget:Set[${RemoteRepJerkz.LockedTargetList.Get[1]}]
+					This:LogInfo["Kill RemoteReppers"]
+					finalizedDC:Set[TRUE]
+				}
+			}			
+			
 			if ${FightOrFlight.IsEngagingGankers} && !${FightOrFlight.currentTarget.Equal[0]} && !${FightOrFlight.currentTarget.Equal[${currentTarget}]}
 			{
 				currentTarget:Set[${FightOrFlight.currentTarget}]
@@ -678,10 +689,20 @@ objectdef obj_DroneControl inherits obj_StateQueue
 			{
 				currentTarget:Set[${Marshal.LockedTargetList.Get[1]}]
 				This:LogInfo["Kill The Damn Marshals"]
-				finalizedTM:Set[TRUE]
+				finalizedDC:Set[TRUE]
 			}
 		}
-		elseif ${ActiveNPCs.LockedTargetList.Used} && !${Marshal.TargetList.Used}
+		elseif ${RemoteRepJerkz.TargetList.Used} && !${Marshal.TargetList.Used} 
+		{
+			This:LogInfo["Debug - RRJerks - TM"]
+			if ${RemoteRepJerkz.LockedTargetList.Used}
+			{
+				currentTarget:Set[${RemoteRepJerkz.LockedTargetList.Get[1]}]
+				This:LogInfo["Kill The Damn Remote Reps"]
+				finalizedDC:Set[TRUE]
+			}
+		}
+		elseif ${ActiveNPCs.LockedTargetList.Used} && !${Marshal.TargetList.Used} && !${RemoteRepJerkz.TargetList.Used}
 		{
 			; Need to re-pick from locked target
 			if ${Ship.ActiveJammerList.Used}
