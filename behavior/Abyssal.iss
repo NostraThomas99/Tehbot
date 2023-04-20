@@ -670,7 +670,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			if (!${Config.UseMTU} || ${AbandonMTU}) && ${This.DistantTrash}
 			{
 				; Special case for Marshals, Charge right into them. 
-				if ${This.MarshalPresent} > 0
+				if ${This.MarshalPresent}
 				{
 					This:LogInfo["${This.MarshalPresent} Marshals"]
 					if ${Entity[Name =- "Marshal"].Distance} > 30000
@@ -691,7 +691,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			if (!${Config.UseMTU} || ${AbandonMTU}) && !${This.DistantTrash}
 			{
 				; Special case for Marshals, Charge right into them.
-				if ${This.MarshalPresent} > 0
+				if ${This.MarshalPresent}
 				{
 					This:LogInfo["${This.MarshalPresent} Marshals"]
 					if ${Entity[Name =- "Marshal"].Distance} > 30000
@@ -784,8 +784,9 @@ objectdef obj_Abyssal inherits obj_StateQueue
 		}
 	}
 	; Those Marshals are annoying as hell
-	member:int MarshalPresent()
+	member:bool MarshalPresent()
 	{
+		Marshals:ClearQueryString
 		Marshals:AddQueryString["(TypeID == 56177 || TypeID == 56176 || TypeID == 56178) && !IsMoribund"]
 		if ${Marshals.Used}
 		{

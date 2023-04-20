@@ -330,7 +330,7 @@ objectdef obj_TargetManager inherits obj_StateQueue
 					finalizedTM:Set[TRUE]
 				}
 			}
-			if ${Ship.ActiveJammerList.Used} && !${Marshalz}
+			if ${Ship.ActiveJammerList.Used} && !${Marshalz.Used}
 			{
 				if !${Ship.ActiveJammerSet.Contains[${CurrentOffenseTarget}]}
 				{
@@ -395,7 +395,7 @@ objectdef obj_TargetManager inherits obj_StateQueue
 				}
 			}
 		}
-		elseif ${Marshalz}
+		elseif ${Marshalz.Used}
 		{
 			This:LogInfo["Debug - Marshal - TM"]
 			if ${Marshalz.LockedTargetList.Used}
@@ -651,6 +651,7 @@ objectdef obj_TargetManager inherits obj_StateQueue
 		}
 
 		This:BuildNpcQueries
+		Marshalz:RequestUpdate
 		Marshalz.AutoLock:Set[TRUE]
 		NPCs.AutoLock:Set[TRUE]
 		ActiveNPCs.AutoLock:Set[TRUE]

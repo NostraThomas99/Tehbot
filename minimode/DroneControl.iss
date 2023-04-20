@@ -469,7 +469,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		ActiveNPCs:RequestUpdate
 		Marshal:RequestUpdate
 
-
+		echo WEEWOOWEEWOO ${Marshal.Used}
 		ActiveNPCs.MinLockCount:Set[${Config.LockCount}]
 
 		if !${Client.InSpace}
@@ -596,7 +596,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		{
 			
 
-			if ${Marshal}
+			if ${Marshal.Used}
 			{
 				This:LogInfo["Debug - Marshal - DC"]
 				if ${Marshal.LockedTargetList.Used}
@@ -665,7 +665,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 			currentTarget:Set[${FightOrFlight.currentTarget}]
 			This:LogInfo["Engaging ganker \ar${Entity[${currentTarget}].Name}"]
 		}
-		elseif ${Marshal}
+		elseif ${Marshal.Used}
 		{
 			This:LogInfo["Debug - Marshal - TM"]
 			if ${Marshal.LockedTargetList.Used}
