@@ -402,10 +402,9 @@ objectdef obj_TargetManager inherits obj_StateQueue
 				CurrentOffenseTarget:Set[${Marshalz.LockedTargetList.Get[1]}]
 				This:LogInfo["Kill The Damn Marshals"]
 				finalizedTM:Set[TRUE]
-				break
 			}
 		}
-		elseif ${ActiveNPCs.LockedTargetList.Used}
+		elseif ${ActiveNPCs.LockedTargetList.Used} && !${Marshalz.Used}
 		{
 			echo ${ActiveNPCs.LockedTargetList.Used} AT
 			; Need to re-pick from locked target

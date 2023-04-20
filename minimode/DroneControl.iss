@@ -665,17 +665,16 @@ objectdef obj_DroneControl inherits obj_StateQueue
 			currentTarget:Set[${FightOrFlight.currentTarget}]
 			This:LogInfo["Engaging ganker \ar${Entity[${currentTarget}].Name}"]
 		}
-		elseif ${Marshalz.Used}
+		elseif ${Marshal.Used}
 		{
-			if ${Marshalz.LockedTargetList.Used}
+			if ${Marshal.LockedTargetList.Used}
 			{
-				CurrentOffenseTarget:Set[${Marshalz.LockedTargetList.Get[1]}]
+				CurrentOffenseTarget:Set[${Marshal.LockedTargetList.Get[1]}]
 				This:LogInfo["Kill The Damn Marshals"]
 				finalizedTM:Set[TRUE]
-				break
 			}
 		}
-		elseif ${ActiveNPCs.LockedTargetList.Used}
+		elseif ${ActiveNPCs.LockedTargetList.Used} && ${Marshal.Used}
 		{
 			; Need to re-pick from locked target
 			if ${Ship.ActiveJammerList.Used}
