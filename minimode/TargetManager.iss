@@ -332,7 +332,18 @@ objectdef obj_TargetManager inherits obj_StateQueue
 					finalizedTM:Set[TRUE]
 				}
 			}
-			if ${Ship.ActiveJammerList.Used} && !${Marshalz.TargetList.Used}
+			
+			if ${RemoteRepJerks.TargetList.Used} && !${Marshalz.TargetList.Used}
+			{
+				This:LogInfo["Debug - RRJerks - TM"]
+				if ${RemoteRepJerks.LockedTargetList.Used}
+				{
+					CurrentOffenseTarget:Set[${RemoteRepJerks.LockedTargetList.Get[1]}]
+					This:LogInfo["Kill The Damn Remote Reppers"]
+					finalizedTM:Set[TRUE]
+				}
+			}
+			if ${Ship.ActiveJammerList.Used} && !${Marshalz.TargetList.Used} && !${RemoteRepJerks.TargetList.Used}
 			{
 				if !${Ship.ActiveJammerSet.Contains[${CurrentOffenseTarget}]}
 				{
@@ -407,7 +418,19 @@ objectdef obj_TargetManager inherits obj_StateQueue
 				finalizedTM:Set[TRUE]
 			}
 		}
-		elseif ${ActiveNPCs.LockedTargetList.Used} && !${Marshalz.TargetList.Used}
+
+		elseif ${RemoteRepJerks.TargetList.Used} && !${Marshalz.TargetList.Used}
+		{
+			This:LogInfo["Debug - Marshal - TM"]
+			if ${RemoteRepJerks.LockedTargetList.Used}
+			{
+				CurrentOffenseTarget:Set[${RemoteRepJerks.LockedTargetList.Get[1]}]
+				This:LogInfo["Kill The Damn Remote Reppers"]
+				finalizedTM:Set[TRUE]
+			}
+		}
+		
+		elseif ${ActiveNPCs.LockedTargetList.Used} && !${Marshalz.TargetList.Used} && !${Marshalz.TargetList.Used}
 		{
 			echo ${ActiveNPCs.LockedTargetList.Used} AT
 			; Need to re-pick from locked target
@@ -655,11 +678,8 @@ objectdef obj_TargetManager inherits obj_StateQueue
 		This:BuildNpcQueries
 		Marshalz.AutoLock:Set[TRUE]
 		Marshalz:RequestUpdate
+		RemoteRepJerks.AutoLock:Set[TRUE]
 		RemoteRepJerks:RequestUpdate
-		if ${RemoteRepJerks.TargetList.Used}
-		{
-			This:LogInfo["Debug - Remote Rep Jerks Detected! Test Successful!"]
-		}
 		NPCs.AutoLock:Set[TRUE]
 		ActiveNPCs.AutoLock:Set[TRUE]
 		ActiveNPCs:RequestUpdate

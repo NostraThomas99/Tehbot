@@ -788,9 +788,9 @@ objectdef obj_Abyssal inherits obj_StateQueue
 	{
 		Marshals:ClearQueryString
 		Marshals:AddQueryString["(TypeID == 56177 || TypeID == 56176 || TypeID == 56178) && !IsMoribund"]
-		if ${Marshals.Used}
+		if ${Marshals.Targetlist.Used}
 		{
-			return ${Marshals.Used}
+			return ${Marshals.Targetlist.Used}
 		}
 	
 	}

@@ -28,6 +28,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 	variable obj_TargetList ActiveNPCs
 	variable obj_TargetList NPC
 	variable obj_TargetList Marshal
+	variable obj_TargetList RemoteRepJerkz
 	variable int64 currentTarget = 0
 	variable bool IsBusy
 	variable int droneEngageRange = 60000
@@ -234,6 +235,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		{
 			This:LogInfo["Starting."]
 			Marshal.Autolock:Set[TRUE]
+			RemoteRepJerkz.Autolock:Set[TRUE]
 			ActiveNPCs.MaxRange:Set[${droneEngageRange}]
 			variable int MaxTarget = ${MyShip.MaxLockedTargets}
 			if ${Me.MaxLockedTargets} < ${MyShip.MaxLockedTargets}
@@ -251,6 +253,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		This:LogInfo["Stopping."]
 		Marshal.Autolock:Set[FALSE]
 		ActiveNPCs.AutoLock:Set[FALSE]
+		RemoteRepJerkz.Autolock:Set[FALSE]
 		This:Clear
 	}
 
@@ -317,7 +320,9 @@ objectdef obj_DroneControl inherits obj_StateQueue
 
 		Marshal:ClearQueryString
 		ActiveNPCs:ClearQueryString
+		RemoteRepJerkz:ClearQueryString
 		
+		RemoteRepJerkz:AddQueryString["Name =- \"Renewing\" || Name =- \"Fieldweaver\" || Name =- \"Plateforger\" && !IsMoribund"]
 		Marshal:AddQueryString["(TypeID == 56177 || TypeID == 56176 || TypeID == 56178) && !IsMoribund"]
 
 		variable int range = ${Math.Calc[${MyShip.MaxTargetRange} * .95]}
@@ -468,8 +473,9 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		This:BuildActiveNPCs
 		ActiveNPCs:RequestUpdate
 		Marshal:RequestUpdate
+		RemoteRepJerkz:RequestUpdate
 
-		echo WEEWOOWEEWOO ${Marshal.TargetList.Used}
+		;echo WEEWOOWEEWOO ${Marshal.TargetList.Used}
 		ActiveNPCs.MinLockCount:Set[${Config.LockCount}]
 
 		if !${Client.InSpace}
@@ -601,7 +607,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 				This:LogInfo["Debug - Marshal - DC"]
 				if ${Marshal.LockedTargetList.Used}
 				{
-					CurrentOffenseTarget:Set[${Marshal.LockedTargetList.Get[1]}]
+					currentTarget:Set[${Marshal.LockedTargetList.Get[1]}]
 					This:LogInfo["Kill The Damn Marshals"]
 					finalizedDC:Set[TRUE]
 				}
@@ -670,7 +676,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 			This:LogInfo["Debug - Marshal - TM"]
 			if ${Marshal.LockedTargetList.Used}
 			{
-				CurrentOffenseTarget:Set[${Marshal.LockedTargetList.Get[1]}]
+				currentTarget:Set[${Marshal.LockedTargetList.Get[1]}]
 				This:LogInfo["Kill The Damn Marshals"]
 				finalizedTM:Set[TRUE]
 			}
