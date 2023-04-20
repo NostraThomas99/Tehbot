@@ -322,6 +322,7 @@ objectdef obj_TargetManager inherits obj_StateQueue
 
 			if ${Marshalz.Used}
 			{
+				This:LogInfo["Debug - Marshal - TM"]
 				if ${Marshalz.LockedTargetList.Used}
 				{
 					CurrentOffenseTarget:Set[${Marshalz.LockedTargetList.Get[1]}]
@@ -394,8 +395,9 @@ objectdef obj_TargetManager inherits obj_StateQueue
 				}
 			}
 		}
-		elseif ${Marshalz.Used}
+		elseif ${Marshalz}
 		{
+			This:LogInfo["Debug - Marshal - TM"]
 			if ${Marshalz.LockedTargetList.Used}
 			{
 				CurrentOffenseTarget:Set[${Marshalz.LockedTargetList.Get[1]}]
