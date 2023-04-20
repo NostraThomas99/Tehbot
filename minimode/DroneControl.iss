@@ -603,7 +603,6 @@ objectdef obj_DroneControl inherits obj_StateQueue
 					CurrentOffenseTarget:Set[${Marshal.LockedTargetList.Get[1]}]
 					This:LogInfo["Kill The Damn Marshals"]
 					finalizedDC:Set[TRUE]
-					break
 				}
 			}
 			

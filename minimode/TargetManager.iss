@@ -327,7 +327,6 @@ objectdef obj_TargetManager inherits obj_StateQueue
 					CurrentOffenseTarget:Set[${Marshalz.LockedTargetList.Get[1]}]
 					This:LogInfo["Kill The Damn Marshals"]
 					finalizedTM:Set[TRUE]
-					break
 				}
 			}
 			if ${Ship.ActiveJammerList.Used} && !${Marshalz}
