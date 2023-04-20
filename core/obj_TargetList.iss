@@ -158,6 +158,8 @@ objectdef obj_TargetList inherits obj_StateQueue
 		QueryString:Concat["GroupID = 1767 ||"]
 		QueryString:Concat["GroupID = 99 ||"]
 		QueryString:Concat["TypeID = 48253 ||"]
+		QueryString:Concat["GroupID = 1307 ||"]
+		QueryString:Concat["GroupID = 4035 ||"]
 		QueryString:Concat["GroupID = GROUP_ANCIENTSHIPSTRUCTURE ||"]
 		QueryString:Concat["GroupID = GROUP_PRESSURESOLO)"]
 
