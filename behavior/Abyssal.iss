@@ -76,6 +76,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 	variable obj_TargetList NPCs
 	variable obj_TargetList ActiveNPCs
 	variable obj_TargetList Lootables
+	variable obj_TargetList Marshals
 
 	variable obj_Configuration_Abyssal Config
 	variable obj_Configuration_Agents Agents
@@ -668,6 +669,15 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			; No MTU logic sucks, dance around between  cache / wreck & enemy if they are running enemy.
 			if (!${Config.UseMTU} || ${AbandonMTU}) && ${This.DistantTrash}
 			{
+				; Special case for Marshals, Charge right into them. 
+				if ${This.MarshalPresent} > 0
+				{
+					This:LogInfo["${This.MarshalPresent} Marshals"]
+					if ${Entity[Name =- "Marshal"].Distance} > 30000
+					{
+						Move:Orbit[${Entity[Name =- "Marshal"]}, 10000]
+					}
+				}
 				if ${Entity[Name =- "Overmind" || Name =- "Tyrannos" || Name =- "Thunderchild" || Name =- "Leshak" || Name =- "Deepwatcher"].Distance} > 30000
 				{
 					Move:Orbit[${Entity[Name =- "Overmind" || Name =- "Tyrannos" || Name =- "Thunderchild" || Name =- "Leshak" || Name =- "Deepwatcher"]}, 5000]
@@ -680,6 +690,15 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			; If we aren't using an MTU and it is just normal trash enemies, orbit the main lootable until everything is dead.
 			if (!${Config.UseMTU} || ${AbandonMTU}) && !${This.DistantTrash}
 			{
+				; Special case for Marshals, Charge right into them.
+				if ${This.MarshalPresent} > 0
+				{
+					This:LogInfo["${This.MarshalPresent} Marshals"]
+					if ${Entity[Name =- "Marshal"].Distance} > 30000
+					{
+						Move:Orbit[${Entity[Name =- "Marshal"]}, 10000]
+					}
+				}
 				if ${Entity[Name =- "Triglavian Biocombinative Cache" || Name =- "Triglavian Bioadaptive Cache"](exists)} && ${Me.ToEntity.Mode} != MOVE_ORBITING
 				{
 					This:LogInfo["Orbiting Cache/Wreck"]
@@ -763,6 +782,16 @@ objectdef obj_Abyssal inherits obj_StateQueue
 		{
 			return FALSE
 		}
+	}
+	; Those Marshals are annoying as hell
+	member:int MarshalPresent()
+	{
+		Marshals:AddQueryString["(TypeID == 56177 || TypeID == 56176 || TypeID == 56178) && !IsMoribund"]
+		if ${Marshals.Used}
+		{
+			return ${Marshals.Used}
+		}
+	
 	}
 	; This one is for seeing if there are still lootables worth waiting for, either the main one we are orbiting (no MTU being used), or further wrecks that have velocity (they are being tractored).
 	; This will return TRUE if we haven't grabbed the loot, and it is reasonable to do so. Hopefully, that is my goal anyways. If we have grabbed all the reasonable wrecks, that is to say they are

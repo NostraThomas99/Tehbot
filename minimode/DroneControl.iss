@@ -27,6 +27,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 	variable obj_Configuration_DroneControl Config
 	variable obj_TargetList ActiveNPCs
 	variable obj_TargetList NPC
+	variable obj_TargetList Marshal
 	variable int64 currentTarget = 0
 	variable bool IsBusy
 	variable int droneEngageRange = 60000
@@ -232,6 +233,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		if ${This.IsIdle}
 		{
 			This:LogInfo["Starting."]
+			Marshal.Autolock:Set[TRUE]
 			ActiveNPCs.MaxRange:Set[${droneEngageRange}]
 			variable int MaxTarget = ${MyShip.MaxLockedTargets}
 			if ${Me.MaxLockedTargets} < ${MyShip.MaxLockedTargets}
@@ -247,6 +249,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 	method Stop()
 	{
 		This:LogInfo["Stopping."]
+		Marshal.Autolock:Set[FALSE]
 		ActiveNPCs.AutoLock:Set[FALSE]
 		This:Clear
 	}
@@ -312,7 +315,10 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		variable string groups = ""
 		variable string seperator = ""
 
+		Marshal:ClearQueryString
 		ActiveNPCs:ClearQueryString
+		
+		Marshal:AddQueryString["(TypeID == 56177 || TypeID == 56176 || TypeID == 56178) && !IsMoribund"]
 
 		variable int range = ${Math.Calc[${MyShip.MaxTargetRange} * .95]}
 
@@ -448,6 +454,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		}
 
 		ActiveNPCs:AddAllNPCs
+		
 	}
 
 	member:bool DroneControl()
@@ -460,6 +467,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 
 		This:BuildActiveNPCs
 		ActiveNPCs:RequestUpdate
+		Marshal:RequestUpdate
 
 
 		ActiveNPCs.MinLockCount:Set[${Config.LockCount}]
@@ -588,6 +596,17 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		{
 			
 
+			if ${Marshal.Used}
+			{
+				if ${Marshal.LockedTargetList.Used}
+				{
+					CurrentOffenseTarget:Set[${Marshal.LockedTargetList.Get[1]}]
+					This:LogInfo["Kill The Damn Marshals"]
+					finalizedDC:Set[TRUE]
+					break
+				}
+			}
+			
 			if ${FightOrFlight.IsEngagingGankers} && !${FightOrFlight.currentTarget.Equal[0]} && !${FightOrFlight.currentTarget.Equal[${currentTarget}]}
 			{
 				currentTarget:Set[${FightOrFlight.currentTarget}]
@@ -645,6 +664,16 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		{
 			currentTarget:Set[${FightOrFlight.currentTarget}]
 			This:LogInfo["Engaging ganker \ar${Entity[${currentTarget}].Name}"]
+		}
+		elseif ${Marshalz.Used}
+		{
+			if ${Marshalz.LockedTargetList.Used}
+			{
+				CurrentOffenseTarget:Set[${Marshalz.LockedTargetList.Get[1]}]
+				This:LogInfo["Kill The Damn Marshals"]
+				finalizedTM:Set[TRUE]
+				break
+			}
 		}
 		elseif ${ActiveNPCs.LockedTargetList.Used}
 		{

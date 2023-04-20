@@ -60,6 +60,7 @@ objectdef obj_TargetManager inherits obj_StateQueue
 	variable obj_TargetList NPCs
 	variable obj_TargetList ActiveNPCs
 	variable obj_TargetList PCs
+	variable obj_TargetList Marshalz
 
 	variable int maxAttackTime
 	variable int switchTargetAfter = 120
@@ -111,7 +112,10 @@ objectdef obj_TargetManager inherits obj_StateQueue
 		variable string groups = ""
 		variable string seperator = ""
 
+		Marshalz:ClearQueryString
 		ActiveNPCs:ClearQueryString
+		
+		Marshalz:AddQueryString["(TypeID == 56177 || TypeID == 56176 || TypeID == 56178) && !IsMoribund"]
 
 		variable int range = ${Math.Calc[${MyShip.MaxTargetRange} * .95]}
 
@@ -185,11 +189,11 @@ objectdef obj_TargetManager inherits obj_StateQueue
 
 		ActiveNPCs:AddQueryString["IsNPC && !IsMoribund && (${groups})"]
 		ActiveNPCs:AddQueryString["IsNPC && !IsMoribund && IsWarpScramblingMe"]
-		ActiveNPCs:AddQueryString["IsNPC && !IsMoribund && Name =-\"Plateforger\""]
-		ActiveNPCs:AddQueryString["IsNPC && !IsMoribund && Name =-\"Renewing\""]
-		ActiveNPCs:AddQueryString["IsNPC && !IsMoribund && Name =-\"Fieldweaver\""]
-		ActiveNPCs:AddQueryString["IsNPC && !IsMoribund && ArmorPct < 90"]		
-		ActiveNPCs:AddQueryString["IsNPC && !IsMoribund && StructurePct < 99"]	
+		;ActiveNPCs:AddQueryString["IsNPC && !IsMoribund && Name =-\"Plateforger\""]
+		;ActiveNPCs:AddQueryString["IsNPC && !IsMoribund && Name =-\"Renewing\""]
+		;ActiveNPCs:AddQueryString["IsNPC && !IsMoribund && Name =-\"Fieldweaver\""]
+		;ActiveNPCs:AddQueryString["IsNPC && !IsMoribund && ArmorPct < 90"]		
+		;ActiveNPCs:AddQueryString["IsNPC && !IsMoribund && StructurePct < 99"]	
 
 		; Add potential jammers.
 		seperator:Set[""]
@@ -283,8 +287,8 @@ objectdef obj_TargetManager inherits obj_StateQueue
 			NPCs:AddTargetExceptionByPartOfName["Sentry Gun"]
 			NPCs:AddTargetExceptionByPartOfName["Tower Sentry"]
 		}
-		echo ${ActiveNPCs.LockedTargetList.Used} activenpcs
-		echo ${NPCs.LockedTargetList.Used} npcs
+		;echo ${ActiveNPCs.LockedTargetList.Used} activenpcs
+		;echo ${NPCs.LockedTargetList.Used} npcs
 	}
 	
 	method PlagiarisedOffense()
@@ -316,8 +320,17 @@ objectdef obj_TargetManager inherits obj_StateQueue
 		if ${CurrentOffenseTarget} != 0
 		{
 
-
-			if ${Ship.ActiveJammerList.Used}
+			if ${Marshalz.Used}
+			{
+				if ${Marshalz.LockedTargetList.Used}
+				{
+					CurrentOffenseTarget:Set[${Marshalz.LockedTargetList.Get[1]}]
+					This:LogInfo["Kill The Damn Marshals"]
+					finalizedTM:Set[TRUE]
+					break
+				}
+			}
+			if ${Ship.ActiveJammerList.Used} && !${Marshalz}
 			{
 				if !${Ship.ActiveJammerSet.Contains[${CurrentOffenseTarget}]}
 				{
@@ -380,6 +393,16 @@ objectdef obj_TargetManager inherits obj_StateQueue
 				{
 					This:LogInfo["Switching to easier target: \ar${Entity[${CurrentOffenseTarget}].Name}"]
 				}
+			}
+		}
+		elseif ${Marshalz.Used}
+		{
+			if ${Marshalz.LockedTargetList.Used}
+			{
+				CurrentOffenseTarget:Set[${Marshalz.LockedTargetList.Get[1]}]
+				This:LogInfo["Kill The Damn Marshals"]
+				finalizedTM:Set[TRUE]
+				break
 			}
 		}
 		elseif ${ActiveNPCs.LockedTargetList.Used}
@@ -628,6 +651,7 @@ objectdef obj_TargetManager inherits obj_StateQueue
 		}
 
 		This:BuildNpcQueries
+		Marshalz.AutoLock:Set[TRUE]
 		NPCs.AutoLock:Set[TRUE]
 		ActiveNPCs.AutoLock:Set[TRUE]
 		This:PlagiarisedOffense
