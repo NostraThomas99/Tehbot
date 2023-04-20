@@ -469,7 +469,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		ActiveNPCs:RequestUpdate
 		Marshal:RequestUpdate
 
-		echo WEEWOOWEEWOO ${Marshal.Used}
+		echo WEEWOOWEEWOO ${Marshal.TargetListUsed}
 		ActiveNPCs.MinLockCount:Set[${Config.LockCount}]
 
 		if !${Client.InSpace}
@@ -596,7 +596,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		{
 			
 
-			if ${Marshal.Used}
+			if ${Marshal.TargetListUsed}
 			{
 				This:LogInfo["Debug - Marshal - DC"]
 				if ${Marshal.LockedTargetList.Used}
@@ -665,7 +665,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 			currentTarget:Set[${FightOrFlight.currentTarget}]
 			This:LogInfo["Engaging ganker \ar${Entity[${currentTarget}].Name}"]
 		}
-		elseif ${Marshal.Used}
+		elseif ${Marshal.TargetListUsed}
 		{
 			This:LogInfo["Debug - Marshal - TM"]
 			if ${Marshal.LockedTargetList.Used}
@@ -675,7 +675,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 				finalizedTM:Set[TRUE]
 			}
 		}
-		elseif ${ActiveNPCs.LockedTargetList.Used} && !${Marshal.Used}
+		elseif ${ActiveNPCs.LockedTargetList.Used} && !${Marshal.TargetListUsed}
 		{
 			; Need to re-pick from locked target
 			if ${Ship.ActiveJammerList.Used}

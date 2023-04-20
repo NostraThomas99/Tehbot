@@ -322,7 +322,7 @@ objectdef obj_TargetManager inherits obj_StateQueue
 		
 		if ${CurrentOffenseTarget} != 0
 		{
-			if ${Marshalz.Used}
+			if ${Marshalz.TargetList.Used}
 			{
 				This:LogInfo["Debug - Marshal - TM"]
 				if ${Marshalz.LockedTargetList.Used}
@@ -332,7 +332,7 @@ objectdef obj_TargetManager inherits obj_StateQueue
 					finalizedTM:Set[TRUE]
 				}
 			}
-			if ${Ship.ActiveJammerList.Used} && !${Marshalz.Used}
+			if ${Ship.ActiveJammerList.Used} && !${Marshalz.TargetList.Used}
 			{
 				if !${Ship.ActiveJammerSet.Contains[${CurrentOffenseTarget}]}
 				{
@@ -397,7 +397,7 @@ objectdef obj_TargetManager inherits obj_StateQueue
 				}
 			}
 		}
-		elseif ${Marshalz.Used}
+		elseif ${Marshalz.TargetList.Used}
 		{
 			This:LogInfo["Debug - Marshal - TM"]
 			if ${Marshalz.LockedTargetList.Used}
@@ -407,7 +407,7 @@ objectdef obj_TargetManager inherits obj_StateQueue
 				finalizedTM:Set[TRUE]
 			}
 		}
-		elseif ${ActiveNPCs.LockedTargetList.Used} && !${Marshalz.Used}
+		elseif ${ActiveNPCs.LockedTargetList.Used} && !${Marshalz.TargetList.Used}
 		{
 			echo ${ActiveNPCs.LockedTargetList.Used} AT
 			; Need to re-pick from locked target
@@ -656,7 +656,7 @@ objectdef obj_TargetManager inherits obj_StateQueue
 		Marshalz.AutoLock:Set[TRUE]
 		Marshalz:RequestUpdate
 		RemoteRepJerks:RequestUpdate
-		if ${RemoteRepJerks.Used}
+		if ${RemoteRepJerks.TargetList.Used}
 		{
 			This:LogInfo["Debug - Remote Rep Jerks Detected! Test Successful!"]
 		}
