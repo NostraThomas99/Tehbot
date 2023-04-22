@@ -933,14 +933,14 @@ objectdef obj_Abyssal inherits obj_StateQueue
 		if ${Entity[Name == "Transfer Conduit (Triglavian)"](exists)}
 		{
 			This:LogInfo["Going to Next Room"]
-			Move:Gate[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]
+			Move:Gate[${Entity[Name == "Transfer Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]
 			GrabbedLoot:Set[FALSE]
 			This:QueueState["RunTheAbyss"]
 			return TRUE
 		}
 		if ${Entity[Name == "Origin Conduit (Triglavian)"](exists)}
 		{
-			Move:Gate[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]
+			Move:Gate[${Entity[Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]
 			This:LogInfo["All done, leaving the abyss."]
 			GrabbedLoot:Set[FALSE]
 			StatusChecked:Set[FALSE]
@@ -957,11 +957,6 @@ objectdef obj_Abyssal inherits obj_StateQueue
 		{
 			return FALSE
 		}
-		; Troubleshooting something weird
-		;if ${Universe[${Me.SolarSystemID}].Security} !~ NULL
-		;{
-		;	return FALSE
-		;}
 		if ${EVE.Bookmark[${Config.HomeBase}](exists)} && ${EVE.Bookmark[${Config.HomeBase}].JumpsTo} < 1000
 		{
 			return FALSE

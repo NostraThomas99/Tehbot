@@ -290,7 +290,7 @@ objectdef obj_Move inherits obj_StateQueue
 		Logger:Log["Move", "Movement queued", "o"]
 		Logger:Log["Move", " ${Entity[${ID}].Name}", "-g"]
 		This.Traveling:Set[TRUE]
-		This:QueueState["GateMove", 2000, "${ID}, ${CalledFromMove}"]
+		This:QueueState["GateMove", 5000, "${ID}, ${CalledFromMove}"]
 	}
 
 	member:bool GateMove(int64 ID, bool CalledFromMove)
