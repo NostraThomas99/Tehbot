@@ -236,28 +236,28 @@ objectdef obj_Abyssal inherits obj_StateQueue
 		{
 			This:LogInfo["Status Check"]
 			This:InsertState["CheckStatus", 5000]
-			return
+			return FALSE
 		}
 		; We are in space, not the abyss, and we have no problems. Lets go to the abyss.
 		if ${Client.InSpace} && !${This.InAbyss} && ${StatusGreen}
 		{
 			This:LogInfo["Go to Abyssal Site]
 			This:InsertState["GoToAbyss", 5000]
-			return
+			return FALSE
 		}
 		; We are in space and need resupply and/or repair, back to base
 		if ${Client.InSpace} && !${This.InAbyss} && !${StatusGreen}
 		{
 			This:LogInfo["Go back to the station"]
 			This:InsertState["GoToStation"]
-			return
+			return FALSE
 		}
 		; We are in abyssal space, no time to see if we are good or not. If we aren't good we are already dead.
 		if ${Client.InSpace} && ${This.InAbyss}
 		{
 			This:LogInfo["We appear to be in The Abyss"]
 			This:QueueState["RunTheAbyss"]
-			return
+			return FALSE
 		}
 		; We are in station and need repairs or resupply.
 		if ${Me.InStation} && !${StatusGreen}
@@ -279,14 +279,14 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			This:QueueState["Repair"]
 			This:QueueState["DropOffLoot", 5000]
 			This:InsertState["ReloadAmmoAndDrones", 3000]
-			return
+			return FALSE
 		}
 		; We have hit the halt button, might want to like, stop the bot or something.
 		if ${Me.InStation} && (${Config.Halt} || ${Halt})
 		{
 			This:LogInfo["Halt Requested"]
 			This:InsertState["HaltBot"]
-			return
+			return FALSE
 		}
 		; We are in station and everything is good, time to go.
 		if ${Me.InStation} && ${StatusGreen}
@@ -294,7 +294,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			This:LogInfo["Undocking"]
 			Move:Undock
 			This:QueueState["CheckForWork", 5000]
-			return
+			return FALSE
 		}
 
 	}
@@ -908,17 +908,17 @@ objectdef obj_Abyssal inherits obj_StateQueue
 					Entity[Name == "Cargo Container"]:Open
 					EVEWindow[Inventory]:LootAll
 					This:InsertState["RunTheAbyss"]
-					return
+					return FALSE
 				}
 			}
 			if !${This.MTUDeployed} && !${Entity[Name == "Cargo Container"](exists)}
 			{
 				This:InsertState["RunTheAbyss"]
-				return				
+				return FALSE			
 			}
 		}
 	This:QueueState["PickupMTU", 5000]
-	return
+	return FALSE
 	}
 	; This gets us from one room to another, also out of the abyss at the end.
 	member:bool RoomTransition()
@@ -936,7 +936,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			Move:Gate[${Entity[Name == "Transfer Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]
 			GrabbedLoot:Set[FALSE]
 			This:QueueState["RunTheAbyss"]
-			return
+			return FALSE
 		}
 		if ${Entity[Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000](exists)} && !${Move.Traveling}
 		{
@@ -945,10 +945,10 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			GrabbedLoot:Set[FALSE]
 			StatusChecked:Set[FALSE]
 			This:QueueState["CheckForWork", 20000]
-			return
+			return FALSE
 		}
 		;This:QueueState["RoomTransition", 5000]
-		return
+		return FALSE
 	}
 	; Just returns a bool for if we are in the Abyss or not. Probably works fine unless we end up in an abyss without a conduit somehow.
 	member:bool InAbyss()
