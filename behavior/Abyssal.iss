@@ -90,6 +90,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 	variable bool OverheatSetup
 	variable bool AbandonMTU
 	variable bool GrabbedLoot = FALSE
+	variable bool InitialTry
 
 	method Initialize()
 	{
@@ -619,6 +620,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 				}
 			}
 			GrabbedLoot:Set[FALSE]
+			InitialTry:Set[FALSE]
 			; Targets exist, TargetManager will handle weapons, this mode just needs to handle navigation.
 			; TargetManager will also quickly kill the main lootable and any others that are at reasonable distance.
 			; We will basically have two primary strategies on room entrance.
@@ -913,21 +915,39 @@ objectdef obj_Abyssal inherits obj_StateQueue
 		if ${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)"].Distance} > 2000 && \
 		(!${MyShip.ToEntity.Approaching.ID.Equal[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]} || ${MyShip.ToEntity.Mode} == MOVE_STOPPED)
 		{
-			Move:Approach[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]
+			Move:Gate[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]
 			This:LogInfo["Approaching conduit"]
 		}
-		if ${Entity[Name == "Transfer Conduit (Triglavian)"].Distance} < 3000 && ${Entity[Name == "Transfer Conduit (Triglavian)"](exists)}
+		if ${Entity[Name == "Transfer Conduit (Triglavian)"](exists)} && !${InitialTry}
 		{
 			This:LogInfo["Going to Next Room"]
 			Entity[Name == "Transfer Conduit (Triglavian)"]:Activate
 			GrabbedLoot:Set[FALSE]
+			InitialTry:Set[TRUE]
 			This:QueueState["RunTheAbyss"]
+			return TRUE
+		}
+		if ${Entity[Name == "Transfer Conduit (Triglavian)"].Distance} < 3000 && ${Entity[Name == "Transfer Conduit (Triglavian)"](exists)}
+		{
+			This:LogInfo["Going to Next Room"]
+			Entity[Name == "Transfer Conduit (Triglavian)" && Distance < 3000]:Activate
+			GrabbedLoot:Set[FALSE]
+			This:QueueState["RunTheAbyss"]
+			return TRUE
+		}
+		if ${Entity[Name == "Origin Conduit (Triglavian)"](exists)} && !${InitialTry}
+		{
+			Entity[Name == "Origin Conduit (Triglavian)"]:Activate
+			This:LogInfo["All done, leaving the abyss."]
+			GrabbedLoot:Set[FALSE]
+			InitialTry:Set[TRUE]
+			StatusChecked:Set[FALSE]
+			This:QueueState["CheckForWork", 10000]
 			return TRUE
 		}
 		if ${Entity[Name == "Origin Conduit (Triglavian)"].Distance} < 3000 && ${Entity[Name == "Origin Conduit (Triglavian)"](exists)}
 		{
-			
-			Entity[Name == "Origin Conduit (Triglavian)"]:Activate
+			Entity[Name == "Origin Conduit (Triglavian)" && Distance < 3000]:Activate
 			This:LogInfo["All done, leaving the abyss."]
 			GrabbedLoot:Set[FALSE]
 			StatusChecked:Set[FALSE]
