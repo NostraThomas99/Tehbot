@@ -750,7 +750,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			{
 				This:LogInfo["Room Complete, Proceed."]
 				;EVE:Execute[CmdStopShip]
-				This:InsertState["RoomTransition", 4000]
+				This:InsertState["TouchTheConduit", 4000]
 				return TRUE
 			}
 			; If we do not use MTUs, and there is a lootable with stuff in it still, we should go to it to grab it (if it is a reasonable distance away).
@@ -776,7 +776,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			{
 				This:LogInfo["Room Complete, Proceed."]
 				;EVE:Execute[CmdStopShip]
-				This:InsertState["RoomTransition", 4000]
+				This:InsertState["TouchTheConduit", 4000]
 				return TRUE
 			}
 			This:InsertState["RunTheAbyss"]
@@ -920,8 +920,36 @@ objectdef obj_Abyssal inherits obj_StateQueue
 	This:QueueState["PickupMTU", 5000]
 	return TRUE
 	}
+	
+	; This will get us close to the conduit because this is getting tedious as hell.
+	member:bool TouchTheConduit()
+	{
+		if ${Entity[Name == "Transfer Conduit (Triglavian)"](exists)} && \
+		!${MyShip.ToEntity.Approaching.ID.Equal[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]}
+		{
+			This:LogInfo["Heading for Transfer Conduit"]
+			Move:Approach[${Entity[Name == "Transfer Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}, 2500]
+		}
+		if ${Entity[Name == "Origin Conduit (Triglavian)"](exists)} && \
+		!${MyShip.ToEntity.Approaching.ID.Equal[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]}	
+		{
+			This:LogInfo["Heading for Origin Conduit"]
+			Move:Approach[${Entity[Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}, 2500]
+		}
+		; This is probably going to fail
+		if ${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000].Distance} > 2500
+		{
+			This:QueueState["TouchTheConduit", 5000]
+			return TRUE
+		}
+		if ${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000].Distance} < 2500
+		{
+			This:InsertState["ConduitActivation", 3000]
+			return TRUE
+		}
+	}
 	; This gets us from one room to another, also out of the abyss at the end.
-	member:bool RoomTransition()
+	member:bool ConduitActivation()
 	{
 		; This was pretty unreliable, let us hope the other way is better.
 		;if ${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)"].Distance} > 2000 && \
@@ -931,7 +959,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 		;	This:LogInfo["Approaching conduit"]
 		;}
 		if ${Entity[Name == "Transfer Conduit (Triglavian)"](exists)} && \
-		(!${MyShip.ToEntity.Approaching.ID.Equal[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]} || ${MyShip.ToEntity.Mode} == MOVE_STOPPED)
+		(!${MyShip.ToEntity.Approaching.ID.Equal[${Entity[Name == "Transfer Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]} || ${MyShip.ToEntity.Mode} == MOVE_STOPPED)
 		{
 			This:LogInfo["Going to Next Room"]
 			Entity[Name == "Transfer Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]:Activate
@@ -940,7 +968,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			return TRUE
 		}
 		if ${Entity[Name == "Origin Conduit (Triglavian)"](exists)} && \
-		(!${MyShip.ToEntity.Approaching.ID.Equal[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]} || ${MyShip.ToEntity.Mode} == MOVE_STOPPED)
+		(!${MyShip.ToEntity.Approaching.ID.Equal[${Entity[Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]} || ${MyShip.ToEntity.Mode} == MOVE_STOPPED)
 		{
 			Entity[Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]:Activate
 			This:LogInfo["All done, leaving the abyss."]
@@ -949,7 +977,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			This:QueueState["CheckForWork", 20000]
 			return TRUE
 		}
-		;This:QueueState["RoomTransition", 4000]
+		;This:QueueState["TouchTheConduit", 4000]
 		return TRUE
 	}
 	; Just returns a bool for if we are in the Abyss or not. Probably works fine unless we end up in an abyss without a conduit somehow.
