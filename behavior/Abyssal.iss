@@ -236,28 +236,28 @@ objectdef obj_Abyssal inherits obj_StateQueue
 		{
 			This:LogInfo["Status Check"]
 			This:InsertState["CheckStatus", 5000]
-			return TRUE
+			return
 		}
 		; We are in space, not the abyss, and we have no problems. Lets go to the abyss.
 		if ${Client.InSpace} && !${This.InAbyss} && ${StatusGreen}
 		{
 			This:LogInfo["Go to Abyssal Site]
 			This:InsertState["GoToAbyss", 5000]
-			return TRUE
+			return
 		}
 		; We are in space and need resupply and/or repair, back to base
 		if ${Client.InSpace} && !${This.InAbyss} && !${StatusGreen}
 		{
 			This:LogInfo["Go back to the station"]
 			This:InsertState["GoToStation"]
-			return TRUE
+			return
 		}
 		; We are in abyssal space, no time to see if we are good or not. If we aren't good we are already dead.
 		if ${Client.InSpace} && ${This.InAbyss}
 		{
 			This:LogInfo["We appear to be in The Abyss"]
 			This:QueueState["RunTheAbyss"]
-			return TRUE
+			return
 		}
 		; We are in station and need repairs or resupply.
 		if ${Me.InStation} && !${StatusGreen}
@@ -279,14 +279,14 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			This:QueueState["Repair"]
 			This:QueueState["DropOffLoot", 5000]
 			This:InsertState["ReloadAmmoAndDrones", 3000]
-			return TRUE
+			return
 		}
 		; We have hit the halt button, might want to like, stop the bot or something.
 		if ${Me.InStation} && (${Config.Halt} || ${Halt})
 		{
 			This:LogInfo["Halt Requested"]
 			This:InsertState["HaltBot"]
-			return TRUE
+			return
 		}
 		; We are in station and everything is good, time to go.
 		if ${Me.InStation} && ${StatusGreen}
@@ -294,7 +294,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			This:LogInfo["Undocking"]
 			Move:Undock
 			This:QueueState["CheckForWork", 5000]
-			return TRUE
+			return
 		}
 
 	}
@@ -722,7 +722,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			EVE:Execute[CmdReloadAmmo]
 			
 			; We had a rare disconnect AFTER grabbing the loot but BEFORE going through the gate
-			if !${This.MTUDeployed} && ${Entity[Name =- "Cache Wreck" && IsWreckEmpty]}
+			if !${This.MTUDeployed} && ${Entity[Name =- "Cache Wreck" && IsWreckEmpty](exists)}
 			{
 				GrabbedLoot:Set[TRUE]
 			}
@@ -750,7 +750,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			{
 				This:LogInfo["Room Complete, Proceed."]
 				EVE:Execute[CmdStopShip]
-				This:QueueState["RoomTransition", 4000]
+				This:QueueState["RoomTransition", 10000]
 				return TRUE
 			}
 			; If we do not use MTUs, and there is a lootable with stuff in it still, we should go to it to grab it (if it is a reasonable distance away).
@@ -776,7 +776,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			{
 				This:LogInfo["Room Complete, Proceed."]
 				EVE:Execute[CmdStopShip]
-				This:QueueState["RoomTransition", 4000]
+				This:QueueState["RoomTransition", 10000]
 				return TRUE
 			}
 			This:InsertState["RunTheAbyss"]
@@ -908,17 +908,17 @@ objectdef obj_Abyssal inherits obj_StateQueue
 					Entity[Name == "Cargo Container"]:Open
 					EVEWindow[Inventory]:LootAll
 					This:InsertState["RunTheAbyss"]
-					return TRUE
+					return
 				}
 			}
 			if !${This.MTUDeployed} && !${Entity[Name == "Cargo Container"](exists)}
 			{
 				This:InsertState["RunTheAbyss"]
-				return TRUE				
+				return				
 			}
 		}
 	This:QueueState["PickupMTU", 5000]
-	return TRUE
+	return
 	}
 	; This gets us from one room to another, also out of the abyss at the end.
 	member:bool RoomTransition()
@@ -930,25 +930,25 @@ objectdef obj_Abyssal inherits obj_StateQueue
 		;	Move:Gate[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]
 		;	This:LogInfo["Approaching conduit"]
 		;}
-		if ${Entity[Name == "Transfer Conduit (Triglavian)"](exists)}
+		if ${Entity[Name == "Transfer Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000](exists)} && !${Move.Traveling}
 		{
 			This:LogInfo["Going to Next Room"]
 			Move:Gate[${Entity[Name == "Transfer Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]
 			GrabbedLoot:Set[FALSE]
 			This:QueueState["RunTheAbyss"]
-			return TRUE
+			return
 		}
-		if ${Entity[Name == "Origin Conduit (Triglavian)"](exists)}
+		if ${Entity[Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000](exists)} && !${Move.Traveling}
 		{
 			Move:Gate[${Entity[Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]
 			This:LogInfo["All done, leaving the abyss."]
 			GrabbedLoot:Set[FALSE]
 			StatusChecked:Set[FALSE]
 			This:QueueState["CheckForWork", 20000]
-			return TRUE
+			return
 		}
-		This:QueueState["RoomTransition", 4000]
-		return TRUE
+		;This:QueueState["RoomTransition", 5000]
+		return
 	}
 	; Just returns a bool for if we are in the Abyss or not. Probably works fine unless we end up in an abyss without a conduit somehow.
 	member:bool InAbyss()

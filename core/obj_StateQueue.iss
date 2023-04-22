@@ -49,6 +49,7 @@ objectdef obj_StateQueue inherits obj_Logger
 
 	method Pulse()
 	{
+		echo DEBUG - ${States.Used} current number of states
 		variable bool ReportIdle=TRUE
 		if ${LavishScript.RunningTime} >= ${This.NextPulse}
 		{
