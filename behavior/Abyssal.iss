@@ -565,6 +565,12 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			}
 		}
 
+		; Something went wrong here
+		if !${This.InAbyss}
+		{
+			This:QueueState["CheckForWork", 10000]
+			return TRUE
+		}
 
 		; First up, I guess we should start moving. We will decide on a plan of action based on a few factors.
 		; Are we using an MTU or not? Are the enemies the kind that run away or not? Is this room going to be extremely dangerous?
@@ -912,46 +918,28 @@ objectdef obj_Abyssal inherits obj_StateQueue
 	; This gets us from one room to another, also out of the abyss at the end.
 	member:bool RoomTransition()
 	{
-		if ${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)"].Distance} > 2000 && \
-		(!${MyShip.ToEntity.Approaching.ID.Equal[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]} || ${MyShip.ToEntity.Mode} == MOVE_STOPPED)
-		{
-			Move:Gate[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]
-			This:LogInfo["Approaching conduit"]
-		}
-		;if ${Entity[Name == "Transfer Conduit (Triglavian)"](exists)} && !${InitialTry}
+		; This was pretty unreliable, let us hope the other way is better.
+		;if ${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)"].Distance} > 2000 && \
+		;(!${MyShip.ToEntity.Approaching.ID.Equal[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]} || ${MyShip.ToEntity.Mode} == MOVE_STOPPED)
 		;{
-		;	This:LogInfo["Going to Next Room"]
-		;	Entity[Name == "Transfer Conduit (Triglavian)"]:Activate
-		;	GrabbedLoot:Set[FALSE]
-		;	InitialTry:Set[TRUE]
-		;	This:QueueState["RunTheAbyss"]
-		;	return TRUE
+		;	Move:Gate[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]
+		;	This:LogInfo["Approaching conduit"]
 		;}
-		if ${Entity[Name == "Transfer Conduit (Triglavian)"].Distance} < 3000 && ${Entity[Name == "Transfer Conduit (Triglavian)"](exists)}
+		if ${Entity[Name == "Transfer Conduit (Triglavian)"](exists)}
 		{
 			This:LogInfo["Going to Next Room"]
-			Entity[Name == "Transfer Conduit (Triglavian)" && Distance < 3000]:Activate
+			Move:Gate[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]
 			GrabbedLoot:Set[FALSE]
 			This:QueueState["RunTheAbyss"]
 			return TRUE
 		}
-		;if ${Entity[Name == "Origin Conduit (Triglavian)"](exists)} && !${InitialTry}
-		;{
-		;	Entity[Name == "Origin Conduit (Triglavian)"]:Activate
-		;	This:LogInfo["All done, leaving the abyss."]
-		;	GrabbedLoot:Set[FALSE]
-		;	InitialTry:Set[TRUE]
-		;	StatusChecked:Set[FALSE]
-		;	This:QueueState["CheckForWork", 10000]
-		;	return TRUE
-		;}
-		if ${Entity[Name == "Origin Conduit (Triglavian)"].Distance} < 3000 && ${Entity[Name == "Origin Conduit (Triglavian)"](exists)}
+		if ${Entity[Name == "Origin Conduit (Triglavian)"](exists)}
 		{
-			Entity[Name == "Origin Conduit (Triglavian)" && Distance < 3000]:Activate
+			Move:Gate[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]
 			This:LogInfo["All done, leaving the abyss."]
 			GrabbedLoot:Set[FALSE]
 			StatusChecked:Set[FALSE]
-			This:QueueState["CheckForWork", 10000]
+			This:QueueState["CheckForWork", 20000]
 			return TRUE
 		}
 		This:QueueState["RoomTransition", 4000]
