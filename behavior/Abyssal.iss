@@ -749,8 +749,8 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			if ${Config.UseMTU} && !${This.MTUDeployed} || ( ${Config.UseMTU} && ${This.MTUDeployed} && ${AbandonMTU})
 			{
 				This:LogInfo["Room Complete, Proceed."]
-				EVE:Execute[CmdStopShip]
-				This:QueueState["RoomTransition", 4000]
+				;EVE:Execute[CmdStopShip]
+				This:InsertState["RoomTransition", 4000]
 				return TRUE
 			}
 			; If we do not use MTUs, and there is a lootable with stuff in it still, we should go to it to grab it (if it is a reasonable distance away).
@@ -775,8 +775,8 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			if (!${Config.UseMTU} || ${AbandonMTU}) && !${This.LootboxesPresent} && ${GrabbedLoot}
 			{
 				This:LogInfo["Room Complete, Proceed."]
-				EVE:Execute[CmdStopShip]
-				This:QueueState["RoomTransition", 4000]
+				;EVE:Execute[CmdStopShip]
+				This:InsertState["RoomTransition", 4000]
 				return TRUE
 			}
 			This:InsertState["RunTheAbyss"]
@@ -930,24 +930,26 @@ objectdef obj_Abyssal inherits obj_StateQueue
 		;	Move:Gate[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]
 		;	This:LogInfo["Approaching conduit"]
 		;}
-		if ${Entity[Name == "Transfer Conduit (Triglavian)"](exists)}
+		if ${Entity[Name == "Transfer Conduit (Triglavian)"](exists)} && \
+		(!${MyShip.ToEntity.Approaching.ID.Equal[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]} || ${MyShip.ToEntity.Mode} == MOVE_STOPPED)
 		{
 			This:LogInfo["Going to Next Room"]
-			Move:Gate[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]
+			Entity[Name == "Transfer Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]:Activate
 			GrabbedLoot:Set[FALSE]
 			This:QueueState["RunTheAbyss"]
 			return TRUE
 		}
-		if ${Entity[Name == "Origin Conduit (Triglavian)"](exists)}
+		if ${Entity[Name == "Origin Conduit (Triglavian)"](exists)} && \
+		(!${MyShip.ToEntity.Approaching.ID.Equal[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]} || ${MyShip.ToEntity.Mode} == MOVE_STOPPED)
 		{
-			Move:Gate[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]
+			Entity[Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]:Activate
 			This:LogInfo["All done, leaving the abyss."]
 			GrabbedLoot:Set[FALSE]
 			StatusChecked:Set[FALSE]
 			This:QueueState["CheckForWork", 20000]
 			return TRUE
 		}
-		This:QueueState["RoomTransition", 4000]
+		;This:QueueState["RoomTransition", 4000]
 		return TRUE
 	}
 	; Just returns a bool for if we are in the Abyss or not. Probably works fine unless we end up in an abyss without a conduit somehow.
