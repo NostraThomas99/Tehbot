@@ -290,7 +290,7 @@ objectdef obj_Move inherits obj_StateQueue
 		Logger:Log["Move", "Movement queued", "o"]
 		Logger:Log["Move", " ${Entity[${ID}].Name}", "-g"]
 		This.Traveling:Set[TRUE]
-		This:QueueState["GateMove", 5000, "${ID}, ${CalledFromMove}"]
+		This:QueueState["GateMove", 2000, "${ID}, ${CalledFromMove}"]
 	}
 
 	member:bool GateMove(int64 ID, bool CalledFromMove)
@@ -323,7 +323,7 @@ objectdef obj_Move inherits obj_StateQueue
 		}
 		Logger:Log["Move", "Activating ${Entity[${ID}].Name}", "g"]
 		Entity[${ID}]:Activate
-		;Client:Wait[5000]
+		Client:Wait[5000]
 		if !${CalledFromMove}
 		{
 			This.Traveling:Set[FALSE]
@@ -872,7 +872,7 @@ objectdef obj_Move inherits obj_StateQueue
 			return
 		}
 
-		ApproachModule:QueueState["CheckApproach", 5000, "${ID}, ${distance}"]
+		ApproachModule:QueueState["CheckApproach", 1000, "${ID}, ${distance}"]
 	}
 
 
