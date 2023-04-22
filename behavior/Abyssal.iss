@@ -626,7 +626,6 @@ objectdef obj_Abyssal inherits obj_StateQueue
 				}
 			}
 			GrabbedLoot:Set[FALSE]
-			InitialTry:Set[FALSE]
 			; Targets exist, TargetManager will handle weapons, this mode just needs to handle navigation.
 			; TargetManager will also quickly kill the main lootable and any others that are at reasonable distance.
 			; We will basically have two primary strategies on room entrance.
@@ -721,6 +720,12 @@ objectdef obj_Abyssal inherits obj_StateQueue
 		{
 			; Good place to reload, probably.
 			EVE:Execute[CmdReloadAmmo]
+			
+			; We had a rare disconnect AFTER grabbing the loot but BEFORE going through the gate
+			if !${This.MTUDeployed} && ${Entity[Name =- "Cache Wreck" && IsWreckEmpty]}
+			{
+				GrabbedLoot:Set[TRUE]
+			}
 			; If we have an MTU out, but there is still reasonable loot in reach, chillax a bit.
 			if ${Config.UseMTU} && ${This.MTUDeployed} && ${This.LootboxesPresent}
 			{
