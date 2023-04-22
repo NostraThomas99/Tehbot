@@ -918,15 +918,15 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			Move:Gate[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]
 			This:LogInfo["Approaching conduit"]
 		}
-		if ${Entity[Name == "Transfer Conduit (Triglavian)"](exists)} && !${InitialTry}
-		{
-			This:LogInfo["Going to Next Room"]
-			Entity[Name == "Transfer Conduit (Triglavian)"]:Activate
-			GrabbedLoot:Set[FALSE]
-			InitialTry:Set[TRUE]
-			This:QueueState["RunTheAbyss"]
-			return TRUE
-		}
+		;if ${Entity[Name == "Transfer Conduit (Triglavian)"](exists)} && !${InitialTry}
+		;{
+		;	This:LogInfo["Going to Next Room"]
+		;	Entity[Name == "Transfer Conduit (Triglavian)"]:Activate
+		;	GrabbedLoot:Set[FALSE]
+		;	InitialTry:Set[TRUE]
+		;	This:QueueState["RunTheAbyss"]
+		;	return TRUE
+		;}
 		if ${Entity[Name == "Transfer Conduit (Triglavian)"].Distance} < 3000 && ${Entity[Name == "Transfer Conduit (Triglavian)"](exists)}
 		{
 			This:LogInfo["Going to Next Room"]
@@ -935,16 +935,16 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			This:QueueState["RunTheAbyss"]
 			return TRUE
 		}
-		if ${Entity[Name == "Origin Conduit (Triglavian)"](exists)} && !${InitialTry}
-		{
-			Entity[Name == "Origin Conduit (Triglavian)"]:Activate
-			This:LogInfo["All done, leaving the abyss."]
-			GrabbedLoot:Set[FALSE]
-			InitialTry:Set[TRUE]
-			StatusChecked:Set[FALSE]
-			This:QueueState["CheckForWork", 10000]
-			return TRUE
-		}
+		;if ${Entity[Name == "Origin Conduit (Triglavian)"](exists)} && !${InitialTry}
+		;{
+		;	Entity[Name == "Origin Conduit (Triglavian)"]:Activate
+		;	This:LogInfo["All done, leaving the abyss."]
+		;	GrabbedLoot:Set[FALSE]
+		;	InitialTry:Set[TRUE]
+		;	StatusChecked:Set[FALSE]
+		;	This:QueueState["CheckForWork", 10000]
+		;	return TRUE
+		;}
 		if ${Entity[Name == "Origin Conduit (Triglavian)"].Distance} < 3000 && ${Entity[Name == "Origin Conduit (Triglavian)"](exists)}
 		{
 			Entity[Name == "Origin Conduit (Triglavian)" && Distance < 3000]:Activate
