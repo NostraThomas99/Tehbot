@@ -975,7 +975,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			This:QueueState["CheckForWork", 20000]
 			return TRUE
 		}
-		;This:QueueState["TouchTheConduit", 4000]
+		This:QueueState["RunTheAbyss", 4000]
 		return TRUE
 	}
 	; Just returns a bool for if we are in the Abyss or not. Probably works fine unless we end up in an abyss without a conduit somehow.
