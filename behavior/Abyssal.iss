@@ -958,7 +958,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 		;	Move:Gate[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]
 		;	This:LogInfo["Approaching conduit"]
 		;}
-		if ${Entity[Name == "Transfer Conduit (Triglavian)"](exists)} &&
+		if ${Entity[Name == "Transfer Conduit (Triglavian)"](exists)}
 		{
 			This:LogInfo["Going to Next Room"]
 			Entity[Name == "Transfer Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]:Activate
@@ -966,7 +966,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			This:QueueState["RunTheAbyss"]
 			return TRUE
 		}
-		if ${Entity[Name == "Origin Conduit (Triglavian)"](exists)} &&
+		if ${Entity[Name == "Origin Conduit (Triglavian)"](exists)}
 		{
 			Entity[Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]:Activate
 			This:LogInfo["All done, leaving the abyss."]
