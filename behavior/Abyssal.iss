@@ -216,7 +216,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 		if ${Client.InSpace} && ${Ship.ModuleList_VortonWeapon.Count} > 0 && ${Config.Overheat} && !${OverheatSetup}
 		{
 			This:LogInfo["Setting Vorton Overload HP Limit"] 
-			Ship.ModuleList_VortonWeapon:SetOverloadHPThreshold[10]
+			Ship.ModuleList_VortonWeapon:SetOverloadHPThreshold[15]
 			OverheatSetup:Set[TRUE]
 		}
 		; We are in space, in a pod. Might figure out something more complicated for this later.
@@ -685,7 +685,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 						Move:Orbit[${Entity[Name =- "Marshal"]}, 10000]
 					}
 				}
-				if ${Entity[Name =- "Overmind" || Name =- "Tyrannos" || Name =- "Thunderchild" || Name =- "Leshak" || Name =- "Deepwatcher"].Distance} > 30000
+				if ${Entity[Name =- "Overmind" || Name =- "Tyrannos" || Name =- "Thunderchild" || Name =- "Leshak" || Name =- "Deepwatcher"].Distance} > 27000
 				{
 					Move:Orbit[${Entity[Name =- "Overmind" || Name =- "Tyrannos" || Name =- "Thunderchild" || Name =- "Leshak" || Name =- "Deepwatcher"]}, 5000]
 				}
@@ -937,12 +937,12 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			Move:Approach[${Entity[Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}, 2500]
 		}
 		; This is probably going to fail
-		if ${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000].Distance} > 2500
+		if ${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000].Distance} > 3000
 		{
 			This:QueueState["TouchTheConduit", 5000]
 			return TRUE
 		}
-		if ${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000].Distance} < 2500
+		if ${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000].Distance} < 3000
 		{
 			This:InsertState["ConduitActivation", 3000]
 			return TRUE
@@ -958,8 +958,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 		;	Move:Gate[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]
 		;	This:LogInfo["Approaching conduit"]
 		;}
-		if ${Entity[Name == "Transfer Conduit (Triglavian)"](exists)} && \
-		(!${MyShip.ToEntity.Approaching.ID.Equal[${Entity[Name == "Transfer Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]} || ${MyShip.ToEntity.Mode} == MOVE_STOPPED)
+		if ${Entity[Name == "Transfer Conduit (Triglavian)"](exists)} &&
 		{
 			This:LogInfo["Going to Next Room"]
 			Entity[Name == "Transfer Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]:Activate
@@ -967,8 +966,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			This:QueueState["RunTheAbyss"]
 			return TRUE
 		}
-		if ${Entity[Name == "Origin Conduit (Triglavian)"](exists)} && \
-		(!${MyShip.ToEntity.Approaching.ID.Equal[${Entity[Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]} || ${MyShip.ToEntity.Mode} == MOVE_STOPPED)
+		if ${Entity[Name == "Origin Conduit (Triglavian)"](exists)} &&
 		{
 			Entity[Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]:Activate
 			This:LogInfo["All done, leaving the abyss."]
