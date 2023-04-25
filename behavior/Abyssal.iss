@@ -726,6 +726,12 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			{
 				GrabbedLoot:Set[TRUE]
 			}
+			; We were out of range to shoot the cache when the last enemy died, and the cache never died between then and now. Please get to it.
+			if ${Entity[Name =- "Triglavian Biocombinative Cache" || Name =- "Triglavian Bioadaptive Cache"](exists)} && ${Me.ToEntity.Mode} != MOVE_ORBITING
+			{
+				This:LogInfo["Orbiting Cache/Wreck"]
+				Move:Orbit[${Entity[Name =- "Triglavian Biocombinative Cache" || Name =- "Triglavian Bioadaptive Cache"]}, 2500]
+			}
 			; If we have an MTU out, but there is still reasonable loot in reach, chillax a bit.
 			if ${Config.UseMTU} && ${This.MTUDeployed} && ${This.LootboxesPresent}
 			{
