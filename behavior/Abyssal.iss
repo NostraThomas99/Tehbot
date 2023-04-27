@@ -727,7 +727,8 @@ objectdef obj_Abyssal inherits obj_StateQueue
 				GrabbedLoot:Set[TRUE]
 			}
 			; We were out of range to shoot the cache when the last enemy died, and the cache never died between then and now. Please get to it.
-			if ${Entity[Name =- "Triglavian Biocombinative Cache" || Name =- "Triglavian Bioadaptive Cache"](exists)} && ${Me.ToEntity.Mode} != MOVE_ORBITING
+			if ${Entity[Name =- "Triglavian Biocombinative Cache" || Name =- "Triglavian Bioadaptive Cache"](exists)} && ${Me.ToEntity.Mode} != MOVE_ORBITING && \
+			!${MyShip.ToEntity.Approaching.ID.Equal[${Entity[Name =- "Triglavian Biocombinative Cache" || Name =- "Triglavian Bioadaptive Cache"]}]}
 			{
 				This:LogInfo["Orbiting Cache/Wreck"]
 				Move:Orbit[${Entity[Name == "Triglavian Biocombinative Cache" || Name == "Triglavian Bioadaptive Cache"]}, 2500]

@@ -5,6 +5,7 @@ objectdef obj_Move inherits obj_StateQueue
 	variable bool Traveling = FALSE
 
 
+
 	method Initialize()
 	{
 		This[parent]:Initialize
@@ -935,6 +936,7 @@ objectdef obj_Move inherits obj_StateQueue
 
 objectdef obj_Approach inherits obj_StateQueue
 {
+	variable int ApproachModuleCounter
 
 	method Initialize()
 	{
@@ -946,6 +948,8 @@ objectdef obj_Approach inherits obj_StateQueue
 
 	member:bool CheckApproach(int64 ID, int distance)
 	{
+		ApproachModuleCounter:Inc[1]
+		Logger:Log["Move", "DEBUG - We are in the approach state - Iteration Number ${ApproachModuleCounter}"]
 		;	Clear approach if we're in warp or the entity no longer exists
 		if ${Me.ToEntity.Mode} == MOVE_WARPING || !${Entity[${ID}](exists)}
 		{
@@ -953,11 +957,21 @@ objectdef obj_Approach inherits obj_StateQueue
 			Logger:Log["Move", "This thing we are approaching doesn't exist"]
 		}
 
+		;	We seem to have been approaching for a long time, lets stop the ship and exit the approach.
+		if ${ApproachModuleCounter} > 30
+		{
+			Logger:Log["Move", "Approaching for too long, abort]
+			EVE:Execute[CmdStopShip]
+			ApproachModuleCounter:Set[0]
+			return TRUE
+			
+		}
 		;	Find out if we need to approach the target
 		if ${Entity[${ID}].Distance} >= ${distance} && ${Me.ToEntity.Mode} != MOVE_APPROACHING
 		{
 			Logger:Log["Move", "Approaching to within ${Tehbot.MetersToKM_Str[${distance}]} of ${Entity[${ID}].Name}", "g"]
 			Entity[${ID}]:Approach[${distance}]
+			ApproachModuleCounter:Set[0]
 			return FALSE
 		}
 
@@ -967,9 +981,9 @@ objectdef obj_Approach inherits obj_StateQueue
 			Logger:Log["Move", "Within ${Tehbot.MetersToKM_Str[${distance}]} of ${Entity[${ID}].Name}", "g"]
 			EVE:Execute[CmdStopShip]
 			Ship.ModuleList_AB_MWD:DeactivateAll
+			ApproachModuleCounter:Set[0]
 			return TRUE
 		}
-
 		return FALSE
 	}
 }
