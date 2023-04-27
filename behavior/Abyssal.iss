@@ -685,9 +685,9 @@ objectdef obj_Abyssal inherits obj_StateQueue
 						Move:Orbit[${Entity[Name =- "Marshal"]}, 10000]
 					}
 				}
-				if ${Entity[Name =- "Overmind" || Name =- "Tyrannos" || Name =- "Thunderchild" || Name =- "Leshak" || Name =- "Deepwatcher" && ID == ${CurrentOffenseTarget}].Distance} > 27000
+				if ${Entity[(Name =- "Overmind" || Name =- "Tyrannos" || Name =- "Thunderchild" || Name =- "Leshak" || Name =- "Deepwatcher") && ID == ${CurrentOffenseTarget}].Distance} > 27000
 				{
-					Move:Orbit[${Entity[Name =- "Overmind" || Name =- "Tyrannos" || Name =- "Thunderchild" || Name =- "Leshak" || Name =- "Deepwatcher" && ID == ${CurrentOffenseTarget}]}, 5000]
+					Move:Orbit[${Entity[(Name =- "Overmind" || Name =- "Tyrannos" || Name =- "Thunderchild" || Name =- "Leshak" || Name =- "Deepwatcher") && ID == ${CurrentOffenseTarget}]}, 5000]
 				}
 				if ${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)"].Distance} > 15000
 				{
