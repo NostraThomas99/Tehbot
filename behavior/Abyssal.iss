@@ -685,9 +685,9 @@ objectdef obj_Abyssal inherits obj_StateQueue
 						Move:Orbit[${Entity[Name =- "Marshal"]}, 10000]
 					}
 				}
-				if ${Entity[Name =- "Overmind" || Name =- "Tyrannos" || Name =- "Thunderchild" || Name =- "Leshak" || Name =- "Deepwatcher"].Distance} > 27000
+				if ${Entity[Name =- "Overmind" || Name =- "Tyrannos" || Name =- "Thunderchild" || Name =- "Leshak" || Name =- "Deepwatcher" && ID == ${CurrentOffenseTarget}].Distance} > 27000
 				{
-					Move:Orbit[${Entity[Name =- "Overmind" || Name =- "Tyrannos" || Name =- "Thunderchild" || Name =- "Leshak" || Name =- "Deepwatcher"]}, 5000]
+					Move:Orbit[${Entity[Name =- "Overmind" || Name =- "Tyrannos" || Name =- "Thunderchild" || Name =- "Leshak" || Name =- "Deepwatcher" && ID == ${CurrentOffenseTarget}]}, 5000]
 				}
 				if ${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)"].Distance} > 15000
 				{
@@ -727,7 +727,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 				GrabbedLoot:Set[TRUE]
 			}
 			; We were out of range to shoot the cache when the last enemy died, and the cache never died between then and now. Please get to it.
-			if ${Entity[Name =- "Triglavian Biocombinative Cache" || Name =- "Triglavian Bioadaptive Cache"](exists)} && ${Me.ToEntity.Mode} != MOVE_ORBITING && \
+			if ${Entity[Name =- "Triglavian Biocombinative Cache" || Name =- "Triglavian Bioadaptive Cache" && Distance > 30000](exists)} && ${Me.ToEntity.Mode} != MOVE_ORBITING && \
 			!${MyShip.ToEntity.Approaching.ID.Equal[${Entity[Name =- "Triglavian Biocombinative Cache" || Name =- "Triglavian Bioadaptive Cache"]}]}
 			{
 				This:LogInfo["Orbiting Cache/Wreck"]
