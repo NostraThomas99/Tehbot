@@ -634,9 +634,9 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			; Distance from both the enemy and the conduit.
 			if ${Config.UseMTU} && ${This.DistantTrash} && !${AbandonMTU}
 			{
-				if ${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000](exists)}
+				if ${Entity[(Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)") && Distance !~ NULL && Distance < 100000](exists)}
 				{
-					if !${MyShip.ToEntity.Approaching.ID.Equal[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000].ID}]} || ${MyShip.ToEntity.Mode} == MOVE_STOPPED
+					if !${MyShip.ToEntity.Approaching.ID.Equal[${Entity[(Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)") && Distance !~ NULL && Distance < 100000].ID}]} || ${MyShip.ToEntity.Mode} == MOVE_STOPPED
 					{
 						Move:Approach[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)"]}, 0]
 					}
@@ -685,11 +685,15 @@ objectdef obj_Abyssal inherits obj_StateQueue
 						Move:Orbit[${Entity[Name =- "Marshal"]}, 10000]
 					}
 				}
+				if ${Entity[(Name =- "Blinding Leshak" && Distance > 40000](exists)}
+				{
+					Move:Orbit[${Entity[(Name =- "Blinding Leshak" && Distance > 40000]}]
+				}
 				if ${Entity[(Name =- "Overmind" || Name =- "Tyrannos" || Name =- "Thunderchild" || Name =- "Leshak" || Name =- "Deepwatcher") && ID == ${CurrentOffenseTarget}].Distance} > 27000
 				{
 					Move:Orbit[${Entity[(Name =- "Overmind" || Name =- "Tyrannos" || Name =- "Thunderchild" || Name =- "Leshak" || Name =- "Deepwatcher") && ID == ${CurrentOffenseTarget}]}, 5000]
 				}
-				if ${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)"].Distance} > 15000
+				if ${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)"].Distance} > 15000 && !${Entity[(Name =- "Blinding Leshak" && Distance > 40000](exists)}
 				{
 					Move:Orbit[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)"]}, 5000]
 				}
@@ -756,7 +760,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			if ${Config.UseMTU} && !${This.MTUDeployed} || ( ${Config.UseMTU} && ${This.MTUDeployed} && ${AbandonMTU})
 			{
 				This:LogInfo["Room Complete, Proceed."]
-				;EVE:Execute[CmdStopShip]
+				EVE:Execute[CmdStopShip]
 				This:InsertState["TouchTheConduit", 4000]
 				return TRUE
 			}
@@ -782,7 +786,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			if (!${Config.UseMTU} || ${AbandonMTU}) && !${This.LootboxesPresent} && ${GrabbedLoot}
 			{
 				This:LogInfo["Room Complete, Proceed."]
-				;EVE:Execute[CmdStopShip]
+				EVE:Execute[CmdStopShip]
 				This:InsertState["TouchTheConduit", 4000]
 				return TRUE
 			}
@@ -931,25 +935,27 @@ objectdef obj_Abyssal inherits obj_StateQueue
 	; This will get us close to the conduit because this is getting tedious as hell.
 	member:bool TouchTheConduit()
 	{
-		if ${Entity[Name == "Transfer Conduit (Triglavian)"](exists)} && \
-		!${MyShip.ToEntity.Approaching.ID.Equal[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]}
+		if (${Entity[Name == "Transfer Conduit (Triglavian)"](exists)} && \
+		!${MyShip.ToEntity.Approaching.ID.Equal[${Entity[(Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)") && Distance !~ NULL && Distance < 100000]}]}) || \
+		${Me.ToEntity.Mode} == MOVE_ORBITING
 		{
 			This:LogInfo["Heading for Transfer Conduit"]
 			Move:Approach[${Entity[Name == "Transfer Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}, 2500]
 		}
-		if ${Entity[Name == "Origin Conduit (Triglavian)"](exists)} && \
-		!${MyShip.ToEntity.Approaching.ID.Equal[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]}	
+		if (${Entity[Name == "Origin Conduit (Triglavian)"](exists)} && \
+		!${MyShip.ToEntity.Approaching.ID.Equal[${Entity[(Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)") && Distance !~ NULL && Distance < 100000]}]}) || \
+		${Me.ToEntity.Mode} == MOVE_ORBITING
 		{
 			This:LogInfo["Heading for Origin Conduit"]
 			Move:Approach[${Entity[Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}, 2500]
 		}
 		; This is probably going to fail
-		if ${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000].Distance} > 3000
+		if ${Entity[(Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)") && Distance !~ NULL && Distance < 100000].Distance} > 3000
 		{
 			This:QueueState["TouchTheConduit", 5000]
 			return TRUE
 		}
-		if ${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000].Distance} < 3000
+		if ${Entity[(Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)") && Distance !~ NULL && Distance < 100000].Distance} < 3000
 		{
 			This:InsertState["ConduitActivation", 3000]
 			return TRUE
@@ -960,9 +966,9 @@ objectdef obj_Abyssal inherits obj_StateQueue
 	{
 		; This was pretty unreliable, let us hope the other way is better.
 		;if ${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)"].Distance} > 2000 && \
-		;(!${MyShip.ToEntity.Approaching.ID.Equal[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]} || ${MyShip.ToEntity.Mode} == MOVE_STOPPED)
+		;(!${MyShip.ToEntity.Approaching.ID.Equal[${Entity[(Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)") && Distance !~ NULL && Distance < 100000]}]} || ${MyShip.ToEntity.Mode} == MOVE_STOPPED)
 		;{
-		;	Move:Gate[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)" && Distance !~ NULL && Distance < 100000]}]
+		;	Move:Gate[${Entity[(Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)") && Distance !~ NULL && Distance < 100000]}]
 		;	This:LogInfo["Approaching conduit"]
 		;}
 		if ${Entity[Name == "Transfer Conduit (Triglavian)"](exists)}
