@@ -685,9 +685,9 @@ objectdef obj_Abyssal inherits obj_StateQueue
 						Move:Orbit[${Entity[Name =- "Marshal"]}, 10000]
 					}
 				}
-				if ${Entity[(Name =- "Blinding Leshak" && Distance > 40000](exists)}
+				if ${Entity[Name =- "Blinding Leshak" && Distance > 40000](exists)}
 				{
-					Move:Orbit[${Entity[(Name =- "Blinding Leshak" && Distance > 40000]}]
+					Move:Orbit[${Entity[Name =- "Blinding Leshak" && Distance > 40000]}]
 				}
 				if ${Entity[(Name =- "Overmind" || Name =- "Tyrannos" || Name =- "Thunderchild" || Name =- "Leshak" || Name =- "Deepwatcher") && ID == ${CurrentOffenseTarget}].Distance} > 27000
 				{
