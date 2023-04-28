@@ -572,6 +572,13 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			return TRUE
 		}
 
+		; We're Stormbringing it up but we didnt have enough time to repair, and waiting for repairs will cost more damage than not overheating. Cancel the repair.
+		; Also I swear if you don't put your SINGLE WEAPON in the very first slot you're crazy.
+		if ${Config.Overheat} && ${MyShip.Module[HiSlot0].IsBeingRepaired}
+		{
+			MyShip.Module[HiSlot0]:CancelRepair
+		}
+		
 		; First up, I guess we should start moving. We will decide on a plan of action based on a few factors.
 		; Are we using an MTU or not? Are the enemies the kind that run away or not? Is this room going to be extremely dangerous?
 		; Are we using a ship capable of projecting damage at quite a distance? Do we need speed to tank?
@@ -724,6 +731,14 @@ objectdef obj_Abyssal inherits obj_StateQueue
 		{
 			; Good place to reload, probably.
 			EVE:Execute[CmdReloadAmmo]
+			
+			; Repairing our vorton, sorry everyone else only overheating vortons for now.
+			if ${MyShip.Module[HiSlot0].Damage} > 0 && ${Config.Overheat} && ${MyShip.Cargo[Nanite Repair Paste](exists)} && !${MyShip.Module[HiSlot0].IsActive} && !${MyShip.Module[HiSlot0].IsBeingRepaired} &&\
+			!${Entity[Name == "Triglavian Biocombinative Cache" || Name == "Triglavian Bioadaptive Cache"](exists)}
+			{
+				This:LogInfo["Repairing our Vorton"]
+				MyShip.Module[HiSlot0]:Repair
+			}
 			
 			; We had a rare disconnect AFTER grabbing the loot but BEFORE going through the gate
 			if !${This.MTUDeployed} && ${Entity[Name =- "Cache Wreck" && IsWreckEmpty]}
@@ -935,6 +950,12 @@ objectdef obj_Abyssal inherits obj_StateQueue
 	; This will get us close to the conduit because this is getting tedious as hell.
 	member:bool TouchTheConduit()
 	{
+		; Missed our chance at repairing, should begin the repair now if we aren't already.
+		if ${MyShip.Module[HiSlot0].Damage} > 0 && ${Config.Overheat} && ${MyShip.Cargo[Nanite Repair Paste](exists)} && !${MyShip.Module[HiSlot0].IsActive} && !${MyShip.Module[HiSlot0].IsBeingRepaired}
+		{
+			This:LogInfo["Repairing our Vorton"]
+			MyShip.Module[HiSlot0]:Repair
+		}
 		if (${Entity[Name == "Transfer Conduit (Triglavian)"](exists)} && \
 		!${MyShip.ToEntity.Approaching.ID.Equal[${Entity[(Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)") && Distance !~ NULL && Distance < 100000]}]}) || \
 		${Me.ToEntity.Mode} == MOVE_ORBITING
