@@ -62,6 +62,7 @@ objectdef obj_TargetManager inherits obj_StateQueue
 	variable obj_TargetList PCs
 	variable obj_TargetList Marshalz
 	variable obj_TargetList RemoteRepJerks
+	variable obj_TargetList StarvingJerks
 
 	variable int maxAttackTime
 	variable int switchTargetAfter = 120
@@ -113,10 +114,12 @@ objectdef obj_TargetManager inherits obj_StateQueue
 		variable string groups = ""
 		variable string seperator = ""
 
+		StarvingJerks:ClearQueryString
 		RemoteRepJerks:ClearQueryString
 		Marshalz:ClearQueryString
 		ActiveNPCs:ClearQueryString
 		
+		StarvingJerks:AddQueryString["Name =- \"Starving\" && !IsMoribund"]
 		Marshalz:AddQueryString["TypeID == 56177 || TypeID == 56176 || TypeID == 56178 && !IsMoribund"]
 		RemoteRepJerks:AddQueryString["Name =- \"Renewing\" || Name =- \"Fieldweaver\" || Name =- \"Plateforger\" && !IsMoribund"]
 
@@ -343,7 +346,18 @@ objectdef obj_TargetManager inherits obj_StateQueue
 					finalizedTM:Set[TRUE]
 				}
 			}
-			if ${Ship.ActiveJammerList.Used} && !${Marshalz.TargetList.Used} && !${RemoteRepJerks.TargetList.Used}
+			
+			if ${StarvingJerks.TargetList.Used} && !${Marshalz.TargetList.Used} && !${RemoteRepJerks.TargetList.Used}
+			{
+				This:LogInfo["Debug - Neuting Jerks - TM"]
+				if ${StarvingJerks.LockedTargetList.Used}
+				{
+					CurrentOffenseTarget:Set[${StarvingJerks.LockedTargetList.Get[1]}]
+					This:LogInfo["Kill The Neuting Rats"]
+					finalizedTM:Set[TRUE]
+				}
+			}
+			if ${Ship.ActiveJammerList.Used} && !${Marshalz.TargetList.Used} && !${RemoteRepJerks.TargetList.Used} && !${StarvingJerks.TargetList.Used}
 			{
 				if !${Ship.ActiveJammerSet.Contains[${CurrentOffenseTarget}]}
 				{
@@ -430,7 +444,17 @@ objectdef obj_TargetManager inherits obj_StateQueue
 			}
 		}
 		
-		elseif ${ActiveNPCs.LockedTargetList.Used} && !${Marshalz.TargetList.Used} && !${Marshalz.TargetList.Used}
+		elseif ${StarvingJerks.TargetList.Used} && !${Marshalz.TargetList.Used} && !${RemoteRepJerks.TargetList.Used}
+		{
+			This:LogInfo["Debug - Neuting Jerks - TM"]
+			if ${StarvingJerks.LockedTargetList.Used}
+			{
+				CurrentOffenseTarget:Set[${StarvingJerks.LockedTargetList.Get[1]}]
+				This:LogInfo["Kill The Neuting Rats"]
+				finalizedTM:Set[TRUE]
+			}
+		}
+		elseif ${ActiveNPCs.LockedTargetList.Used} && !${Marshalz.TargetList.Used} && !${RemoteRepJerks.TargetList.Used} && !${StarvingJerks.TargetList.Used}
 		{
 			echo ${ActiveNPCs.LockedTargetList.Used} AT
 			; Need to re-pick from locked target
@@ -680,6 +704,8 @@ objectdef obj_TargetManager inherits obj_StateQueue
 		Marshalz:RequestUpdate
 		RemoteRepJerks.AutoLock:Set[TRUE]
 		RemoteRepJerks:RequestUpdate
+		StarvingJerks.AutoLock:Set[TRUE]
+		StarvingJerks:RequestUpdate
 		NPCs.AutoLock:Set[TRUE]
 		ActiveNPCs.AutoLock:Set[TRUE]
 		ActiveNPCs:RequestUpdate
