@@ -220,12 +220,13 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			OverheatSetup:Set[TRUE]
 		}
 		; We are running abyssals, our weapons are disintegration orbs, love orbs, anyways, overload the orbs.
-		if ${Client.InSpace} && ${Ship.ModuleList_Disintegrator.Count} > 0 && ${Config.Overheat} && !${OverheatSetup}
-		{
-			This:LogInfo["Setting Disintegrator Overload HP Limit"] 
-			Ship.ModuleList_Disintegrator:SetOverloadHPThreshold[15]
-			OverheatSetup:Set[TRUE]
-		}		
+		; DO NOT OVERHEAT THE ORBS HOLY SHIT THAT IS EXPENSIVE TO REPAIR
+		;if ${Client.InSpace} && ${Ship.ModuleList_Disintegrator.Count} > 0 && ${Config.Overheat} && !${OverheatSetup}
+		;{
+		;	This:LogInfo["Setting Disintegrator Overload HP Limit"] 
+		;	Ship.ModuleList_Disintegrator:SetOverloadHPThreshold[15]
+		;	OverheatSetup:Set[TRUE]
+		;}		
 		; We are in space, in a pod. Might figure out something more complicated for this later.
 		if ${Client.InSpace} && ${MyShip.ToEntity.Type.Equal[Capsule]}
 		{
