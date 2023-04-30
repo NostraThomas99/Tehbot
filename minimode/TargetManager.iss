@@ -121,7 +121,7 @@ objectdef obj_TargetManager inherits obj_StateQueue
 		
 		StarvingJerks:AddQueryString["Name =- \"Starving\" && !IsMoribund"]
 		Marshalz:AddQueryString["TypeID == 56177 || TypeID == 56176 || TypeID == 56178 && !IsMoribund"]
-		RemoteRepJerks:AddQueryString["Name =- \"Renewing\" || Name =- \"Fieldweaver\" || Name =- \"Plateforger\" && !IsMoribund"]
+		RemoteRepJerks:AddQueryString["Name =- \"Renewing\" || Name =- \"Fieldweaver\" || Name =- \"Plateforger\" || Name =- \"Burst\"|| Name =- \"Preserver\" && !IsMoribund"]
 
 		variable int range = ${Math.Calc[${MyShip.MaxTargetRange} * .95]}
 

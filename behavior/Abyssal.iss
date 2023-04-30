@@ -219,6 +219,13 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			Ship.ModuleList_VortonWeapon:SetOverloadHPThreshold[15]
 			OverheatSetup:Set[TRUE]
 		}
+		; We are running abyssals, our weapons are disintegration orbs, love orbs, anyways, overload the orbs.
+		if ${Client.InSpace} && ${Ship.ModuleList_Disintegrator.Count} > 0 && ${Config.Overheat} && !${OverheatSetup}
+		{
+			This:LogInfo["Setting Disintegrator Overload HP Limit"] 
+			Ship.ModuleList_Disintegrator:SetOverloadHPThreshold[15]
+			OverheatSetup:Set[TRUE]
+		}		
 		; We are in space, in a pod. Might figure out something more complicated for this later.
 		if ${Client.InSpace} && ${MyShip.ToEntity.Type.Equal[Capsule]}
 		{
@@ -683,44 +690,68 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			; No MTU logic sucks, dance around between  cache / wreck & enemy if they are running enemy.
 			if (!${Config.UseMTU} || ${AbandonMTU}) && ${This.DistantTrash}
 			{
-				; Special case for Marshals, Charge right into them. 
-				if ${This.MarshalPresent}
+				; Different navigation strategy if you are using precursor weapon. No dancing around here, need to go straight for the target in all cases.
+				if ${Ship.ModuleList_Disintegrator.Count}
 				{
-					This:LogInfo["${This.MarshalPresent} Marshals"]
-					if ${Entity[Name =- "Marshal"].Distance} > 30000
+					if ${CurrentOffenseTarget} && !${MyShip.ToEntity.Approaching.ID.Equal[${CurrentOffenseTarget}]
 					{
-						Move:Orbit[${Entity[Name =- "Marshal"]}, 10000]
+						This:LogInfo["Approaching Target"]
+						Move:Orbit[${CurrentOffenseTarget}, 5000]
 					}
 				}
-				if ${Entity[Name =- "Blinding Leshak" && Distance > 40000](exists)}
+				else
 				{
-					Move:Orbit[${Entity[Name =- "Blinding Leshak" && Distance > 40000]}]
-				}
-				if ${Entity[(Name =- "Overmind" || Name =- "Tyrannos" || Name =- "Thunderchild" || Name =- "Leshak" || Name =- "Deepwatcher") && ID == ${CurrentOffenseTarget}].Distance} > 27000
-				{
-					Move:Orbit[${Entity[(Name =- "Overmind" || Name =- "Tyrannos" || Name =- "Thunderchild" || Name =- "Leshak" || Name =- "Deepwatcher") && ID == ${CurrentOffenseTarget}]}, 5000]
-				}
-				if ${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)"].Distance} > 15000 && !${Entity[(Name =- "Blinding Leshak" && Distance > 40000](exists)}
-				{
-					Move:Orbit[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)"]}, 5000]
+					; Special case for Marshals, Charge right into them. 
+					if ${This.MarshalPresent}
+					{
+						This:LogInfo["${This.MarshalPresent} Marshals"]
+						if ${Entity[Name =- "Marshal"].Distance} > 30000
+						{
+							Move:Orbit[${Entity[Name =- "Marshal"]}, 10000]
+						}
+					}
+					if ${Entity[Name =- "Blinding Leshak" && Distance > 40000](exists)}
+					{
+						Move:Orbit[${Entity[Name =- "Blinding Leshak" && Distance > 40000]}]
+					}
+					if ${Entity[(Name =- "Overmind" || Name =- "Tyrannos" || Name =- "Thunderchild" || Name =- "Leshak" || Name =- "Deepwatcher") && ID == ${CurrentOffenseTarget}].Distance} > 27000
+					{
+						Move:Orbit[${Entity[(Name =- "Overmind" || Name =- "Tyrannos" || Name =- "Thunderchild" || Name =- "Leshak" || Name =- "Deepwatcher") && ID == ${CurrentOffenseTarget}]}, 5000]
+					}
+					if ${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)"].Distance} > 15000 && !${Entity[(Name =- "Blinding Leshak" && Distance > 40000](exists)}
+					{
+						Move:Orbit[${Entity[Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)"]}, 5000]
+					}
 				}
 			}
 			; If we aren't using an MTU and it is just normal trash enemies, orbit the main lootable until everything is dead.
 			if (!${Config.UseMTU} || ${AbandonMTU}) && !${This.DistantTrash}
 			{
-				; Special case for Marshals, Charge right into them.
-				if ${This.MarshalPresent}
+				; Different navigation strategy if you are using precursor weapon.
+				if ${Ship.ModuleList_Disintegrator.Count}
 				{
-					This:LogInfo["${This.MarshalPresent} Marshals"]
-					if ${Entity[Name =- "Marshal"].Distance} > 30000
+					if ${CurrentOffenseTarget} && !${MyShip.ToEntity.Approaching.ID.Equal[${CurrentOffenseTarget}]
 					{
-						Move:Orbit[${Entity[Name =- "Marshal"]}, 10000]
+						This:LogInfo["Approaching Target"]
+						Move:Orbit[${CurrentOffenseTarget}, 5000]
 					}
 				}
-				if ${Entity[Name =- "Triglavian Biocombinative Cache" || Name =- "Triglavian Bioadaptive Cache"](exists)} && ${Me.ToEntity.Mode} != MOVE_ORBITING
+				else
 				{
-					This:LogInfo["Orbiting Cache/Wreck"]
-					Move:Orbit[${Entity[Name =- "Triglavian Biocombinative Cache" || Name =- "Triglavian Bioadaptive Cache"]}, 2500]
+					; Special case for Marshals, Charge right into them.
+					if ${This.MarshalPresent}
+					{
+						This:LogInfo["${This.MarshalPresent} Marshals"]
+						if ${Entity[Name =- "Marshal"].Distance} > 30000
+						{
+							Move:Orbit[${Entity[Name =- "Marshal"]}, 10000]
+						}
+					}
+					if ${Entity[Name =- "Triglavian Biocombinative Cache" || Name =- "Triglavian Bioadaptive Cache"](exists)} && ${Me.ToEntity.Mode} != MOVE_ORBITING
+					{
+						This:LogInfo["Orbiting Cache/Wreck"]
+						Move:Orbit[${Entity[Name =- "Triglavian Biocombinative Cache" || Name =- "Triglavian Bioadaptive Cache"]}, 2500]
+					}
 				}
 			}
 			This:InsertState["RunTheAbyss"]
@@ -732,11 +763,11 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			; Good place to reload, probably.
 			EVE:Execute[CmdReloadAmmo]
 			
-			; Repairing our vorton, sorry everyone else only overheating vortons for now.
+			; Repairing our vorton or disintegrator orb laser.
 			if ${MyShip.Module[HiSlot0].Damage} > 0 && ${Config.Overheat} && ${MyShip.Cargo[Nanite Repair Paste](exists)} && !${MyShip.Module[HiSlot0].IsActive} && !${MyShip.Module[HiSlot0].IsBeingRepaired} &&\
 			!${Entity[Name == "Triglavian Biocombinative Cache" || Name == "Triglavian Bioadaptive Cache"](exists)}
 			{
-				This:LogInfo["Repairing our Vorton"]
+				This:LogInfo["Repairing our Vorton / Orb"]
 				MyShip.Module[HiSlot0]:Repair
 			}
 			

@@ -29,6 +29,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 	variable obj_TargetList NPC
 	variable obj_TargetList Marshal
 	variable obj_TargetList RemoteRepJerkz
+	variable obj_TargetList StarvingJerks
 	variable int64 currentTarget = 0
 	variable bool IsBusy
 	variable int droneEngageRange = 60000
@@ -254,6 +255,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		Marshal.Autolock:Set[FALSE]
 		ActiveNPCs.AutoLock:Set[FALSE]
 		RemoteRepJerkz.Autolock:Set[FALSE]
+		StarvingJerks.Autolock:Set[FALSE]
 		This:Clear
 	}
 
@@ -321,8 +323,10 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		Marshal:ClearQueryString
 		ActiveNPCs:ClearQueryString
 		RemoteRepJerkz:ClearQueryString
-		
-		RemoteRepJerkz:AddQueryString["Name =- \"Renewing\" || Name =- \"Fieldweaver\" || Name =- \"Plateforger\" && !IsMoribund"]
+		StarvingJerks:ClearQueryString
+
+		StarvingJerks:AddQueryString["Name =- \"Starving\" && !IsMoribund"]
+		RemoteRepJerkz:AddQueryString["Name =- \"Renewing\" || Name =- \"Fieldweaver\" || Name =- \"Plateforger\" || Name =- \"Burst\"|| Name =- \"Preserver\" && !IsMoribund"]
 		Marshal:AddQueryString["(TypeID == 56177 || TypeID == 56176 || TypeID == 56178) && !IsMoribund"]
 
 		variable int range = ${Math.Calc[${MyShip.MaxTargetRange} * .95]}
@@ -474,6 +478,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		ActiveNPCs:RequestUpdate
 		Marshal:RequestUpdate
 		RemoteRepJerkz:RequestUpdate
+		StarvingJerks:RequestUpdate
 
 		;echo WEEWOOWEEWOO ${Marshal.TargetList.Used}
 		ActiveNPCs.MinLockCount:Set[${Config.LockCount}]
@@ -546,7 +551,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 				; We are using my new configs, this denotes we have drones that are primarily Armor HP heavy - We will mostly ignore shield damage because otherwise we will recall our drones nonstop.
 				if ${Config.ArmorDrones}
 				{
-					CurrentDroneHealth:Set[${Math.Calc[( ${DroneIterator.Value.ToEntity.ShieldPct.Int} * 0.12 ) + ${DroneIterator.Value.ToEntity.ArmorPct.Int} + ${DroneIterator.Value.ToEntity.StructurePct.Int}]}]
+					CurrentDroneHealth:Set[${Math.Calc[( ${DroneIterator.Value.ToEntity.ShieldPct.Int} * 0.175 ) + ${DroneIterator.Value.ToEntity.ArmorPct.Int} + ${DroneIterator.Value.ToEntity.StructurePct.Int}]}]
 					;This is for abyss, if we've got edencom lightning blasters we need drones to ignore more damage or we will get looped.
 					if ${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]} && ${CurrentDroneHealth} < ${Math.Calc[${Drones.DroneHealth.Element[${DroneIterator.Value.ID}]} - 30]} && \
 					${Entity[Name =- "Skybreaker" || Name =- "Stormbringer" || Name =- "Thunderchild"](exists)}
@@ -622,7 +627,18 @@ objectdef obj_DroneControl inherits obj_StateQueue
 					This:LogInfo["Kill RemoteReppers"]
 					finalizedDC:Set[TRUE]
 				}
-			}			
+			}
+
+			if ${StarvingJerks.TargetList.Used} && !${Marshal.TargetList.Used} && !${RemoteRepJerkz.TargetList.Used}
+			{
+				This:LogInfo["Debug - Neuting Jerks - DC"]
+				if ${StarvingJerks.LockedTargetList.Used}
+				{
+					currentTarget:Set[${StarvingJerks.LockedTargetList.Get[1]}]
+					This:LogInfo["Kill Neuts"]
+					finalizedDC:Set[TRUE]
+				}
+			}				
 			
 			if ${FightOrFlight.IsEngagingGankers} && !${FightOrFlight.currentTarget.Equal[0]} && !${FightOrFlight.currentTarget.Equal[${currentTarget}]}
 			{
@@ -702,7 +718,17 @@ objectdef obj_DroneControl inherits obj_StateQueue
 				finalizedDC:Set[TRUE]
 			}
 		}
-		elseif ${ActiveNPCs.LockedTargetList.Used} && !${Marshal.TargetList.Used} && !${RemoteRepJerkz.TargetList.Used}
+		elseif ${StarvingJerks.TargetList.Used} && !${Marshal.TargetList.Used} && !${RemoteRepJerkz.TargetList.Used}
+		{
+			This:LogInfo["Debug - Neuting Jerks - DC"]
+			if ${StarvingJerks.LockedTargetList.Used}
+			{
+				currentTarget:Set[${StarvingJerks.LockedTargetList.Get[1]}]
+				This:LogInfo["Kill Neuts"]
+				finalizedDC:Set[TRUE]
+			}
+		}	
+		elseif ${ActiveNPCs.LockedTargetList.Used} && !${Marshal.TargetList.Used} && !${RemoteRepJerkz.TargetList.Used} && !${StarvingJerks.TargetList.Used}
 		{
 			; Need to re-pick from locked target
 			if ${Ship.ActiveJammerList.Used}
