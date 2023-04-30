@@ -691,7 +691,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			if (!${Config.UseMTU} || ${AbandonMTU}) && ${This.DistantTrash}
 			{
 				; Different navigation strategy if you are using precursor weapon. No dancing around here, need to go straight for the target in all cases.
-				if ${Ship.ModuleList_Disintegrator.Count}
+				if ${Ship.ModuleList_Disintegrator.Count} > 0
 				{
 					if ${CurrentOffenseTarget} && !${MyShip.ToEntity.Approaching.ID.Equal[${CurrentOffenseTarget}]
 					{
@@ -728,7 +728,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			if (!${Config.UseMTU} || ${AbandonMTU}) && !${This.DistantTrash}
 			{
 				; Different navigation strategy if you are using precursor weapon.
-				if ${Ship.ModuleList_Disintegrator.Count}
+				if ${Ship.ModuleList_Disintegrator.Count} > 0
 				{
 					if ${CurrentOffenseTarget} && !${MyShip.ToEntity.Approaching.ID.Equal[${CurrentOffenseTarget}]
 					{
