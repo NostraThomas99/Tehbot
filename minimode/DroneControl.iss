@@ -30,6 +30,14 @@ objectdef obj_DroneControl inherits obj_StateQueue
 	variable obj_TargetList Marshal
 	variable obj_TargetList RemoteRepJerkz
 	variable obj_TargetList StarvingJerks
+	variable obj_TargetList Leshaks
+	variable obj_TargetList Kikimoras
+	variable obj_TargetList Damaviks
+	variable obj_TargetList Vedmaks
+	variable obj_TargetList Drekavacs
+	variable obj_TargetList Cynabals
+	variable obj_TargetList Dramiels
+	
 	variable int64 currentTarget = 0
 	variable bool IsBusy
 	variable int droneEngageRange = 60000
@@ -235,6 +243,14 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		if ${This.IsIdle}
 		{
 			This:LogInfo["Starting."]
+			Dramiels.AutoLock:Set[TRUE]			
+			Cynabals.AutoLock:Set[TRUE]			
+			Drekavacs.AutoLock:Set[TRUE]			
+			Vedmaks.AutoLock:Set[TRUE]		
+			Damaviks.AutoLock:Set[TRUE]		
+			Kikimoras.AutoLock:Set[TRUE]	
+			Leshaks.AutoLock:Set[TRUE]			
+			StarvingJerks.AutoLock:Set[TRUE]
 			Marshal.Autolock:Set[TRUE]
 			RemoteRepJerkz.Autolock:Set[TRUE]
 			ActiveNPCs.MaxRange:Set[${droneEngageRange}]
@@ -256,6 +272,13 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		ActiveNPCs.AutoLock:Set[FALSE]
 		RemoteRepJerkz.Autolock:Set[FALSE]
 		StarvingJerks.Autolock:Set[FALSE]
+		Dramiels.AutoLock:Set[FALSE]			
+		Cynabals.AutoLock:Set[FALSE]			
+		Drekavacs.AutoLock:Set[FALSE]			
+		Vedmaks.AutoLock:Set[FALSE]		
+		Damaviks.AutoLock:Set[FALSE]		
+		Kikimoras.AutoLock:Set[FALSE]	
+		Leshaks.AutoLock:Set[FALSE]	
 		This:Clear
 	}
 
@@ -324,7 +347,22 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		ActiveNPCs:ClearQueryString
 		RemoteRepJerkz:ClearQueryString
 		StarvingJerks:ClearQueryString
+		Dramiels:ClearQueryString
+		Cynabals:ClearQueryString
+		Drekavacs:ClearQueryString
+		Vedmaks:ClearQueryString
+		Damaviks:ClearQueryString
+		Kikimoras:ClearQueryString
+		Leshaks:ClearQueryString
 
+
+		Dramiels:AddQueryString["Name =- \"Dramiel\" && !IsMoribund"]
+		Cynabals:AddQueryString["Name =- \"Cynabal\" && !IsMoribund"]
+		Drekavacs:AddQueryString["Name =- \"Drekavac\" && !IsMoribund"]
+		Vedmaks:AddQueryString["Name =- \"Vedmak\" && !IsMoribund"]
+		Damaviks:AddQueryString["Name =- \"Damavik\" && !IsMoribund"]
+		Kikimoras:AddQueryString["Name =- \"Kikimora\" && !IsMoribund"]
+		Leshaks:AddQueryString["Name =- \"Leshak\" && !IsMoribund"]	
 		StarvingJerks:AddQueryString["Name =- \"Starving\" && !IsMoribund"]
 		RemoteRepJerkz:AddQueryString["Name =- \"Renewing\" || Name =- \"Fieldweaver\" || Name =- \"Plateforger\" || Name =- \"Burst\"|| Name =- \"Preserver\" && !IsMoribund"]
 		Marshal:AddQueryString["(TypeID == 56177 || TypeID == 56176 || TypeID == 56178) && !IsMoribund"]
@@ -639,7 +677,88 @@ objectdef obj_DroneControl inherits obj_StateQueue
 					finalizedDC:Set[TRUE]
 				}
 			}				
+
+			if ${Leshaks.TargetList.Used} && !${Marshal.TargetList.Used} && !${RemoteRepJerkz.TargetList.Used} && !${StarvingJerks.TargetList.Used}
+			{
+				This:LogInfo["Debug - Leshaks - DC"]
+				if ${Leshaks.LockedTargetList.Used}
+				{
+					currentTarget:Set[${Leshaks.LockedTargetList.Get[1]}]
+					This:LogInfo["Kill The Leshaks"]
+					finalizedDC:Set[TRUE]
+				}
+			}
 			
+			if ${Kikimoras.TargetList.Used} && !${Marshal.TargetList.Used} && !${RemoteRepJerkz.TargetList.Used} && !${StarvingJerks.TargetList.Used} && !${Leshaks.TargetList.Used}
+			{
+				This:LogInfo["Debug - Kikimoras - DC"]
+				if ${Kikimoras.LockedTargetList.Used}
+				{
+					currentTarget:Set[${Kikimoras.LockedTargetList.Get[1]}]
+					This:LogInfo["Kill The Kikimoras"]
+					finalizedDC:Set[TRUE]
+				}
+			}
+
+			if ${Damaviks.TargetList.Used} && !${Marshal.TargetList.Used} && !${RemoteRepJerkz.TargetList.Used} && !${StarvingJerks.TargetList.Used} && !${Leshaks.TargetList.Used} && \
+			!${Kikimoras.TargetList.Used}
+			{
+				This:LogInfo["Debug - Damaviks - DC"]
+				if ${Damaviks.LockedTargetList.Used}
+				{
+					currentTarget:Set[${Damaviks.LockedTargetList.Get[1]}]
+					This:LogInfo["Kill The Damaviks"]
+					finalizedDC:Set[TRUE]
+				}
+			}
+			
+			if ${Vedmaks.TargetList.Used} && !${Marshal.TargetList.Used} && !${RemoteRepJerkz.TargetList.Used} && !${StarvingJerks.TargetList.Used} && !${Leshaks.TargetList.Used} && \
+			!${Kikimoras.TargetList.Used} && !${Damaviks.TargetList.Used}
+			{
+				This:LogInfo["Debug - Vedmaks - DC"]
+				if ${Vedmaks.LockedTargetList.Used}
+				{
+					currentTarget:Set[${Vedmaks.LockedTargetList.Get[1]}]
+					This:LogInfo["Kill The Vedmaks"]
+					finalizedDC:Set[TRUE]
+				}
+			}
+
+			if ${Drekavacs.TargetList.Used} && !${Marshal.TargetList.Used} && !${RemoteRepJerkz.TargetList.Used} && !${StarvingJerks.TargetList.Used} && !${Leshaks.TargetList.Used} && \
+			!${Kikimoras.TargetList.Used} && !${Damaviks.TargetList.Used} && !${Vedmaks.TargetList.Used}
+			{
+				This:LogInfo["Debug - Drekavacs - DC"]
+				if ${Drekavacs.LockedTargetList.Used}
+				{
+					currentTarget:Set[${Drekavacs.LockedTargetList.Get[1]}]
+					This:LogInfo["Kill The Drekavacs"]
+					finalizedDC:Set[TRUE]
+				}
+			}			
+			
+			if ${Cynabals.TargetList.Used} && !${Marshal.TargetList.Used} && !${RemoteRepJerkz.TargetList.Used} && !${StarvingJerks.TargetList.Used} && !${Leshaks.TargetList.Used} && \
+			!${Kikimoras.TargetList.Used} && !${Damaviks.TargetList.Used} && !${Vedmaks.TargetList.Used} && !${Drekavacs.TargetList.Used}
+			{
+				This:LogInfo["Debug - Cynabals - DC"]
+				if ${Cynabals.LockedTargetList.Used}
+				{
+					currentTarget:Set[${Cynabals.LockedTargetList.Get[1]}]
+					This:LogInfo["Kill The Cynabals"]
+					finalizedDC:Set[TRUE]
+				}
+			}
+
+			if ${Dramiels.TargetList.Used} && !${Marshal.TargetList.Used} && !${RemoteRepJerkz.TargetList.Used} && !${StarvingJerks.TargetList.Used} && !${Leshaks.TargetList.Used} && \
+			!${Kikimoras.TargetList.Used} && !${Damaviks.TargetList.Used} && !${Vedmaks.TargetList.Used} && !${Drekavacs.TargetList.Used} && !${Cynabals.TargetList.Used}
+			{
+				This:LogInfo["Debug - Dramiels - DC"]
+				if ${Dramiels.LockedTargetList.Used}
+				{
+					currentTarget:Set[${Dramiels.LockedTargetList.Get[1]}]
+					This:LogInfo["Kill The Dramiels"]
+					finalizedDC:Set[TRUE]
+				}
+			}			
 			if ${FightOrFlight.IsEngagingGankers} && !${FightOrFlight.currentTarget.Equal[0]} && !${FightOrFlight.currentTarget.Equal[${currentTarget}]}
 			{
 				currentTarget:Set[${FightOrFlight.currentTarget}]
@@ -700,7 +819,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		}
 		elseif ${Marshal.TargetList.Used}
 		{
-			This:LogInfo["Debug - Marshal - TM"]
+			This:LogInfo["Debug - Marshal - DC"]
 			if ${Marshal.LockedTargetList.Used}
 			{
 				currentTarget:Set[${Marshal.LockedTargetList.Get[1]}]
@@ -710,7 +829,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		}
 		elseif ${RemoteRepJerkz.TargetList.Used} && !${Marshal.TargetList.Used} 
 		{
-			This:LogInfo["Debug - RRJerks - TM"]
+			This:LogInfo["Debug - RRJerks - DC"]
 			if ${RemoteRepJerkz.LockedTargetList.Used}
 			{
 				currentTarget:Set[${RemoteRepJerkz.LockedTargetList.Get[1]}]
@@ -728,8 +847,89 @@ objectdef obj_DroneControl inherits obj_StateQueue
 				finalizedDC:Set[TRUE]
 			}
 		}	
-		elseif ${ActiveNPCs.LockedTargetList.Used} && !${Marshal.TargetList.Used} && !${RemoteRepJerkz.TargetList.Used} && !${StarvingJerks.TargetList.Used}
+		elseif ${Leshaks.TargetList.Used} && !${Marshal.TargetList.Used} && !${RemoteRepJerkz.TargetList.Used} && !${StarvingJerks.TargetList.Used}
 		{
+			This:LogInfo["Debug - Leshaks - DC"]
+			if ${Leshaks.LockedTargetList.Used}
+			{
+				currentTarget:Set[${Leshaks.LockedTargetList.Get[1]}]
+				This:LogInfo["Kill The Leshaks"]
+				finalizedDC:Set[TRUE]
+			}
+		}
+			
+		elseif ${Kikimoras.TargetList.Used} && !${Marshal.TargetList.Used} && !${RemoteRepJerkz.TargetList.Used} && !${StarvingJerks.TargetList.Used} && !${Leshaks.TargetList.Used}
+		{
+			This:LogInfo["Debug - Kikimoras - DC"]
+			if ${Kikimoras.LockedTargetList.Used}
+			{
+				currentTarget:Set[${Kikimoras.LockedTargetList.Get[1]}]
+				This:LogInfo["Kill The Kikimoras"]
+				finalizedDC:Set[TRUE]
+			}
+		}
+		elseif ${Damaviks.TargetList.Used} && !${Marshal.TargetList.Used} && !${RemoteRepJerkz.TargetList.Used} && !${StarvingJerks.TargetList.Used} && !${Leshaks.TargetList.Used} && \
+		!${Kikimoras.TargetList.Used}
+		{
+			This:LogInfo["Debug - Damaviks - DC"]
+			if ${Damaviks.LockedTargetList.Used}
+			{
+				currentTarget:Set[${Damaviks.LockedTargetList.Get[1]}]
+				This:LogInfo["Kill The Damaviks"]
+				finalizedDC:Set[TRUE]
+			}
+		}
+			
+		elseif ${Vedmaks.TargetList.Used} && !${Marshal.TargetList.Used} && !${RemoteRepJerkz.TargetList.Used} && !${StarvingJerks.TargetList.Used} && !${Leshaks.TargetList.Used} && \
+		!${Kikimoras.TargetList.Used} && !${Damaviks.TargetList.Used}
+		{
+			This:LogInfo["Debug - Vedmaks - DC"]
+			if ${Vedmaks.LockedTargetList.Used}
+			{
+				currentTarget:Set[${Vedmaks.LockedTargetList.Get[1]}]
+				This:LogInfo["Kill The Vedmaks"]
+				finalizedDC:Set[TRUE]
+			}
+		}
+
+		elseif ${Drekavacs.TargetList.Used} && !${Marshal.TargetList.Used} && !${RemoteRepJerkz.TargetList.Used} && !${StarvingJerks.TargetList.Used} && !${Leshaks.TargetList.Used} && \
+		!${Kikimoras.TargetList.Used} && !${Damaviks.TargetList.Used} && !${Vedmaks.TargetList.Used}
+		{
+			This:LogInfo["Debug - Drekavacs - DC"]
+			if ${Drekavacs.LockedTargetList.Used}
+			{
+				currentTarget:Set[${Drekavacs.LockedTargetList.Get[1]}]
+				This:LogInfo["Kill The Drekavacs"]
+				finalizedDC:Set[TRUE]
+			}
+		}			
+		
+		elseif ${Cynabals.TargetList.Used} && !${Marshal.TargetList.Used} && !${RemoteRepJerkz.TargetList.Used} && !${StarvingJerks.TargetList.Used} && !${Leshaks.TargetList.Used} && \
+		!${Kikimoras.TargetList.Used} && !${Damaviks.TargetList.Used} && !${Vedmaks.TargetList.Used} && !${Drekavacs.TargetList.Used}
+		{
+			This:LogInfo["Debug - Cynabals - DC"]
+			if ${Cynabals.LockedTargetList.Used}
+			{
+				currentTarget:Set[${Cynabals.LockedTargetList.Get[1]}]
+				This:LogInfo["Kill The Cynabals"]
+				finalizedDC:Set[TRUE]
+			}
+		}
+
+		elseif ${Dramiels.TargetList.Used} && !${Marshal.TargetList.Used} && !${RemoteRepJerkz.TargetList.Used} && !${StarvingJerks.TargetList.Used} && !${Leshaks.TargetList.Used} && \
+		!${Kikimoras.TargetList.Used} && !${Damaviks.TargetList.Used} && !${Vedmaks.TargetList.Used} && !${Drekavacs.TargetList.Used} && !${Cynabals.TargetList.Used}
+		{
+			This:LogInfo["Debug - Dramiels - DC"]
+			if ${Dramiels.LockedTargetList.Used}
+			{
+				currentTarget:Set[${Dramiels.LockedTargetList.Get[1]}]
+				This:LogInfo["Kill The Dramiels"]
+				finalizedDC:Set[TRUE]
+			}
+		}
+
+		elseif ${ActiveNPCs.LockedTargetList.Used} && !${Marshal.TargetList.Used} && !${RemoteRepJerkz.TargetList.Used} && !${StarvingJerks.TargetList.Used} && !${Leshaks.TargetList.Used} && \
+		!${Kikimoras.TargetList.Used} && !${Damaviks.TargetList.Used} && !${Vedmaks.TargetList.Used} && !${Drekavacs.TargetList.Used} && !${Cynabals.TargetList.Used}
 			; Need to re-pick from locked target
 			if ${Ship.ActiveJammerList.Used}
 			{

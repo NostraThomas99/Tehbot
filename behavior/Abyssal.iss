@@ -723,7 +723,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			if (!${Config.UseMTU} || ${AbandonMTU}) && ${This.DistantTrash}
 			{
 				; Different navigation strategy if you are using precursor weapon. No dancing around here, need to go straight for the target in all cases.
-				if ${Ship.ModuleList_Disintegrator.Count} > 0
+				if ${Ship.ModuleList_Disintegrator.Count} > 0 || ${Ship.ModuleList_VortonWeapon.Count} > 0 || ${Ship.ModuleList_Turret.Count}
 				{
 					if ${CurrentOffenseTarget} && !${MyShip.ToEntity.Approaching.ID.Equal[${CurrentOffenseTarget}]}
 					{
@@ -760,12 +760,12 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			if (!${Config.UseMTU} || ${AbandonMTU}) && !${This.DistantTrash}
 			{
 				; Different navigation strategy if you are using precursor weapon.
-				if ${Ship.ModuleList_Disintegrator.Count} > 0
+				if ${Ship.ModuleList_Disintegrator.Count} > 0 || ${Ship.ModuleList_VortonWeapon.Count} > 0 || ${Ship.ModuleList_Turret.Count}
 				{
 					if ${CurrentOffenseTarget} && !${MyShip.ToEntity.Approaching.ID.Equal[${CurrentOffenseTarget}]}
 					{
 						This:LogInfo["Approaching Target"]
-						Move:Orbit[${CurrentOffenseTarget}, 5000]
+						Move:Orbit[${CurrentOffenseTarget}, 50000]
 					}
 				}
 				else
