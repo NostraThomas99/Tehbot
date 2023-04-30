@@ -765,7 +765,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 					if ${CurrentOffenseTarget} && !${MyShip.ToEntity.Approaching.ID.Equal[${CurrentOffenseTarget}]}
 					{
 						This:LogInfo["Approaching Target"]
-						Move:Orbit[${CurrentOffenseTarget}, 50000]
+						Move:Orbit[${CurrentOffenseTarget}, 5000]
 					}
 				}
 				else
