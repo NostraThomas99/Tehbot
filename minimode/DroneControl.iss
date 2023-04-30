@@ -930,6 +930,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 
 		elseif ${ActiveNPCs.LockedTargetList.Used} && !${Marshal.TargetList.Used} && !${RemoteRepJerkz.TargetList.Used} && !${StarvingJerks.TargetList.Used} && !${Leshaks.TargetList.Used} && \
 		!${Kikimoras.TargetList.Used} && !${Damaviks.TargetList.Used} && !${Vedmaks.TargetList.Used} && !${Drekavacs.TargetList.Used} && !${Cynabals.TargetList.Used}
+		{
 			; Need to re-pick from locked target
 			if ${Ship.ActiveJammerList.Used}
 			{
