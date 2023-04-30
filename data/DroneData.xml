@@ -53,6 +53,10 @@
       <Setting Name="2466" Type="Hornet II" Volume="5" Race="1" />
       <Setting Name="2486" Type="Warrior I" Volume="5" Race="2" />
       <Setting Name="2488" Type="Warrior II" Volume="5" Race="2" />
+      <Setting Name="31880" Type="Federation Navy Hobgoblin" Volume="5" Race="8" />	  
+      <Setting Name="31864" Type="Imperial Navy Acolyte" Volume="5" Race="4" />	  
+      <Setting Name="31872" Type="Caldari Navy Hornet" Volume="5" Race="1" />	  
+      <Setting Name="31888" Type="Republic Fleet Warrior" Volume="5" Race="2" /> 
     </Set>
     <Set Name="Combat Drone">
       <Setting Name="3549" Type="Tutorial Attack Drone" Volume="5" Race="" />
