@@ -368,7 +368,10 @@ objectdef obj_TargetManager inherits obj_StateQueue
 						if ${Entity[${activeJammerIterator.Value}].IsLockedTarget}
 						{
 							CurrentOffenseTarget:Set[${activeJammerIterator.Value}]
-							maxAttackTime:Set[${Math.Calc[${LavishScript.RunningTime} + (${switchTargetAfter} * 1000)]}]
+							if ${Ship.ModuleList_Disintegrator.Count} == 0
+							{
+								maxAttackTime:Set[${Math.Calc[${LavishScript.RunningTime} + (${switchTargetAfter} * 1000)]}]
+							}
 							This:LogInfo["Switching target to activate jammer \ar${Entity[${CurrentOffenseTarget}].Name}"]
 							finalizedTM:Set[TRUE]
 							break
@@ -393,7 +396,10 @@ objectdef obj_TargetManager inherits obj_StateQueue
 						{
 							This:LogInfo["Pritorizing non-structure targets."]
 							CurrentOffenseTarget:Set[0]
-							maxAttackTime:Set[0]
+							if ${Ship.ModuleList_Disintegrator.Count} == 0
+							{
+								maxAttackTime:Set[${Math.Calc[${LavishScript.RunningTime} + (${switchTargetAfter} * 1000)]}]
+							}
 							return FALSE
 						}
 					}
@@ -410,7 +416,10 @@ objectdef obj_TargetManager inherits obj_StateQueue
 						(${Ship.IsHardToDealWithTarget[${CurrentOffenseTarget}]} || ${Entity[${CurrentOffenseTarget}].Distance} > ${Entity[${lockedTargetIterator.Value}].Distance})
 						{
 							CurrentOffenseTarget:Set[${lockedTargetIterator.Value}]
-							maxAttackTime:Set[${Math.Calc[${LavishScript.RunningTime} + (${switchTargetAfter} * 1000)]}]
+							if ${Ship.ModuleList_Disintegrator.Count} == 0
+							{
+								maxAttackTime:Set[${Math.Calc[${LavishScript.RunningTime} + (${switchTargetAfter} * 1000)]}]
+							}
 							switched:Set[TRUE]
 						}
 					}
@@ -466,7 +475,10 @@ objectdef obj_TargetManager inherits obj_StateQueue
 					if ${Entity[${activeJammerIterator.Value}].IsLockedTarget}
 					{
 						CurrentOffenseTarget:Set[${activeJammerIterator.Value}]
-						maxAttackTime:Set[${Math.Calc[${LavishScript.RunningTime} + (${switchTargetAfter} * 1000)]}]
+						if ${Ship.ModuleList_Disintegrator.Count} == 0
+						{
+							maxAttackTime:Set[${Math.Calc[${LavishScript.RunningTime} + (${switchTargetAfter} * 1000)]}]
+						}
 						This:LogInfo["Targeting activate jammer \ar${Entity[${CurrentOffenseTarget}].Name}"]
 						break
 					}
@@ -498,7 +510,10 @@ objectdef obj_TargetManager inherits obj_StateQueue
 							; if ${CurrentOffenseTarget} != 0
 							; 	This:LogInfo["there is something closer ${Entity[${lockedTargetIterator.Value}].Name}"]
 							CurrentOffenseTarget:Set[${lockedTargetIterator.Value}]
-							maxAttackTime:Set[${Math.Calc[${LavishScript.RunningTime} + (${switchTargetAfter} * 1000)]}]
+							if ${Ship.ModuleList_Disintegrator.Count} == 0
+							{
+								maxAttackTime:Set[${Math.Calc[${LavishScript.RunningTime} + (${switchTargetAfter} * 1000)]}]
+							}
 						}
 					}
 					while ${lockedTargetIterator:Next(exists)}
@@ -508,7 +523,10 @@ objectdef obj_TargetManager inherits obj_StateQueue
 				{
 					; This:LogInfo["no easy target"]
 					CurrentOffenseTarget:Set[${lowPriorityTarget}]
-					maxAttackTime:Set[${Math.Calc[${LavishScript.RunningTime} + (${switchTargetAfter} * 1000)]}]
+					if ${Ship.ModuleList_Disintegrator.Count} == 0
+					{
+						maxAttackTime:Set[${Math.Calc[${LavishScript.RunningTime} + (${switchTargetAfter} * 1000)]}]
+					}
 				}
 			}
 			This:LogInfo["Primary target: \ar${Entity[${CurrentOffenseTarget}].Name}, effciency ${Math.Calc[${Ship.ModuleList_Weapon.DamageEfficiency[${CurrentOffenseTarget}]} * 100].Deci}%."]
@@ -573,13 +591,13 @@ objectdef obj_TargetManager inherits obj_StateQueue
 				Ship.ModuleList_Weapon:ActivateAll[${CurrentOffenseTarget}]
 				Ship.ModuleList_TrackingComputer:ActivateFor[${CurrentOffenseTarget}]
 			}
-			elseif !${Entity[${CurrentOffenseTarget}].IsTargetingMe}
-			{
-				This:LogDebug["Far trigger"]
+			;elseif !${Entity[${CurrentOffenseTarget}].IsTargetingMe}
+			;{
+			;	This:LogDebug["Far trigger"]
 				; Shoot at out of range target to trigger them.
-				Ship.ModuleList_Weapon:ActivateAll[${CurrentOffenseTarget}]
-				Ship.ModuleList_TrackingComputer:ActivateFor[${CurrentOffenseTarget}]
-			}
+			;	Ship.ModuleList_Weapon:ActivateAll[${CurrentOffenseTarget}]
+			;	Ship.ModuleList_TrackingComputer:ActivateFor[${CurrentOffenseTarget}]
+			;}
 			else
 			{
 				This:LogDebug["Far approach"]
@@ -655,7 +673,7 @@ objectdef obj_TargetManager inherits obj_StateQueue
 				This:LogInfo[" ${Entity[${targetToDestroy}].Name}", "o"]
 				Entity[${targetToDestroy}]:LockTarget
 			}
-			elseif ${Entity[${targetToDestroy}].IsLockedTarget}
+			elseif ${Entity[${targetToDestroy}].IsLockedTarget} && (${Entity[${targetToDestroy}].Distance} < ${Math.Calc[${Ship.ModuleList_Weapon.Range} * .95]})
 			{
 				Ship.ModuleList_Weapon:ActivateAll[${Entity[${targetToDestroy}].ID}]
 				if ${AutoModule.Config.TrackingComputers}
