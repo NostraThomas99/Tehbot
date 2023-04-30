@@ -595,7 +595,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 		if ${This.JerksPresent} && ${This.InAbyss}
 		{
 			; Threshold for defensive shield drugs is 40%, stick to the safe ones so you don't kneecap yourself by removing all your cap or whatever the hell.
-			if ${MyShip.ShieldPct} < 40
+			if (${MyShip.ShieldPct} < 40 && ${Ship.ModuleList_Regen_Shield.Count}) || (${MyShip.ArmorPct} < 40 && ${Ship.ModuleList_Repair_Armor.Count})
 			{
 				if ${MyShip.Cargo[Agency 'Hardshell' TB3 Dose I](exists)} && ${LavishScript.RunningTime} >= ${HardshellTime}
 				{
@@ -624,20 +624,51 @@ objectdef obj_Abyssal inherits obj_StateQueue
 				if ${MyShip.Cargo[Synth Blue Pill Booster](exists)} && ${LavishScript.RunningTime} >= ${BluePillTime}
 				{
 					MyShip.Cargo[Synth Blue Pill Booster]:ConsumeBooster
-					SynthBluePillTime:Set[${Math.Calc[${LavishScript.RunningTime} + 1800000]}]
+					BluePillTime:Set[${Math.Calc[${LavishScript.RunningTime} + 1800000]}]
 					This:LogInfo["Using Synth Blue Pill."]
 				}
 				if ${MyShip.Cargo[Standard Blue Pill Booster](exists)} && ${LavishScript.RunningTime} >= ${BluePillTime}
 				{
 					MyShip.Cargo[Standard Blue Pill Booster]:ConsumeBooster
-					SynthBluePillTime:Set[${Math.Calc[${LavishScript.RunningTime} + 1800000]}]
+					BluePillTime:Set[${Math.Calc[${LavishScript.RunningTime} + 1800000]}]
 					This:LogInfo["Using Standard Blue Pill."]
+				}
+				if ${MyShip.Cargo[Improved Blue Pill Booster](exists)} && ${LavishScript.RunningTime} >= ${BluePillTime}
+				{
+					MyShip.Cargo[Improved Blue Pill Booster]:ConsumeBooster
+					BluePillTime:Set[${Math.Calc[${LavishScript.RunningTime} + 1800000]}]
+					This:LogInfo["Using Improved Blue Pill."]
 				}
 				if ${MyShip.Cargo[Strong Blue Pill Booster](exists)} && ${LavishScript.RunningTime} >= ${BluePillTime}
 				{
 					MyShip.Cargo[Strong Blue Pill Booster]:ConsumeBooster
-					SynthBluePillTime:Set[${Math.Calc[${LavishScript.RunningTime} + 1800000]}]
+					BluePillTime:Set[${Math.Calc[${LavishScript.RunningTime} + 1800000]}]
 					This:LogInfo["Using Strong Blue Pill."]
+				}
+				
+				if ${MyShip.Cargo[Synth Exile Booster](exists)} && ${LavishScript.RunningTime} >= ${BluePillTime}
+				{
+					MyShip.Cargo[Synth Exile Booster]:ConsumeBooster
+					ExileTime:Set[${Math.Calc[${LavishScript.RunningTime} + 1800000]}]
+					This:LogInfo["Using Exile ."]
+				}
+				if ${MyShip.Cargo[Standard Exile Booster](exists)} && ${LavishScript.RunningTime} >= ${BluePillTime}
+				{
+					MyShip.Cargo[Standard Exile Booster]:ConsumeBooster
+					ExileTime:Set[${Math.Calc[${LavishScript.RunningTime} + 1800000]}]
+					This:LogInfo["Using Exile."]
+				}
+				if ${MyShip.Cargo[Improved Exile Booster](exists)} && ${LavishScript.RunningTime} >= ${BluePillTime}
+				{
+					MyShip.Cargo[Improved Exile Booster]:ConsumeBooster
+					ExileTime:Set[${Math.Calc[${LavishScript.RunningTime} + 1800000]}]
+					This:LogInfo["Using Exile."]
+				}
+				if ${MyShip.Cargo[Strong Exile Booster](exists)} && ${LavishScript.RunningTime} >= ${BluePillTime}
+				{
+					MyShip.Cargo[Strong Exile Booster]:ConsumeBooster
+					ExileTime:Set[${Math.Calc[${LavishScript.RunningTime} + 1800000]}]
+					This:LogInfo["Using Exile."]
 				}
 			}
 			GrabbedLoot:Set[FALSE]

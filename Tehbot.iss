@@ -59,6 +59,7 @@
 #include minimode/TargetManager.iss
 #include minimode/Salvage.iss
 #include minimode/UndockWarp.iss
+;#include minimode/PanicButtons.iss
 
 function atexit()
 {
@@ -103,6 +104,7 @@ function main(string Character="")
 	declarevariable UndockWarp obj_UndockWarp script
 	declarevariable Salvage obj_Salvage script
 	declarevariable DroneControl obj_DroneControl script
+	;declarevariable PanicButtons obj_PanicButtons script
 
 	Dynamic:PopulateBehaviors
 	Dynamic:PopulateMiniModes
@@ -133,6 +135,7 @@ function main(string Character="")
 	;More global variables, this is for keeping track of when we last attempted (successfully or not) to use a drug
 	declarevariable BluePillTime int64 global
 	declarevariable HardshellTime int64 global
+	declarevariable ExileTime int64 global
 	
 	;More global variable(s), lets see if this fixes our orbit problems
 	declarevariable orbitTarget = 0 int64 global
