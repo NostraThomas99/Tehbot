@@ -50,6 +50,18 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		This.NonGameTiedPulse:Set[TRUE]
 		DynamicAddMiniMode("DroneControl", "DroneControl")
 	}
+	
+	member:bool JerkzPresent()
+	{
+		if ${Entity[(Group =- "Abyssal Spaceship Entities" || Group =- "Abyssal Drone Entities") && !IsMoribund && Name !~ "Vila Swarmer"](exists)}
+		{
+			return TRUE
+		}
+		else
+		{
+			return FALSE
+		}
+	}
 
 	member:int FindBestType(int TargetGroupID)
 	{
@@ -1002,7 +1014,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 			Drones:RefreshActiveTypes
 		}
 
-		if ${currentTarget} == 0 && ${Drones.ActiveDroneCount["ToEntity.GroupID = GROUP_SCOUT_DRONE || ToEntity.GroupID = GROUP_COMBAT_DRONE"]} > 0
+		if ${currentTarget} == 0 && ${Drones.ActiveDroneCount["ToEntity.GroupID = GROUP_SCOUT_DRONE || ToEntity.GroupID = GROUP_COMBAT_DRONE"]} > 0 && !${This.JerkzPresent}
 		{
 			Drones:Recall["ToEntity.GroupID = GROUP_SCOUT_DRONE || ToEntity.GroupID = GROUP_COMBAT_DRONE"]
 			This:QueueState["Idle", 5000]
