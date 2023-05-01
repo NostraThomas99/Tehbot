@@ -941,7 +941,7 @@ objectdef obj_Approach inherits obj_StateQueue
 	method Initialize()
 	{
 		This[parent]:Initialize
-		This.PulseFrequency:Set[3000]
+		This.PulseFrequency:Set[1000]
 		This.NonGameTiedPulse:Set[TRUE]
 	}
 
