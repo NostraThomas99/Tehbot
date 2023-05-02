@@ -102,7 +102,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 		ISXEVE:Debug_SetEntityCacheDisabled[TRUE]
 
 		DynamicAddBehavior("Abyssal", "Abyssal Runner")
-		This.PulseFrequency:Set[2000]
+		This.PulseFrequency:Set[3500]
 
 		This.LogInfoColor:Set["g"]
 		This.LogLevelBar:Set[${Config.LogLevelBar}]
@@ -839,7 +839,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			{
 				This:LogInfo["Room Complete, Proceed."]
 				EVE:Execute[CmdStopShip]
-				This:InsertState["TouchTheConduit", 3000]
+				This:InsertState["TouchTheConduit", 4000]
 				return TRUE
 			}
 			; If we do not use MTUs, and there is a lootable with stuff in it still, we should go to it to grab it (if it is a reasonable distance away).
@@ -865,7 +865,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			{
 				This:LogInfo["Room Complete, Proceed."]
 				EVE:Execute[CmdStopShip]
-				This:InsertState["TouchTheConduit", 3000]
+				This:InsertState["TouchTheConduit", 4000]
 				return TRUE
 			}
 			This:InsertState["RunTheAbyss"]
@@ -1036,7 +1036,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 		; This is probably going to fail
 		if ${Entity[(Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)") && Distance !~ NULL && Distance < 100000].Distance} > 3000
 		{
-			This:QueueState["TouchTheConduit", 3000]
+			This:QueueState["TouchTheConduit", 5000]
 			return TRUE
 		}
 		if ${Entity[(Name == "Transfer Conduit (Triglavian)" || Name == "Origin Conduit (Triglavian)") && Distance !~ NULL && Distance < 100000].Distance} < 3000
@@ -1072,7 +1072,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 			This:QueueState["CheckForWork", 20000]
 			return TRUE
 		}
-		This:QueueState["RunTheAbyss", 3000]
+		This:QueueState["RunTheAbyss", 4000]
 		return TRUE
 	}
 	; Just returns a bool for if we are in the Abyss or not. Probably works fine unless we end up in an abyss without a conduit somehow.
