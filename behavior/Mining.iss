@@ -293,7 +293,7 @@ objectdef obj_Mining inherits obj_StateQueue
 		LeaderSummons:Set[${Help3}]
 	}
 	
-	method WhoIsOutThereEvent(string Name, int 64 CharID)
+	method WhoIsOutThereEvent(string Name, int64 CharID)
 	{
 		CurrentParticipants:Set[${Name}, ${CharID}]
 	}
