@@ -649,14 +649,14 @@ objectdef obj_Mining inherits obj_StateQueue
 				This:QueueState["WaitForFleetInvite", 10000]
 			}
 			; We mine at the leader, and we've been summoned
-			if ${Config.MineAtLeader} && ${LeaderSummons}
+			elseif ${Config.MineAtLeader} && ${LeaderSummons}
 			{
 				This:LogInfo["Leader has summoned us"]
 				This:QueueState["TravelToLeader", 5000]
 				return TRUE
 			}
 			; We mine at the leader, and we've NOT been summoned
-			else ${Config.MineAtLeader} && !${LeaderSummons}
+			elseif ${Config.MineAtLeader} && !${LeaderSummons}
 			{
 				This:LogInfo["Waiting for Leader Summons"]
 				This:QueueState["EstablishMiningLocation", 150000]
@@ -746,7 +746,7 @@ objectdef obj_Mining inherits obj_StateQueue
 		{
 			do
 			{
-				if ${Me.Fleet.InvitationText.Find[${CurrentParticipants.CurrentKey]}
+				if ${Me.Fleet.InvitationText.Find[${CurrentParticipants.CurrentKey}]}
 				{
 					Me.Fleet:AcceptInvite
 					This:QueueState["EstablishMiningLocation"]
