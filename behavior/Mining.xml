@@ -1457,7 +1457,7 @@
 						<Width>30%</Width>
 						<Height>6%</Height>
 						<Alignment>Left</Alignment>
-						<Text>Mining Range Limit</Text>
+						<Text>Warp In Distance</Text>
 					</Text>
 					<Textentry Name="WarpInDistance">
 						<Font template='Information.Font' />
@@ -1475,7 +1475,7 @@
 							Script[Tehbot].VariableScope.Mining.Config:SetWarpInDistance[${This.Text}]
 						</OnChange>
 						<OnMouseEnter>
-							UIElement[Information@InformationFrame@Movement/Positioning/Misc@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["Warp to mining site at how many meters?"]
+							UIElement[Information@InformationFrame@Movement/Positioning/Misc@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["Warp to mining site/boss at how many meters?"]
 						</OnMouseEnter>
 						<OnMouseExit>
 							UIElement[Information@InformationFrame@Movement/Positioning/Misc@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]

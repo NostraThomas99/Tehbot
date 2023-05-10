@@ -204,6 +204,9 @@ objectdef obj_Configuration_Mining inherits obj_Configuration_Base
 	
 	; Need to keep track of what Anom we are running in a way that persists 
 	Setting(int64, PersistentAnomID, setPersistentAnomID)
+	
+	; To keep track of Da Boss, persistently
+	Setting(int64, DaBossID, SetDaBossID)
 
 	
 	
@@ -244,8 +247,18 @@ objectdef obj_Mining inherits obj_StateQueue
 	variable int64 CurrentAnomID
 	; This bool is set by the UI button that says to rebuild the allowed anomaly list.
 	variable bool RebuildAnomList
+	
 	; This collection will be used by the WhoIsOutThere event. key is character name and int64 is char id.
 	variable collection:int64 CurrentParticipants
+	
+	; This queue will contain all the valid bookmark names we turn up by looking for mining bookmarks.
+	variable queue:string MiningBookmarkQueue
+	
+	; Belt related trash
+	variable index:entity beltIndex
+	variable iterator beltIterator
+	variable set EmptyBelts
+	variable stack:int64 BeltStack
 	
 
 	method Initialize()
@@ -270,6 +283,9 @@ objectdef obj_Mining inherits obj_StateQueue
 		
 		LavishScript:RegisterEvent[WhoIsOutThere]
 		Event[WhoIsOutThere]:AttachAtom[This:WhoIsOutThereEvent]
+		
+		LavishScript:RegisterEvent[WhoIsDaBoss]
+		Event[WhoIsDaBoss]:AttachAtom[This:WhoIsDaBossEvent]		
 
 		LavishScript:RegisterEvent[Tehbot_ScheduleHalt]
 		Event[Tehbot_ScheduleHalt]:AttachAtom[This:ScheduleHalt]
@@ -292,6 +308,11 @@ objectdef obj_Mining inherits obj_StateQueue
 	{
 		LeaderSummons:Set[${Help3}]
 	}
+	
+	method WhoIsDaBossEvent(int64 BossID)
+	{
+		Config.DaBossID:Set[${BossID}]
+	}	
 	
 	method WhoIsOutThereEvent(string Name, int64 CharID)
 	{
@@ -352,10 +373,13 @@ objectdef obj_Mining inherits obj_StateQueue
 	member:bool CheckForWork()
 	{
 
-		ammo:Set[${Config.WhatMiningCrystal}]
+		if ${Config.WhatMiningCrystal}
+		{
+			ammo:Set[${Config.WhatMiningCrystal}]
+		}
 
 		;You know, I don't think this actually does anything... Well maybe it does.
-		Ship.ModuleList_Weapon:ConfigureAmmo[${ammo}, ${secondaryAmmo}, ${tertiaryAmmo}]
+		Ship.ModuleList_OreMining:ConfigureAmmo[${ammo}, , ]
 			
 		; We are in space, in a pod. Might figure out something more complicated for this later.
 		if ${Client.InSpace} && ${MyShip.ToEntity.Type.Equal[Capsule]}
@@ -370,6 +394,18 @@ objectdef obj_Mining inherits obj_StateQueue
 			This:LogInfo["We dead"]
 			This:Stop
 		}
+		; We are in station, and ore holds are a pain in the ass, make active.
+		if ${Me.InSpace} && ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold](exists)} && ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold].UsedCapacity} < 0
+		{
+			EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold]:MakeActive
+			return FALSE
+		}		
+		; We are in space and ore holds are a pain in the ass, make active.
+		if ${Client.InSpace} && ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold](exists)} && ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold].UsedCapacity} < 0
+		{
+			EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold]:MakeActive
+			return FALSE
+		}
 		; We are in space, we have time to see if we need anything.
 		if ${Client.InSpace} && !${StatusChecked}
 		{
@@ -377,11 +413,25 @@ objectdef obj_Mining inherits obj_StateQueue
 			This:InsertState["CheckStatus", 5000]
 			return TRUE
 		}
-		; We are in space,  and we have no problems. Lets go to the mining site.
+		; We are in station and everything is good, lets establish our mining location.
+		if ${Me.InStation} && !${StatusChecked}
+		{
+			This:LogInfo["Status Check"]
+			This:InsertState["CheckStatus", 5000]
+			return TRUE
+		}
+		; We are in space,  and we have no problems. Lets establish our mining location.
 		if ${Client.InSpace} && ${StatusGreen}
 		{
-			This:LogInfo["Prepare to Mine"]
+			This:LogInfo["Figure out mining location"]
 			This:InsertState["EstablishMiningLocation", 5000]
+			return TRUE
+		}
+		; We are in station and everything is good, lets establish our mining location.
+		if ${Me.InStation} && ${StatusGreen}
+		{
+			This:LogInfo["Figure out mining location"]
+			This:QueueState["EstablishMiningLocation", 5000]
 			return TRUE
 		}
 		; We are in space and need resupply and/or repair, back to base
@@ -394,7 +444,6 @@ objectdef obj_Mining inherits obj_StateQueue
 		; We are in station and need repairs or resupply.
 		if ${Me.InStation} && !${StatusGreen}
 		{
-			This:LogInfo["Loading Crystals \ao${ammo}"]
 			if ${Config.UseMiningCrystals}
 			{
 				This:LogInfo["Loading \ao${ammo}", "o"]
@@ -412,15 +461,6 @@ objectdef obj_Mining inherits obj_StateQueue
 			This:InsertState["HaltBot"]
 			return TRUE
 		}
-		; We are in station and everything is good, time to go.
-		if ${Me.InStation} && ${StatusGreen}
-		{
-			This:LogInfo["Undocking"]
-			Move:Undock
-			This:QueueState["CheckForWork", 5000]
-			return TRUE
-		}
-
 	}
 	
 	; We should see if we need ammo, filaments, etc. This is in case the bot gets stopped in space after a few runs or whatever.
@@ -554,7 +594,13 @@ objectdef obj_Mining inherits obj_StateQueue
 		{
 			; Please keep your inventory open at all times, please.
 			EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipCargo]:MakeActive
-			Client:Wait[1000]
+			return FALSE
+		}
+		; Ore bay is rude af
+		if ${Client.InSpace} && ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold](exists)} && ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold].UsedCapacity} < 0
+		{
+			EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold]:MakeActive
+			return FALSE
 		}
 		; Looks like we're full.
 		if (${Math.Calc[${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold].Capacity} - ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold].UsedCapacity}]}) < 999
@@ -589,12 +635,14 @@ objectdef obj_Mining inherits obj_StateQueue
 		}
 	}
 	
-	; We have all we need, go to the mining location.
+	; Everything looks good, lets figure out where we are going.
 	member:bool EstablishMiningLocation()
 	{
 		; We are the fleet boss, we mine in a fleet
 		if ${Config.FleetBoss} && ${Config.FleetUp}
 		{	
+			echo Boss + Fleet
+			relay "all" -event WhoIsDaBossEvent ${Me.CharID}
 			; We aren't in a fleet yet, lets fix that.
 			if !${Me.Fleet}
 			{
@@ -613,8 +661,6 @@ objectdef obj_Mining inherits obj_StateQueue
 			; Mine at bookmark
 			elseif ${Config.MineAtBookmark} && ${Config.MineAtBookmarkPrefix.NotNULLOrEmpty}
 			{
-				;Move:Bookmark["${Config.FilamentSite}"]
-				;This:InsertState["Traveling"]
 				This:QueueState["StartBookmarkDance", 5000]
 				return TRUE
 			}
@@ -622,6 +668,8 @@ objectdef obj_Mining inherits obj_StateQueue
 			elseif !${Config.MineAtBookmarkPrefix.NotNULLOrEmpty} && ${Config.MineAtBookmark}
 			{
 				This:LogInfo["Set to mine at bookmark, yet no prefix defined, stopping"]
+				Move:Bookmark["${Config.HomeStructure}"]
+				This:InsertState["Traveling"]
 				This:Stop
 			}
 			; Mine at Anom
@@ -641,6 +689,7 @@ objectdef obj_Mining inherits obj_StateQueue
 		; We are not Da Boss, but we do Fleet Up.
 		if !${Config.FleetBoss} && ${Config.FleetUp}
 		{	
+			echo NOT Boss + Fleet
 			; We aren't in a fleet, lets fix that
 			if !${Me.Fleet}
 			{
@@ -667,11 +716,10 @@ objectdef obj_Mining inherits obj_StateQueue
 		; We do not fleet up, we do not meet up, we mine solo.
 		if !${Config.FleetUp} && !${Config.GroupMining}
 		{
+			echo NOT Boss + NOT Fleet
 			; Mine at bookmark
 			if ${Config.MineAtBookmark} && ${Config.MineAtBookmarkPrefix.NotNULLOrEmpty}
 			{
-				;Move:Bookmark["${Config.FilamentSite}"]
-				;This:InsertState["Traveling"]
 				This:QueueState["StartBookmarkDance", 5000]
 				return TRUE
 			}
@@ -679,6 +727,8 @@ objectdef obj_Mining inherits obj_StateQueue
 			elseif !${Config.MineAtBookmarkPrefix.NotNULLOrEmpty} && ${Config.MineAtBookmark}
 			{
 				This:LogInfo["Set to mine at bookmark, yet no prefix defined, stopping"]
+				Move:Bookmark["${Config.HomeStructure}"]
+				This:InsertState["Traveling"]
 				This:Stop
 			}
 			; Mine at Anom
@@ -703,8 +753,101 @@ objectdef obj_Mining inherits obj_StateQueue
 		else
 		{
 			This:LogInfo["Misconfiguration - EstablishMiningLocation - Stopping"]
+			Move:Bookmark["${Config.HomeStructure}"]
+			This:InsertState["Traveling"]
 			This:Stop		
 		}
+	}
+	
+	; This is how we will pick a mining bookmark to go to.
+	member:bool StartBookmarkDance()
+	{
+		variable index:bookmark MiningBookmarks
+		variable iterator BookmarkIterator
+		MiningBookmarks:RemoveByQuery[${LavishScript.CreateQuery[SolarSystemID == ${Me.SolarSystemID} && Name =- "${MineAtBookmarkPrefix}"]}, FALSE]
+		MiningBookmarks:Collapse		
+		
+		EVE:GetMiningBookmarks[MiningBookmarks]
+		MiningBookmarks:GetIterator[BookmarkIterator]
+
+		if !${BookmarkIterator:First(exists)}
+		{
+			This:LogInfo["No valid bookmarks found - Stopping"]
+			Move:Bookmark["${Config.HomeStructure}"]
+			This:InsertState["Traveling"]
+			This:Stop
+		}
+		; Going to shove every valid bookmark into a queue because queues are fun hell yeah lets use
+		; a container I haven't really used for no good reason.
+		if ${BookmarkIterator:First(exists)}
+		{
+			do
+			{
+				MiningBookmarkQueue:Queue[${BookmarkIterator.Value.Label}]
+				This:LogInfo["Queueing up Mining Bookmark ${BookmarkIterator.Value.Label}"]
+			
+			}
+			while ${BookmarkIterator:Next(exists)}
+		}
+		This:LogInfo["Mining Bookmark List Assembled - ${MiningBookmarkQueue.Used} Bookmarks Found"]
+		This:QueueState["NavigateToMiningLocation", 5000]
+		return TRUE
+	}
+	; This is how we will pick an anom to go to.
+	member:bool StartAnomDance()
+	{
+		if ${Me.InStation}
+		{
+			This:LogInfo["Need to be Undocked for this part"]
+			Move:Undock
+		}
+		if ${Client.InSpace}
+		{
+			This:LogInfo["Updating Anomalies"]
+			This:QueueState["UpdateAnoms"]
+			return TRUE
+		}
+	}
+	; This is how we will pick an asteroid belt, still cant believe this.
+	member:bool StartBeltDance()
+	{
+		variable int NumberBelts
+		if ${Me.InStation}
+		{
+			This:LogInfo["Need to be Undocked for this part"]
+			Move:Undock
+		}
+		
+		if !${Client.InSpace}
+		{
+			return FALSE
+		}
+		EVE:QueryEntities[beltIndex, "GroupID = 9"]
+		beltIndex:GetIterator[beltIterator]
+		
+		if !${beltIterator:First(exists)}
+		{
+			This:LogInfo["We seem to not have any belts here? Stopping."]
+			Move:Bookmark["${Config.HomeStructure}"]
+			This:InsertState["Traveling"]
+			This:Stop		
+		}
+		if ${beltIterator:First(exists)}
+		{
+			do
+			{
+				if !${EmptyBelts.Contains[${beltIterator.Value.Name}]}
+				{
+					BeltStack:Push[${beltIterator.Value.ID}
+					This:LogInfo["Adding Belt ${beltIterator.Value.Name} to Stack"]
+					NumberBelts:Inc[1]
+				}
+			}
+			while ${beltIterator:Next(exists)}
+		}
+		This:LogInfo["Belt List Built - ${NumberBelts} Belts Found"]
+		This:QueueState["NavigateToMiningLocation", 5000]
+		return TRUE			
 	}
 	; This is where Da Boss manages sending out fleet invites.
 	member:bool StartFleetDance()
@@ -758,10 +901,65 @@ objectdef obj_Mining inherits obj_StateQueue
 		This:QueueState["WaitForFleetInvite", 15000]
 		return TRUE
 	}
+	; This is where we travel to our mining location. Fleet members that aren't Da Boss will not touch this normally.
+	member:bool NavigateToMiningLocation()
+	{
+		This:LogInfo["Begin Navigation to Mining Location"]
+		if ${MiningBookmarkQueue.Peek}
+		{
+			This:LogInfo["Moving to Bookmark"]
+			Move:Bookmark[${MiningBookmarkQueue.Peek}, FALSE, ${Config.WarpInDistance}, FALSE]
+			This:InsertState["Traveling"]
+			This:QueueState["StartWorking", 4000]
+		}
+		if ${BeltStack.Top}
+		{
+			This:LogInfo["Moving to Belt"]
+			Move:Entity[${BeltStack.Top}, ${Config.WarpInDistance}, FALSE]
+			This:InsertState["Traveling"]
+			This:QueueState["StartWorking", 4000]
+		}
+	}
+	; This is where we travel to Da Boss.
+	member:bool TravelToLeader()
+	{
+		if !${Me.Fleet}
+		{
+			This:LogInfo["Dunno how we got here honestly - Stopping"]
+			Move:Bookmark["${Config.HomeStructure}"]
+			This:InsertState["Traveling"]
+			This:Stop
+		}
+		if !${Config.DaBossID}
+		{
+			This:LogInfo["Considering this is supposed to be set each time you start the bot, and it persists, what the hell"]
+			This:Stop
+		}
+		if ${Me.InStation}
+		{
+			This:LogInfo["Need to be Undocked for this part"]
+			Move:Undock
+		}
+		if !${Client.InSpace}
+		{
+			return FALSE
+		}
+		if ${Client.InSpace}
+		{
+			This:LogInfo["Moving to Da Boss"]
+			Move:FleetMember[${Config.DaBossID}, FALSE, ${Config.WarpInDistance}]
+			This:QueueState["StartWorking", 4000]
+			return TRUE
+		}
+		This:LogInfo["Dunno how we got here honestly - Stopping"]
+		Move:Bookmark["${Config.HomeStructure}"]
+		This:InsertState["Traveling"]
+		This:Stop
+	}
 	; We are at the mining location, commence the minings.
 	member:bool StartWorking()
 	{
-
+		This:LogInfo["Time to get to work"]
 
 	}
 
@@ -794,7 +992,6 @@ objectdef obj_Mining inherits obj_StateQueue
 	{
 	
 		MyShip.Scanners.System:GetAnomalies[MyAnomalies]
-
 		MyAnomalies:GetIterator[MyAnomalies_Iterator]	
 
 		if ${MyAnomalies_Iterator:First(exists)}
@@ -804,7 +1001,11 @@ objectdef obj_Mining inherits obj_StateQueue
 				; Check to see if the currently being run site still exists, this should work even if you disconnect via XML storage.
 				if ${MyAnomalies_Iterator.Value.ID} == ${Config.PersistentAnomID}
 				{
-					MyAnomalies_Iterator.Value:WarpTo[${Config.WarpInDistance}, FALSE]					
+					MyAnomalies_Iterator.Value:WarpTo[${Config.WarpInDistance}, FALSE]
+					This:LogInfo["Anomaly Found - ${MyAnomalies_Iterator.Value.Name} - Warping]
+					This:InsertState["Traveling", 5000]
+					This:QueueState["StartWorking", 5000]
+					return TRUE
 				
 				}
 				; I'm too lazy to add like 50 gas sites to this sorry
@@ -812,20 +1013,29 @@ objectdef obj_Mining inherits obj_StateQueue
 				{
 					Config.PersistentAnomID:Set[${MyAnomalies_Iterator.Value.ID}]
 					MyAnomalies_Iterator.Value:WarpTo[${Config.WarpInDistance}, FALSE]
-					
+					This:LogInfo["Anomaly Found - ${MyAnomalies_Iterator.Value.Name} - Warping]
+					This:InsertState["Traveling", 5000]
+					This:QueueState["StartWorking", 5000]
+					return TRUE
 				}
 				elseif ${ValidAnomalies.Contains[Reservoir]} && ${MyAnomalies_Iterator.Value.Name.Find["Reservoir"]} && ${MyAnomalies_Iterator.Value.ID} != ${Config.PersistentAnomID}
 				{
 					Config.PersistentAnomID:Set[${MyAnomalies_Iterator.Value.ID}]
 					MyAnomalies_Iterator.Value:WarpTo[${Config.WarpInDistance}, FALSE]
-					
+					This:LogInfo["Anomaly Found - ${MyAnomalies_Iterator.Value.Name} - Warping]
+					This:InsertState["Traveling", 5000]
+					This:QueueState["StartWorking", 5000]
+					return TRUE
 				}
 				; Everything else goes here
 				elseif ${ValidAnomalies.Contains[${MyAnomalies_Iterator.Value.Name}]} && ${MyAnomalies_Iterator.Value.ID} != ${Config.PersistentAnomID}
 				{
 					Config.PersistentAnomID:Set[${MyAnomalies_Iterator.Value.ID}]
-					MyAnomalies_Iterator.Value:WarpTo[${Config.WarpInDistance}, FALSE]	
-					
+					MyAnomalies_Iterator.Value:WarpTo[${Config.WarpInDistance}, FALSE]
+					This:LogInfo["Anomaly Found - ${MyAnomalies_Iterator.Value.Name} - Warping]
+					This:InsertState["Traveling", 5000]
+					This:QueueState["StartWorking", 5000]
+					return TRUE
 				}
 				else
 				{
@@ -836,10 +1046,19 @@ objectdef obj_Mining inherits obj_StateQueue
 			}
 			while ${MyAnomalies_Iterator:Next(exists)}
 			
-			echo DEBUG - No anoms configured or none present in system - Stopping
+			This:LogInfo["DEBUG - Present Anoms Filtered Out - Stopping"]
+			Move:Bookmark["${Config.HomeStructure}"]
+			This:InsertState["Traveling"]
 			This:Stop
 		}
-	
+		else
+		{
+			This:LogInfo["DEBUG - No Anoms Present - Stopping"]
+			Move:Bookmark["${Config.HomeStructure}"]
+			This:InsertState["Traveling"]
+			This:Stop
+			
+		}
 	}
 	
 	
@@ -878,13 +1097,22 @@ objectdef obj_Mining inherits obj_StateQueue
 			EVE:Execute[OpenInventory]
 			return FALSE
 		}
+		
+		if ${Config.UseIndustrialCore}
+		{
+			if (!${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipFuelBay](exists)} || ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipFuelBay].Capacity} < 0)
+			{
+				EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipFuelBay]:MakeActive
+			}
+		}
 
 		if ${Config.UseDrones}
 		{
 			if (!${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipDroneBay](exists)} || ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipDroneBay].Capacity} < 0)
 			{
 				EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipDroneBay]:MakeActive
-				Client:Wait[5000]
+				Client:Wait[2000]
+				This:LogInfo["Checkpoint 1"]
 				return FALSE
 			}
 
@@ -895,7 +1123,8 @@ objectdef obj_Mining inherits obj_StateQueue
 				fallbackDroneType:Set[${Config.DroneType}]
 			}
 			
-			Client:Wait[5000]
+			Client:Wait[2000]
+			This:LogInfo["Checkpoint 2"]
 			EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipDroneBay]:GetItems[items]
 			items:GetIterator[itemIterator]
 			if ${itemIterator:First(exists)}
@@ -907,7 +1136,8 @@ objectdef obj_Mining inherits obj_StateQueue
 						if !${EVEWindow[Inventory].ChildWindow[StationCorpHangar](exists)}
 						{
 							EVEWindow[Inventory].ChildWindow[StationCorpHangars]:MakeActive
-							Client:Wait[5000]
+							Client:Wait[2000]
+							This:LogInfo["Checkpoint 3"]
 							return FALSE
 						}
 
@@ -915,7 +1145,8 @@ objectdef obj_Mining inherits obj_StateQueue
 						{
 
 							EVEWindow[Inventory].ChildWindow["StationCorpHangar", ${Config.MunitionStorageFolder}]:MakeActive
-							Client:Wait[5000]
+							Client:Wait[2000]
+							This:LogInfo["Checkpoint 4"]
 							return FALSE
 						}
 
@@ -930,7 +1161,8 @@ objectdef obj_Mining inherits obj_StateQueue
 						if !${EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems](exists)}
 						{
 							EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems]:MakeActive
-							Client:Wait[5000]
+							Client:Wait[2000]
+							This:LogInfo["Checkpoint 5"]
 							return FALSE
 						}
 
@@ -957,16 +1189,20 @@ objectdef obj_Mining inherits obj_StateQueue
 		if !${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipCargo](exists)} || ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipCargo].Capacity} < 0
 		{
 			EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipCargo]:MakeActive
-			Client:Wait[5000]
+			Client:Wait[2000]
+			This:LogInfo["Checkpoint 6"]
 			return FALSE
 		}
 
 		crystalsToLoad:Dec[${This.InventoryItemQuantity[${ammo}, ${Me.ShipID}, "ShipCargo"]}]
 		firstBurstToLoad:Dec[${This.InventoryItemQuantity[${firstBurstCharge}, ${Me.ShipID}, "ShipCargo"]}]
 		secondBurstToLoad:Dec[${This.InventoryItemQuantity[${secondBurstCharge}, ${Me.ShipID}, "ShipCargo"]}]		
-		thirdBurstToLoad:Dec[${This.InventoryItemQuantity[${thirdBurstCharge}, ${Me.ShipID}, "ShipCargo"]}]		
-		heavywaterToLoad:Dec[${This.InventoryItemQuantity["Heavy Water", ${Me.ShipID}, "ShipFuelBay"]}]
-		
+		thirdBurstToLoad:Dec[${This.InventoryItemQuantity[${thirdBurstCharge}, ${Me.ShipID}, "ShipCargo"]}]	
+
+		if ${Config.UseIndustrialCore}
+		{
+			heavywaterToLoad:Dec[${This.InventoryItemQuantity["Heavy Water", ${Me.ShipID}, "ShipFuelBay"]}]
+		}
 		
 		
 		batteryToLoad:Dec[${This.InventoryItemQuantity[${batteryType}, ${Me.ShipID}, "ShipCargo"]}]
@@ -982,7 +1218,8 @@ objectdef obj_Mining inherits obj_StateQueue
 					if (!${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipDroneBay](exists)} || ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipDroneBay].Capacity} < 0)
 					{
 						EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipDroneBay]:MakeActive
-						Client:Wait[5000]
+						Client:Wait[2000]
+						This:LogInfo["Checkpoint 7"]
 						return FALSE
 					}
 
@@ -1023,7 +1260,8 @@ objectdef obj_Mining inherits obj_StateQueue
 						if !${EVEWindow[Inventory].ChildWindow[StationCorpHangar](exists)}
 						{
 							EVEWindow[Inventory].ChildWindow[StationCorpHangars]:MakeActive
-							Client:Wait[5000]
+							Client:Wait[2000]
+							This:LogInfo["Checkpoint 8"]
 							return FALSE
 						}
 
@@ -1031,7 +1269,8 @@ objectdef obj_Mining inherits obj_StateQueue
 						{
 
 							EVEWindow[Inventory].ChildWindow["StationCorpHangar", ${Config.MunitionStorageFolder}]:MakeActive
-							Client:Wait[5000]
+							Client:Wait[2000]
+							This:LogInfo["Checkpoint 9"]
 							return FALSE
 						}
 
@@ -1043,7 +1282,8 @@ objectdef obj_Mining inherits obj_StateQueue
 						if !${EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems](exists)}
 						{
 							EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems]:MakeActive
-							Client:Wait[5000]
+							Client:Wait[2000]
+							This:LogInfo["Checkpoint 10"]
 							return FALSE
 						}
 
@@ -1061,14 +1301,16 @@ objectdef obj_Mining inherits obj_StateQueue
 			if !${EVEWindow[Inventory].ChildWindow[StationCorpHangar](exists)}
 			{
 				EVEWindow[Inventory].ChildWindow[StationCorpHangars]:MakeActive
-				Client:Wait[5000]
+				Client:Wait[2000]
+				This:LogInfo["Checkpoint 11"]
 				return FALSE
 			}
 
 			if !${EVEWindow[Inventory].ChildWindow["StationCorpHangar", ${Config.MunitionStorageFolder}](exists)}
 			{
 				EVEWindow[Inventory].ChildWindow["StationCorpHangar", ${Config.MunitionStorageFolder}]:MakeActive
-				Client:Wait[5000]
+				Client:Wait[2000]
+				This:LogInfo["Checkpoint 12"]
 				return FALSE
 			}
 
@@ -1079,7 +1321,8 @@ objectdef obj_Mining inherits obj_StateQueue
 			if !${EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems](exists)}
 			{
 				EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems]:MakeActive
-				Client:Wait[5000]
+				Client:Wait[2000]
+				This:LogInfo["Checkpoint 13"]
 				return FALSE
 			}
 
@@ -1179,7 +1422,8 @@ objectdef obj_Mining inherits obj_StateQueue
 		if (!${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipDroneBay](exists)} || ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipDroneBay].Capacity} < 0)
 		{
 			EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipDroneBay]:MakeActive
-			Client:Wait[5000]
+			Client:Wait[2000]
+			This:LogInfo["Checkpoint 14"]
 			return FALSE
 		}
 
@@ -1307,14 +1551,16 @@ objectdef obj_Mining inherits obj_StateQueue
 			if !${EVEWindow[Inventory].ChildWindow[StationCorpHangar](exists)}
 			{
 				EVEWindow[Inventory].ChildWindow[StationCorpHangars]:MakeActive
-				Client:Wait[5000]
+				Client:Wait[2000]
+				This:LogInfo["Checkpoint 15"]
 				return FALSE
 			}
 
 			if !${EVEWindow[Inventory].ChildWindow["StationCorpHangar", ${Config.MunitionStorageFolder}](exists)}
 			{
 				EVEWindow[Inventory].ChildWindow["StationCorpHangar", ${Config.MunitionStorageFolder}]:MakeActive
-				Client:Wait[5000]
+				Client:Wait[2000]
+				This:LogInfo["Checkpoint 16"]
 				return FALSE
 			}
 
@@ -1336,9 +1582,11 @@ objectdef obj_Mining inherits obj_StateQueue
 			; 	}
 			; 	while ${itemIterator:Next(exists)}
 			; }
-			Client:Wait[5000]
+			Client:Wait[2000]
+			This:LogInfo["Checkpoint 17"]
 			EVEWindow[Inventory].ChildWindow["StationCorpHangar", ${Config.MunitionStorageFolder}]:StackAll
-			Client:Wait[5000]
+			Client:Wait[2000]
+			This:LogInfo["Checkpoint 18"]
 			
 			if ${Config.DropOffToContainer} && ${Config.DropOffContainerName.NotNULLOrEmpty}
 			{
@@ -1351,7 +1599,8 @@ objectdef obj_Mining inherits obj_StateQueue
 			{
 
 				EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems]:MakeActive
-				Client:Wait[5000]
+				Client:Wait[2000]
+				This:LogInfo["Checkpoint 19"]
 				return FALSE
 			}
 
@@ -1398,7 +1647,8 @@ objectdef obj_Mining inherits obj_StateQueue
 						(${EVEWindow[Inventory].ChildWindow[${dropOffContainerID}].Capacity} < 0)
 					{
 						EVEWindow[Inventory].ChildWindow[${dropOffContainerID}]:MakeActive
-						Client:Wait[5000]
+						Client:Wait[2000]
+						This:LogInfo["Checkpoint 20"]
 						return FALSE
 					}
 
@@ -1423,7 +1673,8 @@ objectdef obj_Mining inherits obj_StateQueue
 				if ${Iter.Value.Name.Equal[StationCorpHangars]}
 				{
 					Iter.Value:MakeActive
-					Client:Wait[5000]
+					Client:Wait[2000]
+					This:LogInfo["Checkpoint 21"]
 				}
 			}
 			while ${Iter:Next(exists)}
@@ -1473,7 +1724,8 @@ objectdef obj_Mining inherits obj_StateQueue
 			EVE:Execute[OpenInventory]
 			return FALSE
 		}
-		Client:Wait[5000]
+		Client:Wait[2000]
+		This:LogInfo["Checkpoint 22"]
 		variable index:item items
 		variable iterator itemIterator
 		variable int64 dropOffContainerID = 0;
@@ -1485,7 +1737,8 @@ objectdef obj_Mining inherits obj_StateQueue
 				if !${EVEWindow[Inventory].ChildWindow[StationCorpHangar](exists)}
 				{
 					EVEWindow[Inventory].ChildWindow[StationCorpHangars]:MakeActive
-					Client:Wait[5000]
+					Client:Wait[2000]
+					This:LogInfo["Checkpoint 23"]
 					return FALSE
 				}
 
@@ -1493,10 +1746,12 @@ objectdef obj_Mining inherits obj_StateQueue
 				{
 
 					EVEWindow[Inventory].ChildWindow["StationCorpHangar", ${Config.MunitionStorageFolder}]:MakeActive
-					Client:Wait[5000]
+					Client:Wait[2000]
+					This:LogInfo["Checkpoint 24"]
 					return FALSE
 				}
-				Client:Wait[5000]
+				Client:Wait[2000]
+				This:LogInfo["Checkpoint 25"]
 				EVEWindow[Inventory].ChildWindow["StationCorpHangar", ${Config.MunitionStorageFolder}]:GetItems[items]
 			}
 			elseif ${Config.MunitionStorage.Equal[Personal Hangar]}
@@ -1504,7 +1759,8 @@ objectdef obj_Mining inherits obj_StateQueue
 				if !${EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems](exists)}
 				{
 					EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems]:MakeActive
-					Client:Wait[5000]
+					Client:Wait[2000]
+					This:LogInfo["Checkpoint 26"]
 					return FALSE
 				}
 				EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems]:GetItems[items]
@@ -1527,7 +1783,8 @@ objectdef obj_Mining inherits obj_StateQueue
 							(${EVEWindow[Inventory].ChildWindow[${dropOffContainerID}].Capacity} < 0)
 						{
 							EVEWindow[Inventory].ChildWindow[${dropOffContainerID}]:MakeActive
-							Client:Wait[5000]
+							Client:Wait[2000]
+							This:LogInfo["Checkpoint 27"]
 							return FALSE
 						}
 						break
@@ -1537,13 +1794,15 @@ objectdef obj_Mining inherits obj_StateQueue
 			}
 		}
 
-		if !${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold](exists)}
+		if ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold](exists)} && ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold].UsedCapacity} < 0
 		{
 			EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold]:MakeActive
-			Client:Wait[5000]
+			Client:Wait[2000]
+			This:LogInfo["Checkpoint 28"]
 			return FALSE
 		}
-		Client:Wait[5000]
+		Client:Wait[2000]
+		This:LogInfo["Checkpoint 29"]
 		EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold]:GetItems[items]
 		items:GetIterator[itemIterator]
 		if ${itemIterator:First(exists)}
@@ -1565,14 +1824,16 @@ objectdef obj_Mining inherits obj_StateQueue
 						if !${EVEWindow[Inventory].ChildWindow[StationCorpHangar](exists)}
 						{
 							EVEWindow[Inventory].ChildWindow[StationCorpHangars]:MakeActive
-							Client:Wait[5000]
+							Client:Wait[2000]
+							This:LogInfo["Checkpoint 30"]
 							return FALSE
 						}
 
 						if !${EVEWindow[Inventory].ChildWindow["StationCorpHangar", ${Config.MunitionStorageFolder}](exists)}
 						{
 							EVEWindow[Inventory].ChildWindow["StationCorpHangar", ${Config.MunitionStorageFolder}]:MakeActive
-							Client:Wait[5000]
+							Client:Wait[2000]
+							This:LogInfo["Checkpoint 31"]
 							return FALSE
 						}
 
@@ -1584,7 +1845,8 @@ objectdef obj_Mining inherits obj_StateQueue
 						if !${EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems](exists)}
 						{
 							EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems]:MakeActive
-							Client:Wait[5000]
+							Client:Wait[2000]
+							This:LogInfo["Checkpoint 32"]
 							return FALSE
 						}
 						itemIterator.Value:MoveTo[MyStationHangar, Hangar]
