@@ -1,0 +1,558 @@
+objectdef obj_Configuration_MinerWorker inherits obj_Configuration_Base
+{
+	
+	method Initialize()
+	{
+		This[parent]:Initialize["MinerWorker"]
+		
+		This.ConfigRef:AddSetting[BezdnacinePriority, 1]
+		This.ConfigRef:AddSetting[CobaltitePriority, 1]
+		This.ConfigRef:AddSetting[AmberCytoserocinPriority, 1]
+	}
+	
+
+	method Set_Default_Values()
+	{
+		This.ConfigRef:AddSetting[LogLevelBar, LOG_INFO]
+	}
+
+
+	Setting(bool, ExpectCommandBursts, SetExpectCommandBursts)
+
+	; Section for Asteroid Ore Priorities
+	Setting(int, ArkonorPriority, SetArkonorPriority)	
+	Setting(int, BezdnacinePriority, SetBezdnacinePriority)
+	Setting(int, BistotPriority, SetBistotPriority)
+	Setting(int, CrokitePriority, SetCrokitePriority)
+	Setting(int, DarkOchrePriority, SetDarkOchrePriority)
+	Setting(int, DuciniumPriority, SetDuciniumPriority)
+	Setting(int, EifyriumPriority, SetEifyriumPriority)
+	Setting(int, GneissPriority, SetGneissPriority)
+	Setting(int, HedbergitePriority, SetHedbergitePriority)
+	Setting(int, HemorphitePriority, SetHemorphitePriority)
+	Setting(int, JaspetPriority, SetJaspetPriority)
+	Setting(int, KernitePriority, SetKernitePriority)
+	Setting(int, MercoxitPriority, SetMercoxitPriority)
+	Setting(int, MorduniumPriority, SetMorduniumPriority)
+	Setting(int, OmberPriority, SetOmberPriority)
+	Setting(int, PlagioclasePriority, SetPlagioclasePriority)
+	Setting(int, PyroxeresPriority, SetPyroxeresPriority)
+	Setting(int, RakovenePriority, SetRakovenePriority)
+	Setting(int, ScorditePriority, SetScorditePriority)
+	Setting(int, SpodumainPriority, SetSpodumainPriority)
+	Setting(int, TalassonitePriority, SetTalassonitePriority)
+	Setting(int, VeldsparPriority, SetVeldsparPriority)
+	Setting(int, YtiriumPriority, SetYtiriumPriority)
+
+	; Section for Moon Ore Priorities
+	Setting(int, CobaltitePriority, SetCobaltitePriority)
+	Setting(int, EuxenitePriority, SetEuxenitePriority)
+	Setting(int, TitanitePriority, SetTitanitePriority)
+	Setting(int, ScheelitePriority, SetScheelitePriority)
+	
+	Setting(int, BitumensPriority, SetBitumensPriority)
+	Setting(int, CoesitePriority, SetCoesitePriority)
+	Setting(int, SylvitePriority, SetSylvitePriority)
+	Setting(int, ZeolitesPriority, SetZeolitesPriority)
+	
+	Setting(int, ChromitePriority, SetChromitePriority)
+	Setting(int, OtavitePriority, SetOtavitePriority)
+	Setting(int, SperrylitePriority, SetSperrylitePriority)
+	Setting(int, VanadinitePriority, SetVanadinitePriority)
+	
+	Setting(int, CarnotitePriority, SetCarnotitePriority)
+	Setting(int, CinnabarPriority, SetCinnabarPriority)
+	Setting(int, PollucitePriority, SetPollucitePriority)
+	Setting(int, ZirconPriority, SetZirconPriority)
+
+	Setting(int, LoparitePriority, SetLoparitePriority)
+	Setting(int, MonazitePriority, SetMonazitePriority)
+	Setting(int, XenotimePriority, SetXenotimePriority)
+	Setting(int, YtterbitePriority, SetYtterbitePriority)
+
+	; Section for Gas Priorities
+	Setting(int, AmberCytoserocinPriority, SetAmberCytoserocinPriority)
+	Setting(int, AmberMykoserocinPriority, SetAmberMykoserocinPriority)
+	Setting(int, AzureCytoserocinPriority, SetAzureCytoserocinPriority)
+	Setting(int, AzureMykoserocinPriority, SetAzureMykoserocinPriority)
+	Setting(int, CeladonCytoserocinPriority, SetCeladonCytoserocinPriority)
+	Setting(int, CeladonMykoserocinPriority, SetCeladonMykoserocinPriority)
+	Setting(int, GoldenCytoserocinPriority, SetGoldenCytoserocinPriority)
+	Setting(int, GoldenMykoserocinPriority, SetGoldenMykoserocinPriority)
+	Setting(int, LimeCytoserocinPriority, SetLimeCytoserocinPriority)
+	Setting(int, LimenMykoserocinPriority, SetLimeMykoserocinPriority)
+	Setting(int, MalachiteCytoserocinPriority, SetMalachiteCytoserocinPriority)
+	Setting(int, MalachiteMykoserocinPriority, SetMalachiteMykoserocinPriority)	
+	Setting(int, VermillionCytoserocinPriority, SetVermillionCytoserocinPriority)
+	Setting(int, VermillionMykoserocinPriority, SetVermillionMykoserocinPriority)
+	Setting(int, ViridianCytoserocinPriority, SetViridianCytoserocinPriority)
+	Setting(int, ViridianMykoserocinPriority, SetViridianMykoserocinPriority)
+	
+	Setting(int, Fullerite-C28Priority, SetFullerite-C28Priority)
+	Setting(int, Fullerite-C32Priority, SetFullerite-C32Priority)
+	Setting(int, Fullerite-C320Priority, SetFullerite-C320Priority)
+	Setting(int, Fullerite-C50Priority, SetFullerite-C50Priority)
+	Setting(int, Fullerite-C540Priority, SetFullerite-C540Priority)
+	Setting(int, Fullerite-C60Priority, SetFullerite-C60Priority)
+	Setting(int, Fullerite-C70Priority, SetFullerite-C70Priority)
+	Setting(int, Fullerite-C72Priority, SetFullerite-C72Priority)
+	Setting(int, Fullerite-C84Priority, SetFullerite-C84Priority)
+	
+	
+	
+	Setting(int, LogLevelBar, SetLogLevelBar)
+}
+
+objectdef obj_MinerWorker inherits obj_StateQueue
+{
+	; Avoid name conflict with common config.
+	variable obj_Configuration_MinerWorker Config
+	
+	variable int MaxTarget = ${MyShip.MaxLockedTargets}
+
+	; This will literally just be all (hostile) NPCs within 300km or so.
+	variable obj_TargetList ActiveNPCs
+	; This will be our Fleet Members on grid.
+	variable obj_TargetList FleetPCs
+	; This will be Other Players not in the fleet, on grid.
+	variable obj_TargetList PCs
+	; This will be Asteroids
+	variable obj_TargetList Asteroids
+	; This will be Ice
+	variable obj_TargetList Ice
+	; This will be Gas
+	variable obj_TargetList Gas
+	
+	; This collection is to help create the sets below. Key is the name of the mineable
+	; Value is the priority number assigned.
+	variable collection:int PriorityCollection
+	; This set is for Ignored Mineables
+	variable set IgnoredMineables
+	; This set is for Highest Priority Mineables
+	variable set HighPriorityMineables
+	; This set is for Medium Priority Mineables
+	variable set MediumPriorityMineables
+	; This set is for Lowest Priority Mineables
+	variable set LowPriorityMineables
+	
+	; This string is for creating our prioritization query for Asteroids
+	variable string PrioAst = ""
+	
+	; This string is for creating our prioritization query for Gas Stuff
+	variable string PrioGas = ""
+	
+	; This string is so I can do stupid crap to modify the query string the way I need to.
+	variable string PrioSeperator = ""
+	
+	; Lets not create these queries over and over
+	variable bool TargetQueriesCreated = FALSE
+	; Is it in fact, time to mine?
+	variable bool MiningTime
+	; Is it time to activate the industrial core?
+	variable bool CoreGreen
+	; Is it time to activate the Compressor?
+	variable bool CompressorGreen
+	; Is it time to move on to the next Location? (warp)
+	variable bool ChangeVenue
+	; Do we need to start moving to a different area in the current location? (burn)
+	variable bool MoveAlong
+	; Are we inhibiting our Command Burst Usage (we need to dock soon, for instance)
+	variable bool InhibitBursts
+	; If this is true, we should request compression from our Foreman
+	variable bool NeedCompression
+	; This bool exists to trigger priority list recalculating
+	variable bool ReCalculatePriorities = FALSE
+	; Need to close the UI element we have to force open, but without making it unusable in the future
+	; and this is the stupidest way I could think of to do it.
+	variable int YouOnlyRunTwice
+
+	
+	variable int64 BurstTimer
+
+	method Initialize()
+	{
+		This[parent]:Initialize
+
+		DynamicAddMiniMode("MinerWorker", "MinerWorker")
+		This.PulseFrequency:Set[2000]
+
+		This.NonGameTiedPulse:Set[TRUE]
+		
+		if !${PriorityCollection.FirstValue}
+		{
+			timedcommand 0 "ui -load \"${Script.CurrentDirectory}/minimode/MinerWorker.xml\""
+		}
+		This.LogLevelBar:Set[${Config.LogLevelBar}]
+		
+		
+	}
+
+	method Start()
+	{
+		AttackTimestamp:Clear
+
+		if ${This.IsIdle}
+		{
+			This:LogInfo["Starting"]
+			This:QueueState["MinerWorker"]
+		}
+	}
+	
+	method Stop()
+	{
+		This:Clear
+	}
+	
+	; This exists to tell TargetList what exactly each Target List should be looking for.
+	method CreateTargetQueries()
+	{
+		; I'm not sure why I am clearing and re-entering the queries for these over and over. I'm sure there is a reason.
+		ActiveNPCs:ClearQueryString
+		FleetPCs:ClearQueryString
+		PCs:ClearQueryString
+		Asteroids:ClearQueryString
+		Ice:ClearQueryString
+		Gas:ClearQueryString
+		
+		; First up, All NPCs, filtering out the ones we really don't want to mess with.
+		ActiveNPCs:AddAllNPCs
+		; That was difficult, next up we will get our fleet members on grid.
+		FleetPCs:AddAllFleetPC
+		; Next up, non fleet member players on grid.
+		PCs:AddAllPC
+		; Is there mineable stuff in range of our mining equipment?
+		if !${Mining.JustMineIt}
+		{
+			Asteroids:AddQueryString["CategoryID = 25 && Name !~ Ice && Distance < ${Ship.ModuleList_OreMining.Range} && (${PrioAst})"]
+			Ice:AddQueryString["CategoryID = 25 && Name =- Ice && Distance < ${Ship.ModuleList_IceMining.Range}"]
+			Gas:AddQueryString["GroupID = 711 && Distance < ${Ship.ModuleList_GasMining.Range} && (${PrioGas})"]
+		}
+		else
+		{
+			Asteroids:AddQueryString["CategoryID = 25 && Name !~ Ice && Distance < ${Ship.ModuleList_OreMining.Range}"]
+			Ice:AddQueryString["CategoryID = 25 && Name =- Ice && Distance < ${Ship.ModuleList_IceMining.Range}"]
+			Gas:AddQueryString["GroupID = 711 && Distance < ${Ship.ModuleList_GasMining.Range}"]
+		}
+		TargetQueriesCreated:Set[TRUE]
+	}
+	
+	method CheckOreHold()
+	{
+		if !${Client.Inventory}
+		{
+			echo inventory not open
+		}
+		if ${EVEWindow[Inventory].ChildWindow[${MyShip.ID}, ShipGeneralMiningHold].UsedCapacity} / ${EVEWindow[Inventory].ChildWindow[${MyShip.ID}, ShipGeneralMiningHold].Capacity} > 0.8
+		{
+			EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold]:StackAll
+			if ${Mining.Config.UseCompressor}
+			{
+				if ${FullOfCompressed}
+				{
+					Mining.ReturnToStation:Set[TRUE]
+					This:LogInfo["Full - Too Much Compressed Mineables - Return to Station to Unload"]
+					return FALSE
+				}
+				elseif ${Mining.CompressionActive}
+				{
+					This:LogInfo["Compression Active - Compressing Ore"]
+					
+					variable index:int64 OreBayContents
+					variable iterator OreIterator
+		
+					MyShip:GetOreHoldCargo[OreBayContents]
+					OreBayContents:GetIterator[OreIterator]
+		
+					if ${OreIterator:First(exists)}
+					do
+					{
+						if (${OreIterator.Value.CategoryID} == 25 && !${OreIterator.Value.Name.Find["Compressed"]}) || (${OreIterator.Value.GroupID} == 711)
+						{
+							OreIterator.Value:Compress
+							This:Compression
+						}
+					}
+					while ${OreIterator:Next(exists)}
+				}
+				else
+				{
+					relay "all" -event CompressionRequest TRUE
+					This:LogInfo["Requesting Compression"]
+				}
+			}	
+			else
+			{
+				Mining.ReturnToStation:Set[TRUE]
+				This:LogInfo["Full - No Compression - Return to Station to Unload"]
+			}
+
+		}
+		else
+		{
+			if ${Mining.Config.UseCompressor}
+			{
+				relay "all" -event CompressionRequest FALSE
+				This:LogInfo["No need for compression at this time."]
+			}
+		}
+	}
+	
+	; Press the damn compress button yo
+	;method Compression()
+	;{
+		;if 
+		;{
+		;	
+		;}
+		;else
+		;{
+		;	
+		;}
+	;}
+	; This will hopefully, if I can code it, return a bool. True if we have too much compressed stuff. False if we do not.
+	; Will tinker with the ratio later.
+	member:bool FullOfCompressed()
+	{
+		variable float CompressedOreVolume=0
+		variable index:int64 OreBayContents
+		variable iterator OreIterator
+		
+		MyShip:GetOreHoldCargo[OreBayContents]
+		OreBayContents:GetIterator[OreIterator]
+		
+		if ${OreIterator:First(exists)}
+		do
+		{
+			if (${OreIterator.Value.CategoryID} == 25 && ${OreIterator.Value.Name.Find["Compressed"]}) || (${OreIterator.Value.GroupID} == 4168)
+			{
+				CompressedOreVolume:Inc[${Math.Calc[${OreIterator.Value.Quantity} * ${Ore.Value.Volume}]}]
+			}
+		}
+		while ${OreIterator:Next(exists)}
+		
+		if ${CompressedOreVolume} >= ${Math.Calc[${EVEWindow[Inventory].ChildWindow[${MyShip.ID}, ShipGeneralMiningHold].Capacity} * 0.75]}
+		{
+			return TRUE
+		}
+		else
+		{
+			return FALSE
+		}
+		
+	}
+	; Use TargetList to see if we have anything to mine here
+	method CheckForMineables()
+	{
+		Asteroids:RequestUpdate
+		Ice:RequestUpdate
+		Gas:RequestUpdate
+	}
+
+	; Use TargetList to see if we have anything to run away from here
+	method CheckForHostiles()
+	{
+		ActiveNPCs:RequestUpdate
+		PCs:RequestUpdate
+	}
+
+	; Use TargetList to see if we have anything to mine here
+	method CheckForFriendlies()
+	{
+		FleetPCs:RequestUpdate
+		PCs:RequestUpdate
+	}
+	; Here is where we will take our PriorityCollection and sort it out into the Priority Sets
+	method ReCalcPriorities()
+	{
+		IgnoredMineables:Clear
+		HighPriorityMineables:Clear
+		MediumPriorityMineables:Clear
+		LowPriorityMineables:Clear
+		
+		if ${PriorityCollection.FirstValue}
+		{
+			do
+			{
+				if ${PriorityCollection.CurrentValue} == 0
+				{
+					IgnoredMineables:Add[${PriorityCollection.CurrentKey}]
+					echo DEBUG - Adding ${PriorityCollection.CurrentKey} to Ignore List
+				}
+				if ${PriorityCollection.CurrentValue} == 1
+				{
+					HighPriorityMineables:Add[${PriorityCollection.CurrentKey}]
+					echo DEBUG - Adding ${PriorityCollection.CurrentKey} to Highest Priority List
+				}
+				if ${PriorityCollection.CurrentValue} == 2
+				{
+					MediumPriorityMineables:Add[${PriorityCollection.CurrentKey}]
+					echo DEBUG - Adding ${PriorityCollection.CurrentKey} to Medium Priority List
+				}
+				if ${PriorityCollection.CurrentValue} == 3
+				{
+					LowPriorityMineables:Add[${PriorityCollection.CurrentKey}]
+					echo DEBUG - Adding ${PriorityCollection.CurrentKey} to Low Priority List
+				}
+			}
+			while ${PriorityCollection.NextKey(exists)}
+		}
+		
+		ReCalculatePriorities:Set[FALSE]
+	}
+	
+	; Here is where we will utilize my prioritization crap I spent all this time on.
+	method CommencePrioritization()
+	{
+		PrioAst:Set["Name =- ThisSpaceForRent"]
+		PrioGas:Set["Name =- ThisSpaceForRent"]
+		if ${HighPriorityMineables.Used} > 0
+		{
+			HighPriorityMineables:ForEach["PrioAst:Concat[\" || Name =- \"\${ForEach.Value}\"\"]"]
+			HighPriorityMineables:ForEach["PrioGas:Concat[\" || Name =- \"\${ForEach.Value}\"\"]"]
+			This:CheckForMineables
+			echo DEBUG - High Priority Mineables Filter Applied
+		}
+		if ${MediumPriorityMineables.Used} > 0 && (!${Asteroids.TargetList.Used} && !${Ice.TargetList.Used} && !${Gas.TargetList.Used})
+		{
+			MediumPriorityMineables:ForEach["PrioAst:Concat[\" || Name =- \"\${ForEach.Value}\"\"]"]
+			MediumPriorityMineables:ForEach["PrioGas:Concat[\" || Name =- \"\${ForEach.Value}\"\"]"]
+			echo DEBUG - Medium Priority Mineables Filter Applied
+			This:CheckForMineables
+		}
+		if ${LowPriorityMineables.Used} > 0 && (!${Asteroids.TargetList.Used} && !${Ice.TargetList.Used} && !${Gas.TargetList.Used})
+		{
+			LowPriorityMineables:ForEach["PrioAst:Concat[\" || Name =- \"\${ForEach.Value}\"\"]"]
+			LowPriorityMineables:ForEach["PrioGas:Concat[\" || Name =- \"\${ForEach.Value}\"\"]"]
+			echo DEBUG - Low Priority Mineables Filter Applied
+			This:CheckForMineables
+		}
+	
+	}
+	
+	; Main loop for this minimode.
+	member:bool MinerWorker()
+	{
+		if ${Me.InStation}
+		{
+			return FALSE
+		}
+		if !${Client.InSpace}
+		{
+			return FALSE
+		}
+		if ${Me.ToEntity.Mode} == MOVE_WARPING
+		{
+			return FALSE
+		}
+		;echo ${PriorityCollection.FirstValue} Prio Debug
+		;echo ${Config.BezdnacinePriority} Bez Debug
+		if ${YouOnlyRunTwice} < 2
+		{
+			YouOnlyRunTwice:Inc[1]
+			if ${PriorityCollection.FirstValue}
+			{
+				timedcommand 0 "ui -unload \"${Script.CurrentDirectory}/minimode/MinerWorker.xml\""
+				ReCalculatePriorities:Set[TRUE]
+			}
+		}
+		; This bool will be set by a UI button. You click it and it sorts priority collection into lists. It will also be triggered once automatically
+		; When we start the bot.
+		if ${ReCalculatePriorities}
+		{
+			TargetQueriesCreated:Set[FALSE]
+			This:ReCalcPriorities
+		}
+		if !${Mining.Config.JustMineIt}
+		{
+			This:CommencePrioritization
+		}
+		;if !${Mining.ClearToMine}
+		;{
+		;	return FALSE
+		;}
+		if !${TargetQueriesCreated}
+		{
+			This:CreateTargetQueries
+		}
+		This:CheckForMineables
+		This:CheckForHostiles
+		This:CheckForFriendlies
+
+		
+		echo ${Asteroids.TargetList.Used} ${Ice.TargetList.Used} ${Gas.TargetList.Used}
+		
+		; Alright, lets get down to business here. This minimode exists for the actual miners to do actual mining.
+		; This is the mining equivalent of TargetManager, really. What does that mean?
+		; We need to do like literally exactly 2 things, find targets (or their absense), apply our modules to those targets.
+		; All navigation is being handled by the mainmode, we don't care about local. We don't care about NPCs or other players, none of
+		; That shit even matters AT ALL here because hey this is a minimode, it can do whatever it wants while whatever else is going on.
+		
+		if (${Asteroids.TargetList.Used} || ${Ice.TargetList.Used} || ${Gas.TargetList.Used})
+		{
+			if ${Asteroids.TargetList.Used}
+			{
+				Asteroids.AutoLock:Set[TRUE]
+			}
+			if ${Ice.TargetList.Used}
+			{
+				Ice.AutoLock:Set[TRUE]
+			}
+			if ${Gas.TargetList.Used}
+			{
+				Gas.AutoLock:Set[TRUE]
+			}
+		}
+		
+		; We have locked targets of the appropriate type
+		if (${Asteroids.LockedTargetList.Used} || ${Ice.LockedTargetList.Used} || ${Gas.LockedTargetList.Used}) 
+		{
+			if ${Asteroids.LockedTargetList.Used} && ${Ship.ModuleList_OreMining.InactiveCount} > 0
+			{
+				if ${Asteroids.LockedTargetList.Used} > 1 && ${Ship.ModuleList_OreMining.InactiveCount} > 1
+				{
+					Ship.ModuleList_OreMining:ActivateOne[${Asteroids.LockedTargetList.Get[1]}]
+					Ship.ModuleList_OreMining:ActivateOne[${Asteroids.LockedTargetList.Get[2]}]
+				}
+				else
+				{
+					Ship.ModuleList_OreMining:ActivateOne[${Asteroids.LockedTargetList.Get[1]}]
+				}
+			}
+			if ${Ice.LockedTargetList.Used} && ${Ship.ModuleList_IceMining.InactiveCount} > 0
+			{
+				if ${Ice.LockedTargetList.Used} > 1 && ${Ship.ModuleList_IceMining.InactiveCount} > 1
+				{
+					Ship.ModuleList_Iceining:ActivateOne[${Ice.LockedTargetList.Get[1]}]
+					Ship.ModuleList_IceMining:ActivateOne[${Ice.LockedTargetList.Get[2]}]
+				}
+				else
+				{
+					Ship.ModuleList_IceMining:ActivateOne[${Ice.LockedTargetList.Get[1]}]
+				}
+			}
+			if ${Gas.LockedTargetList.Used} && ${Ship.ModuleList_GasMining.InactiveCount} > 0
+			{
+				if ${Gas.LockedTargetList.Used} > 1 && ${Ship.ModuleList_GasMining.InactiveCount} > 1
+				{
+					Ship.ModuleList_Gasining:ActivateOne[${Gas.LockedTargetList.Get[1]}]
+					Ship.ModuleList_GasMining:ActivateOne[${Gas.LockedTargetList.Get[2]}]
+				}
+				else
+				{
+					Ship.ModuleList_GasMining:ActivateOne[${Gas.LockedTargetList.Get[1]}]
+				}
+			}
+		}
+		
+		This:CheckOreHold
+		
+		if (!${Asteroids.TargetList.Used} && !${Ice.TargetList.Used} && !${Gas.TargetList.Used})
+		{
+			Asteroids.AutoLock:Set[FALSE]
+			Ice.AutoLock:Set[FALSE]
+			Gas.AutoLock:Set[FALSE]
+		}
+	
+		return FALSE
+	}
+}

@@ -1,0 +1,2736 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ISUI>
+	<template name='Information.Font'>
+		<Name>Segoe</Name>
+		<Size>24</Size>
+		<Color>FFFFFFFF</Color>
+	</template>
+
+	<window name='Tehbot_Mining'>
+		<Visible>1</Visible>
+		<BackGroundColor></BackGroundColor>
+		<Border>0</Border>
+		<X>200</X>
+		<Y>300</Y>
+		<Width>1600</Width>
+		<Height>800</Height>
+		<TitleBar>
+			<Width>100%</Width>
+			<Height>40</Height>
+			<Border>0</Border>
+			<BackgroundColor>FF000000</BackgroundColor>
+			<Children>
+				<Text name='Tehbot_Mining_TitleBar_Title'>
+					<X>0</X>
+					<Y>3</Y>
+					<Width>100%</Width>
+					<Height>40</Height>
+					<Alignment>Center</Alignment>
+					<Text>Mining Configuration</Text>
+				</Text>
+				<button	Name='Close'>
+					<X>r80</X>
+					<Y>0</Y>
+					<Width>80</Width>
+					<Height>40</Height>
+					<Text>Close</Text>
+					<OnLeftClick>
+						ui -unload "&filepath;/Mining"
+					</OnLeftClick>
+				</button>
+			</Children>
+		</TitleBar>
+		<Children name="Tehbot_Mining_Children">
+			<Frame name="Tehbot_Mining_Frame">
+				<X>0</X>
+				<Y>30</Y>
+				<Width>100%</Width>
+				<Height>100%</Height>
+				<BackgroundColor>FF000000</BackgroundColor>
+				<Border>1</Border>
+				<BorderColor>FFFFFFFF</BorderColor>
+				<Children name="Tehbot_Mining_Frame_Children">
+					<Text name='obj_MiningInformation'>
+						<Font template='Information.Font' />
+						<X>1%</X>
+						<Y>1%</Y>
+						<Width>98%</Width>
+						<Height>18%</Height>
+						<Wrap />
+						<Text>Mining Settings go Here</Text>
+					</Text>
+
+			<TabControl	Name='MiningTabs'>
+				<X>0</X>
+				<Y>30</Y>
+				<Width>100%</Width>
+				<Height>100%</Height>
+				<Tabs>
+					<Tab Name='MainMiningTab'>
+						<frame name='MainMiningTabFrame'>
+							<BackgroundColor>FF000000</BackgroundColor>
+							<Border>1</Border>
+							<BorderColor>FFFFFFFF</BorderColor>
+							<X>0</X>
+							<Y>0</Y>
+							<Height>100%</Height>
+							<Width>100%</Width>
+							<OnLoad>
+								This:SetLeftClickThru[TRUE]
+							</OnLoad>
+						</frame>
+
+					<Checkbox name='GroupMining'>
+						<X>1%</X>
+						<Y>4%</Y>
+						<Width>30%</Width>
+						<Height>5%</Height>
+						<Text>Group Mining</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.Mining.Config.GroupMining}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.Mining.Config:SetGrrrMining[${This.Checked}]
+						</OnLeftClick>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["If checked, you are in a Group (does not imply fleet). Unchecked, mining alone. This doesn't do anything yet."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Checkbox>
+					
+					<Checkbox name='FleetUp'>
+						<X>1%</X>
+						<Y>9%</Y>
+						<Width>30%</Width>
+						<Height>5%</Height>
+						<Text>Join Fleet</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.Mining.Config.FleetUp}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.Mining.Config:SetFleetUp[${This.Checked}]
+						</OnLeftClick>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["If checked, we are mining in a Fleet."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Checkbox>
+					
+					<Checkbox name='FleetBoss'>
+						<X>1%</X>
+						<Y>14%</Y>
+						<Width>30%</Width>
+						<Height>5%</Height>
+						<Text>I Am Da Boss</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.Mining.Config.FleetBoss}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.Mining.Config:SetFleetBoss[${This.Checked}]
+						</OnLeftClick>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["We are in a Fleet, and we are Da Boss. Do not make more than one boss."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Checkbox>
+
+					<Checkbox name='TakeBreaks'>
+						<X>1%</X>
+						<Y>19%</Y>
+						<Width>30%</Width>
+						<Height>5%</Height>
+						<Text>Take Breaks</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.Mining.Config.TakeBreaks}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.Mining.Config:SetTakeBreaks[${This.Checked}]
+						</OnLeftClick>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["We should periodically take breaks. If there is a boss, only the bosses' setting will be respected."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Checkbox>					
+
+					<Text name='BreakHowOftenTitle'>
+						<X>2%</X>
+						<Y>24%</Y>
+						<Width>30%</Width>
+						<Height>6%</Height>
+						<Alignment>Left</Alignment>
+						<Text>Break How Often (Minutes)</Text>
+					</Text>
+					<Textentry Name="BreakHowOften">
+						<Font template='Information.Font' />
+						<BackgroundColor>FF000000</BackgroundColor>
+						<Border>1</Border>
+						<BorderColor>FFFFFFFF</BorderColor>
+						<X>1%</X>
+						<Y>24%</Y>
+						<Width>5%</Width>
+						<Height>3%</Height>
+						<OnLoad>
+							This:SetText[${Script[Tehbot].VariableScope.Mining.Config.BreakHowOften}]
+						</OnLoad>
+						<OnChange>
+							Script[Tehbot].VariableScope.Mining.Config:SetBreakHowOften[${This.Text}]
+						</OnChange>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["How often do we take breaks, in minutes. Every hour and a half = 90 minutes. Why am I explaining this?"]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Textentry>
+
+					<Text name='BreakHowLongTitle'>
+						<X>2%</X>
+						<Y>29%</Y>
+						<Width>30%</Width>
+						<Height>6%</Height>
+						<Alignment>Left</Alignment>
+						<Text>Break Duration (Minutes)</Text>
+					</Text>
+					<Textentry Name="BreakHowLong">
+						<Font template='Information.Font' />
+						<BackgroundColor>FF000000</BackgroundColor>
+						<Border>1</Border>
+						<BorderColor>FFFFFFFF</BorderColor>
+						<X>1%</X>
+						<Y>29%</Y>
+						<Width>5%</Width>
+						<Height>3%</Height>
+						<OnLoad>
+							This:SetText[${Script[Tehbot].VariableScope.Mining.Config.BreakHowLong}]
+						</OnLoad>
+						<OnChange>
+							Script[Tehbot].VariableScope.Mining.Config:SetBreakHowLong[${This.Text}]
+						</OnChange>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["How long will we break for, in minutes."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Textentry>	
+
+					<Checkbox name='UseIndustrialCore'>
+						<X>1%</X>
+						<Y>34%</Y>
+						<Width>15%</Width>
+						<Height>5%</Height>
+						<Text>Use Industrial Core</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.Mining.Config.UseIndustrialCore}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.Mining.Config:SetUseIndustrialCore[${This.Checked}]
+						</OnLeftClick>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["We are using our industrial core. This is so we know to grab fuel. Also if I ever set up rorquals that will be needed too. Also needed for Using a Compressor."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Checkbox>	
+
+					<Checkbox name='UseCompressor'>
+						<X>16%</X>
+						<Y>34%</Y>
+						<Width>15%</Width>
+						<Height>5%</Height>
+						<Text>Use Compressor</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.Mining.Config.UseCompressor}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.Mining.Config:SetUseCompressor[${This.Checked}]
+						</OnLeftClick>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["We will use our compressor. This will be set up to work on demand, I might make another gimmick setting so you can leave the compressor on forever. But that sounds pretty stupid to me."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Checkbox>	
+
+					<Text name='UnitsHeavyWaterTitle'>
+						<X>6%</X>
+						<Y>39%</Y>
+						<Width>30%</Width>
+						<Height>6%</Height>
+						<Alignment>Left</Alignment>
+						<Text>Units of Heavy Water</Text>
+					</Text>
+					<Textentry Name="UnitsHeavyWater">
+						<Font template='Information.Font' />
+						<BackgroundColor>FF000000</BackgroundColor>
+						<Border>1</Border>
+						<BorderColor>FFFFFFFF</BorderColor>
+						<X>1%</X>
+						<Y>39%</Y>
+						<Width>5%</Width>
+						<Height>3%</Height>
+						<OnLoad>
+							This:SetText[${Script[Tehbot].VariableScope.Mining.Config.UnitsHeavyWater}]
+						</OnLoad>
+						<OnChange>
+							Script[Tehbot].VariableScope.Mining.Config:SetUnitsHeavyWater[${This.Text}]
+						</OnChange>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["How many units of heavy water to carry in our Fuel Bay. Ensure this number actually fits please."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Textentry>
+
+					<Checkbox name='MineAtLeader'>
+						<X>35%</X>
+						<Y>46%</Y>
+						<Width>15%</Width>
+						<Height>5%</Height>
+						<Text>Mine at Fleet Boss</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.Mining.Config.MineAtLeader}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.Mining.Config:SetMineAtLeader[${This.Checked}]
+						</OnLeftClick>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["We will mine wherever Da Boss is. Do not select multiple mining location boxes."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Checkbox>
+
+					<Checkbox name='MineAtOreAnom'>
+						<X>51%</X>
+						<Y>46%</Y>
+						<Width>15%</Width>
+						<Height>5%</Height>
+						<Text>Mine at Anomaly</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.Mining.Config.MineAtOreAnom}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.Mining.Config:SetMineAtOreAnom[${This.Checked}]
+						</OnLeftClick>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["We will mine at Ore Anoms. Do not select multiple mining location boxes."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Checkbox>					
+
+					<Checkbox name='MineAtLocalBelt'>
+						<X>67%</X>
+						<Y>46%</Y>
+						<Width>15%</Width>
+						<Height>5%</Height>
+						<Text>Mine at Asteroid Belt</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.Mining.Config.MineAtLocalBelt}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.Mining.Config:SetMineAtLocalBelt[${This.Checked}]
+						</OnLeftClick>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["We will mine at local asteroid belts. Do not select multiple mining location boxes."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Checkbox>
+					
+					<Checkbox name='MineAtBookmark'>
+						<X>35%</X>
+						<Y>51%</Y>
+						<Width>15%</Width>
+						<Height>5%</Height>
+						<Text>Mine at Bookmark</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.Mining.Config.MineAtBookmark}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.Mining.Config:SetMineAtBookmark[${This.Checked}]
+						</OnLeftClick>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["We will mine wherever a bookmark has the prefix in the textbox. Do not select multiple mining location boxes."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Checkbox>
+					
+					<Textentry Name="MineAtBookmarkPrefix">
+						<Font template='Information.Font' />
+						<BackgroundColor>FF000000</BackgroundColor>
+						<Border>1</Border>
+						<BorderColor>FFFFFFFF</BorderColor>
+						<X>50%</X>
+						<Y>51%</Y>
+						<Width>30%</Width>
+						<Height>5%</Height>
+						<OnLoad>
+							This:SetText[${Script[Tehbot].VariableScope.Mining.Config.MineAtBookmarkPrefix}]
+						</OnLoad>
+						<OnChange>
+							Script[Tehbot].VariableScope.Mining.Config:SetMineAtBookmarkPrefix[${This.Text}]
+						</OnChange>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["What is the mining bookmark prefix?"]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Textentry>
+					
+					<Checkbox name='JustMineIt'>
+						<X>35%</X>
+						<Y>55%</Y>
+						<Width>10%</Width>
+						<Height>5%</Height>
+						<Text>JUST MINE IT</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.Mining.Config.JustMineIt}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.Mining.Config:SetJustMineIt[${This.Checked}]
+						</OnLeftClick>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["If this is checked, we will be ignoring all the hard work I put into ore prioritization. We will just mine whatever is in range of our mining tools. Ore prioritization is located in the MinerWorker minimode config page."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Checkbox>
+					
+					<Checkbox name='UseMiningCrystals'>
+						<X>35%</X>
+						<Y>6%</Y>
+						<Width>50%</Width>
+						<Height>5%</Height>
+						<Text>Use Mining Crystals</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.Mining.Config.UseMiningCrystals}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.Mining.Config:SetUseMiningCrystals[${This.Checked}]
+							if ${This.Checked}
+							{
+								UIElement[MiningCrystal@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:Show
+								UIElement[MiningCrystal2@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:Show
+							}
+							else
+							{
+								UIElement[MiningCrystal@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:Hide
+								UIElement[MiningCrystal2@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:Hide
+							}
+						</OnLeftClick>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["Use Mining Crystals, it isn't going to pick for you, select your crystal. Only one type at a time for now."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Checkbox>
+					
+					<Text name='MiningCrystal'>
+						<X>35%</X>
+						<Y>10%</Y>
+						<Width>50%</Width>
+						<Height>5%</Height>
+						<Alignment>Left</Alignment>
+						<Text>Mining Crystal Type</Text>
+						<OnLoad>
+							if !${Script[Tehbot].VariableScope.Mining.Config.UseMiningCrystals}
+							{
+								This:Hide
+							}
+						</OnLoad>
+					</Text>
+					<combobox Name="MiningCrystal2">
+						<Font template='Information.Font' />
+						<BackgroundColor>FF000000</BackgroundColor>
+						<X>50%</X>
+						<Y>8%</Y>
+						<Width>49%</Width>
+						<Height>5%</Height>
+						<OnLoad>
+							variable index:item cargo
+							EVEWindow[Inventory].ChildWindow[${Me.ShipID},ShipCargo]:GetItems[cargo]
+							cargo:RemoveByQuery[${LavishScript.CreateQuery[Category =- "Charge"]}, FALSE]
+							variable iterator c
+							cargo:GetIterator[c]
+							if ${c:First(exists)}
+								do
+								{
+									if !${This.ItemByText[${c.Value.Type}](exists)}
+									{
+										This:AddItem[${c.Value.Type}]
+									}
+								}
+								while ${c:Next(exists)}
+							if ${Me.Station(exists)}
+							{
+								EVEWindow[Inventory].ChildWindow[${Me.Station.ID},StationItems]:GetItems[cargo]
+								cargo:RemoveByQuery[${LavishScript.CreateQuery[Category =- "Charge"]}, FALSE]
+								if ${c:First(exists)}
+									do
+									{
+										if !${This.ItemByText[${c.Value.Type}](exists)}
+										{
+											This:AddItem[${c.Value.Type}]
+										}
+									}
+									while ${c:Next(exists)}
+							}
+							if ${Script[Tehbot].VariableScope.Mining.Config.WhatMiningCrystal.NotNULLOrEmpty}
+							{
+								if !${This.ItemByText[${Script[Tehbot].VariableScope.Mining.Config.WhatMiningCrystal}](exists)}
+									This:AddItem[${Script[Tehbot].VariableScope.Mining.Config.WhatMiningCrystal}]
+							}
+							This.ItemByText[${Script[Tehbot].VariableScope.Mining.Config.WhatMiningCrystal}]:Select
+							This:SetZOrder[movetop]
+							if !${Script[Tehbot].VariableScope.Mining.Config.UseMiningCrystals}
+							{
+								This:Hide
+							}
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.Mining.Config:SetWhatMiningCrystal[${This.SelectedItem.Text}]
+						</OnSelect>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["Mining Crystal Type"]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</combobox>	
+
+					<Text name='HowManyMiningCrystalsTitle'>
+						<X>45%</X>
+						<Y>16%</Y>
+						<Width>30%</Width>
+						<Height>6%</Height>
+						<Alignment>Left</Alignment>
+						<Text>Units of Mining Crystals</Text>
+					</Text>
+					<Textentry Name="HowManyMiningCrystals">
+						<Font template='Information.Font' />
+						<BackgroundColor>FF000000</BackgroundColor>
+						<Border>1</Border>
+						<BorderColor>FFFFFFFF</BorderColor>
+						<X>35%</X>
+						<Y>16%</Y>
+						<Width>5%</Width>
+						<Height>3%</Height>
+						<OnLoad>
+							This:SetText[${Script[Tehbot].VariableScope.Mining.Config.HowManyMiningCrystals}]
+						</OnLoad>
+						<OnChange>
+							Script[Tehbot].VariableScope.Mining.Config:SetHowManyMiningCrystals[${This.Text}]
+						</OnChange>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["How many units of our chosen mining crystal to put in cargo. Ensure this number actually fits please. Also, you shouldn't need too many."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Textentry>
+					
+					<Checkbox name='UseCommandBurstOne'>
+						<X>35%</X>
+						<Y>19%</Y>
+						<Width>50%</Width>
+						<Height>5%</Height>
+						<Text>Command Charge 1</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.Mining.Config.UseCommandBurstOne}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.Mining.Config:SetUseCommandBurstOne[${This.Checked}]
+							if ${This.Checked}
+							{
+								UIElement[CommandBurst@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:Show
+								UIElement[CommandBurst2@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:Show
+							}
+							else
+							{
+								UIElement[CommandBurst@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:Hide
+								UIElement[CommandBurst2@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:Hide
+							}
+						</OnLeftClick>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["First Command Burst Charge. Use if you are in a ship that boosts."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Checkbox>
+		
+					<combobox Name="CommandBurst2">
+						<Font template='Information.Font' />
+						<BackgroundColor>FF000000</BackgroundColor>
+						<X>50%</X>
+						<Y>19%</Y>
+						<Width>49%</Width>
+						<Height>5%</Height>
+						<OnLoad>
+							variable index:item cargo
+							EVEWindow[Inventory].ChildWindow[${Me.ShipID},ShipCargo]:GetItems[cargo]
+							cargo:RemoveByQuery[${LavishScript.CreateQuery[Category =- "Charge"]}, FALSE]
+							variable iterator c
+							cargo:GetIterator[c]
+							if ${c:First(exists)}
+								do
+								{
+									if !${This.ItemByText[${c.Value.Type}](exists)}
+									{
+										This:AddItem[${c.Value.Type}]
+									}
+								}
+								while ${c:Next(exists)}
+							if ${Me.Station(exists)}
+							{
+								EVEWindow[Inventory].ChildWindow[${Me.Station.ID},StationItems]:GetItems[cargo]
+								cargo:RemoveByQuery[${LavishScript.CreateQuery[Category =- "Charge"]}, FALSE]
+								if ${c:First(exists)}
+									do
+									{
+										if !${This.ItemByText[${c.Value.Type}](exists)}
+										{
+											This:AddItem[${c.Value.Type}]
+										}
+									}
+									while ${c:Next(exists)}
+							}
+							if ${Script[Tehbot].VariableScope.Mining.Config.CommandBurstOne.NotNULLOrEmpty}
+							{
+								if !${This.ItemByText[${Script[Tehbot].VariableScope.Mining.Config.CommandBurstOne}](exists)}
+									This:AddItem[${Script[Tehbot].VariableScope.Mining.Config.CommandBurstOne}]
+							}
+							This.ItemByText[${Script[Tehbot].VariableScope.Mining.Config.CommandBurstOne}]:Select
+							This:SetZOrder[movetop]
+							if !${Script[Tehbot].VariableScope.Mining.Config.CommandBurstOne}
+							{
+								This:Hide
+							}
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.Mining.Config:SetCommandBurstOne[${This.SelectedItem.Text}]
+						</OnSelect>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["First Boost Charge Type]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</combobox>	
+					
+					<Checkbox name='UseCommandBurstTwo'>
+						<X>35%</X>
+						<Y>25%</Y>
+						<Width>50%</Width>
+						<Height>5%</Height>
+						<Text>Command Charge 2</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.Mining.Config.UseCommandBurstTwo}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.Mining.Config:SetUseCommandBurstTwo[${This.Checked}]
+							if ${This.Checked}
+							{
+								UIElement[CommandBlurst@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:Show
+								UIElement[CommandBlurst2@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:Show
+							}
+							else
+							{
+								UIElement[CommandBlurst@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:Hide
+								UIElement[CommandBlurst2@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:Hide
+							}
+						</OnLeftClick>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["Second Command Burst Charge. Use if you are in a ship that boosts."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Checkbox>
+					
+					<combobox Name="CommandBlurst2">
+						<Font template='Information.Font' />
+						<BackgroundColor>FF000000</BackgroundColor>
+						<X>50%</X>
+						<Y>25%</Y>
+						<Width>49%</Width>
+						<Height>5%</Height>
+						<OnLoad>
+							variable index:item cargo
+							EVEWindow[Inventory].ChildWindow[${Me.ShipID},ShipCargo]:GetItems[cargo]
+							cargo:RemoveByQuery[${LavishScript.CreateQuery[Category =- "Charge"]}, FALSE]
+							variable iterator c
+							cargo:GetIterator[c]
+							if ${c:First(exists)}
+								do
+								{
+									if !${This.ItemByText[${c.Value.Type}](exists)}
+									{
+										This:AddItem[${c.Value.Type}]
+									}
+								}
+								while ${c:Next(exists)}
+							if ${Me.Station(exists)}
+							{
+								EVEWindow[Inventory].ChildWindow[${Me.Station.ID},StationItems]:GetItems[cargo]
+								cargo:RemoveByQuery[${LavishScript.CreateQuery[Category =- "Charge"]}, FALSE]
+								if ${c:First(exists)}
+									do
+									{
+										if !${This.ItemByText[${c.Value.Type}](exists)}
+										{
+											This:AddItem[${c.Value.Type}]
+										}
+									}
+									while ${c:Next(exists)}
+							}
+							if ${Script[Tehbot].VariableScope.Mining.Config.CommandBurstTwo.NotNULLOrEmpty}
+							{
+								if !${This.ItemByText[${Script[Tehbot].VariableScope.Mining.Config.CommandBurstTwo}](exists)}
+									This:AddItem[${Script[Tehbot].VariableScope.Mining.Config.CommandBurstTwo}]
+							}
+							This.ItemByText[${Script[Tehbot].VariableScope.Mining.Config.CommandBurstTwo}]:Select
+							This:SetZOrder[movetop]
+							if !${Script[Tehbot].VariableScope.Mining.Config.CommandBurstTwo}
+							{
+								This:Hide
+							}
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.Mining.Config:SetCommandBurstTwo[${This.SelectedItem.Text}]
+						</OnSelect>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["Second Boost Charge Type"]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</combobox>	
+					
+					<Checkbox name='UseCommandBurstThree'>
+						<X>35%</X>
+						<Y>31%</Y>
+						<Width>50%</Width>
+						<Height>5%</Height>
+						<Text>Command Charge 3</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.Mining.Config.UseCommandBurstThree}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.Mining.Config:SetUseCommandBurstThree[${This.Checked}]
+							if ${This.Checked}
+							{
+								UIElement[CommandBorst@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:Show
+								UIElement[CommandBorst2@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:Show
+							}
+							else
+							{
+								UIElement[CommandBorst@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:Hide
+								UIElement[CommandBorst2@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:Hide
+							}
+						</OnLeftClick>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["Third Command Burst Charge. Use if you are in a ship that boosts."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Checkbox>
+					
+					<combobox Name="CommandBorst2">
+						<Font template='Information.Font' />
+						<BackgroundColor>FF000000</BackgroundColor>
+						<X>50%</X>
+						<Y>31%</Y>
+						<Width>49%</Width>
+						<Height>5%</Height>
+						<OnLoad>
+							variable index:item cargo
+							EVEWindow[Inventory].ChildWindow[${Me.ShipID},ShipCargo]:GetItems[cargo]
+							cargo:RemoveByQuery[${LavishScript.CreateQuery[Category =- "Charge"]}, FALSE]
+							variable iterator c
+							cargo:GetIterator[c]
+							if ${c:First(exists)}
+								do
+								{
+									if !${This.ItemByText[${c.Value.Type}](exists)}
+									{
+										This:AddItem[${c.Value.Type}]
+									}
+								}
+								while ${c:Next(exists)}
+							if ${Me.Station(exists)}
+							{
+								EVEWindow[Inventory].ChildWindow[${Me.Station.ID},StationItems]:GetItems[cargo]
+								cargo:RemoveByQuery[${LavishScript.CreateQuery[Category =- "Charge"]}, FALSE]
+								if ${c:First(exists)}
+									do
+									{
+										if !${This.ItemByText[${c.Value.Type}](exists)}
+										{
+											This:AddItem[${c.Value.Type}]
+										}
+									}
+									while ${c:Next(exists)}
+							}
+							if ${Script[Tehbot].VariableScope.Mining.Config.CommandBurstThree.NotNULLOrEmpty}
+							{
+								if !${This.ItemByText[${Script[Tehbot].VariableScope.Mining.Config.CommandBurstThree}](exists)}
+									This:AddItem[${Script[Tehbot].VariableScope.Mining.Config.CommandBurstThree}]
+							}
+							This.ItemByText[${Script[Tehbot].VariableScope.Mining.Config.CommandBurstThree}]:Select
+							This:SetZOrder[movetop]
+							if !${Script[Tehbot].VariableScope.Mining.Config.CommandBurstThree}
+							{
+								This:Hide
+							}
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.Mining.Config:SetCommandBurstThree[${This.SelectedItem.Text}]
+						</OnSelect>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["Third Boost Charge Type"]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</combobox>	
+					
+					<Text name='CommandBurstAmountTitle'>
+						<X>45%</X>
+						<Y>41%</Y>
+						<Width>30%</Width>
+						<Height>6%</Height>
+						<Alignment>Left</Alignment>
+						<Text>Units of Command Charges</Text>
+					</Text>
+					<Textentry Name="CommandBurstAmount">
+						<Font template='Information.Font' />
+						<BackgroundColor>FF000000</BackgroundColor>
+						<Border>1</Border>
+						<BorderColor>FFFFFFFF</BorderColor>
+						<X>35%</X>
+						<Y>41%</Y>
+						<Width>5%</Width>
+						<Height>3%</Height>
+						<OnLoad>
+							This:SetText[${Script[Tehbot].VariableScope.Mining.Config.CommandBurstAmount}]
+						</OnLoad>
+						<OnChange>
+							Script[Tehbot].VariableScope.Mining.Config:SetCommandBurstAmount[${This.Text}]
+						</OnChange>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["How many units command burst charges to put in cargo."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Textentry>
+					
+					<Checkbox name='UseDrones'>
+						<X>1%</X>
+						<Y>49%</Y>
+						<Width>30%</Width>
+						<Height>5%</Height>
+						<Text>Use Drones</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.Mining.Config.UseDrones}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.Mining.Config:SetUseDrones[${This.Checked}]
+							if ${This.Checked}
+							{
+								UIElement[DroneType@Tehbot_Mining_Frame@Tehbot_Mining]:Show
+							}
+							else
+							{
+								UIElement[DroneType@Tehbot_Mining_Frame@Tehbot_Mining]:Hide
+							}
+						</OnLeftClick>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["Check this if you'll be using drones to shoot small shit. This tells the bot to make sure to top off drones before running a Mining."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Checkbox>
+
+					<combobox Name="DroneType">
+						<Font template='Information.Font' />
+						<BackgroundColor>FF000000</BackgroundColor>
+						<X>1%</X>
+						<Y>53%</Y>
+						<Width>30%</Width>
+						<Height>5%</Height>
+						<OnLoad>
+							if !${Script[Tehbot].VariableScope.Mining.Config.UseDrones}
+								This:Hide
+							variable index:item cargo
+							variable iterator c
+							EVEWindow[Inventory].ChildWindow[${Me.ShipID},ShipDroneBay]:GetItems[cargo]
+							cargo:RemoveByQuery[${LavishScript.CreateQuery[Category =- "Drone"]}, FALSE]
+							cargo:GetIterator[c]
+							if ${c:First(exists)}
+								do
+								{
+									if !${This.ItemByText[${c.Value.Type}](exists)}
+									{
+										This:AddItem[${c.Value.Type}]
+									}
+								}
+								while ${c:Next(exists)}
+							if ${Me.Station(exists)}
+							{
+								EVEWindow[Inventory].ChildWindow[${Me.Station.ID},StationItems]:GetItems[cargo]
+								cargo:RemoveByQuery[${LavishScript.CreateQuery[Category =- "Drone"]}, FALSE]
+								cargo:GetIterator[c]
+								if ${c:First(exists)}
+									do
+									{
+										if !${This.ItemByText[${c.Value.Type}](exists)}
+											This:AddItem[${c.Value.Type}]
+									}
+									while ${c:Next(exists)}
+							}
+							if ${Script[Tehbot].VariableScope.Mining.Config.DroneType.NotNULLOrEmpty}
+							{
+								if !${This.ItemByText[${Script[Tehbot].VariableScope.Mining.Config.DroneType}](exists)}
+									This.ItemByText[${Script[Tehbot].VariableScope.Mining.Config.DroneType}]:Select
+							}
+							This.ItemByText[${Script[Tehbot].VariableScope.Mining.Config.DroneType}]:Select
+							This:SetZOrder[movetop]
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.Mining.Config:SetDroneType[${This.SelectedItem.Text}]
+						</OnSelect>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["This configures the type of drone the bot will top off before a Mining."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</combobox>
+
+					<Text name='MunitionStorageTitle'>
+						<X>36%</X>
+						<Y>60%</Y>
+						<Width>30%</Width>
+						<Height>6%</Height>
+						<Alignment>Center</Alignment>
+						<Text>Ammo/Drone Storage</Text>
+					</Text>
+					<listbox Name="MunitionStorage">
+						<Font template='Information.Font' />
+						<BackgroundColor>FF000000</BackgroundColor>
+						<Border>1</Border>
+						<BorderColor>FFFFFFFF</BorderColor>
+						<X>36%</X>
+						<Y>66%</Y>
+						<Width>30%</Width>
+						<Height>9%</Height>
+						<Items>
+							<Item>Personal Hangar</Item>
+							<Item>Corporation Hangar</Item>
+						</Items>
+						<OnLoad>
+							This.ItemByText[${Script[Tehbot].VariableScope.Mining.Config.MunitionStorage}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.Mining.Config:SetMunitionStorage[${This.SelectedItem.Text}]
+							switch ${This.SelectedItem.Text}
+							{
+								case Corporation Hangar
+									UIElement[MunitionStorageFolderTitle@Tehbot_Mining_Frame@Tehbot_Mining]:Show
+									UIElement[MunitionStorageFolder@Tehbot_Mining_Frame@Tehbot_Mining]:Show
+									break
+								case Personal Hangar
+									UIElement[MunitionStorageFolderTitle@Tehbot_Mining_Frame@Tehbot_Mining]:Hide
+									UIElement[MunitionStorageFolder@Tehbot_Mining_Frame@Tehbot_Mining]:Hide
+									break
+							}
+						</OnSelect>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["Use this field to configure where you would like Tehbot to unload ore."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</listbox>
+
+					<Text name='MunitionStorageFolderTitle'>
+						<X>69%</X>
+						<Y>60%</Y>
+						<Width>30%</Width>
+						<Height>5%</Height>
+						<Alignment>Center</Alignment>
+						<Text>Corporation Folder</Text>
+						<OnLoad>
+							switch ${Script[Tehbot].VariableScope.Mining.Config.MunitionStorage}
+							{
+								case Corporation Hangar
+									This:Show
+									break
+								default
+									This:Hide
+									break
+							}
+						</OnLoad>
+					</Text>
+					<listbox Name="MunitionStorageFolder">
+						<Font template='Information.Font' />
+						<BackgroundColor>FF000000</BackgroundColor>
+						<Border>1</Border>
+						<BorderColor>FFFFFFFF</BorderColor>
+						<X>69%</X>
+						<Y>66%</Y>
+						<Width>30%</Width>
+						<Height>10%</Height>
+						<Items>
+							<Item>Folder1</Item>
+							<Item>Folder2</Item>
+							<Item>Folder3</Item>
+							<Item>Folder4</Item>
+							<Item>Folder5</Item>
+							<Item>Folder6</Item>
+							<Item>Folder7</Item>
+						</Items>
+						<OnLoad>
+							switch ${Script[Tehbot].VariableScope.Mining.Config.MunitionStorage}
+							{
+								case Corporation Hangar
+									This:Show
+									break
+								default
+									This:Hide
+									break
+							}
+							This.ItemByText["${Script[Tehbot].VariableScope.Mining.Config.MunitionStorageFolder}"]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.Mining.Config:SetMunitionStorageFolder[${This.SelectedItem.Text}]
+						</OnSelect>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["This field is used to further configure your dropoff type for types that have additional options, like Corporate Hangars."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</listbox>
+
+					<Text name='HomeStructureTitle'>
+						<X>1%</X>
+						<Y>65%</Y>
+						<Width>30%</Width>
+						<Height>5%</Height>
+						<Alignment>Center</Alignment>
+						<Text>HomeStructure</Text>
+					</Text>
+					<Textentry Name="HomeStructure">
+						<Font template='Information.Font' />
+						<BackgroundColor>FF000000</BackgroundColor>
+						<Border>1</Border>
+						<BorderColor>FFFFFFFF</BorderColor>
+						<X>1%</X>
+						<Y>69%</Y>
+						<Width>30%</Width>
+						<Height>5%</Height>
+						<OnLoad>
+							This:SetText[${Script[Tehbot].VariableScope.Mining.Config.HomeStructure}]
+						</OnLoad>
+						<OnChange>
+							Script[Tehbot].VariableScope.Mining.Config:SetHomeStructure[${This.Text}]
+						</OnChange>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["What BM is home?"]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Textentry>
+					
+					<Checkbox name='HomeStructureIsCitadel'>
+						<X>1%</X>
+						<Y>75%</Y>
+						<Width>30%</Width>
+						<Height>5%</Height>
+						<Text>Home Structure is Citadel</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.Mining.Config.HomeStructureIsCitadel}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.Mining.Config:SetHomeStructureIsCitadel[${This.Checked}]
+						</OnLeftClick>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["This indicates that Home Structure is a Citadel"]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Checkbox>
+					
+					<Checkbox name='DropOffToContainer'>
+						<X>36%</X>
+						<Y>75%</Y>
+						<Width>30%</Width>
+						<Height>5%</Height>
+						<Text>Unload Loot To Container</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.Mining.Config.DropOffToContainer}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.Mining.Config:SetDropOffToContainer[${This.Checked}]
+							if ${This.Checked}
+							{
+								UIElement[DropOffContainerName@Tehbot_Mining_Frame@Tehbot_Mining]:Show
+							}
+							else
+							{
+								UIElement[DropOffContainerName@Tehbot_Mining_Frame@Tehbot_Mining]:Hide
+							}
+						</OnLeftClick>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["Check this if you want to unload ore station container."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Checkbox>
+
+					<Textentry Name="DropOffContainerName">
+						<Font template='Information.Font' />
+						<BackgroundColor>FF000000</BackgroundColor>
+						<Border>1</Border>
+						<BorderColor>FFFFFFFF</BorderColor>
+						<X>36%</X>
+						<Y>80%</Y>
+						<Width>30%</Width>
+						<Height>5%</Height>
+						<OnLoad>
+							This:SetText[${Script[Tehbot].VariableScope.Mining.Config.DropOffContainerName}]
+							if ${Script[Tehbot].VariableScope.Mining.Config.DropOffToContainer}
+							{
+								This:Show
+							}
+							else
+							{
+								This:Hide
+							}
+						</OnLoad>
+						<OnChange>
+							Script[Tehbot].VariableScope.Mining.Config:SetDropOffContainerName[${This.Text}]
+						</OnChange>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["The bot will unload all the ore to a station container with the specified name."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Textentry>
+
+					<Text name='InformationFrameTitle'>
+						<X>1%</X>
+						<Y>88%</Y>
+						<Width>32%</Width>
+						<Height>4%</Height>
+						<Text>Information</Text>
+						<OnLoad>
+							This.Font:SetColor[FFFFFF00]
+						</OnLoad>
+					</Text>
+					<Frame name="InformationFrame">
+						<X>0%</X>
+						<Y>90%</Y>
+						<Width>100%</Width>
+						<Height>12%</Height>
+						<BackgroundColor>FF000000</BackgroundColor>
+						<Border>1</Border>
+						<BorderColor>FFFFFFFF</BorderColor>
+						<Children>
+							<Text name='Information'>
+								<X>5%</X>
+								<Y>5%</Y>
+								<Width>90%</Width>
+								<Height>90%</Height>
+								<Wrap />
+								<VerticalAlignment>Center</VerticalAlignment>
+							</Text>
+						</Children>
+					</Frame>
+					</Tab>
+					<Tab Name='Movement/Positioning/Misc'>
+						<frame name='Movement/Positioning/Misc'>
+							<BackgroundColor>FF000000</BackgroundColor>
+							<Border>1</Border>
+							<BorderColor>FFFFFFFF</BorderColor>
+							<X>0</X>
+							<Y>0</Y>
+							<Height>100%</Height>
+							<Width>100%</Width>
+							<OnLoad>
+								This:SetLeftClickThru[TRUE]
+							</OnLoad>
+						</frame>
+					<Text name='WanderRangeLimitTitle'>
+						<X>6%</X>
+						<Y>9%</Y>
+						<Width>30%</Width>
+						<Height>6%</Height>
+						<Alignment>Left</Alignment>
+						<Text>Mining Range Limit</Text>
+					</Text>
+					<Textentry Name="WanderRangeLimit">
+						<Font template='Information.Font' />
+						<BackgroundColor>FF000000</BackgroundColor>
+						<Border>1</Border>
+						<BorderColor>FFFFFFFF</BorderColor>
+						<X>1%</X>
+						<Y>9%</Y>
+						<Width>5%</Width>
+						<Height>3%</Height>
+						<OnLoad>
+							This:SetText[${Script[Tehbot].VariableScope.Mining.Config.WanderRangeLimit}]
+						</OnLoad>
+						<OnChange>
+							Script[Tehbot].VariableScope.Mining.Config:SetWanderRangeLimit[${This.Text}]
+						</OnChange>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@Movement/Positioning/Misc@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["How many meters will we go to get to our mineables?"]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@Movement/Positioning/Misc@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Textentry>
+					
+					<Checkbox name='OrbitRocks'>
+						<X>1%</X>
+						<Y>14%</Y>
+						<Width>30%</Width>
+						<Height>5%</Height>
+						<Text>Orbit Rocks</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.Mining.Config.OrbitRocks}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.Mining.Config:SetOrbitRocks[${This.Checked}]
+						</OnLeftClick>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@Movement/Positioning/Misc@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["This indicates that we want to orbit the asteroid we are mining"]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@Movement/Positioning/Misc@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Checkbox>
+					<Textentry Name="OrbitRocksDistance2">
+						<Font template='Information.Font' />
+						<BackgroundColor>FF000000</BackgroundColor>
+						<Border>1</Border>
+						<BorderColor>FFFFFFFF</BorderColor>
+						<X>11%</X>
+						<Y>14%</Y>
+						<Width>5%</Width>
+						<Height>5%</Height>
+						<OnLoad>
+							This:SetText[${Script[Tehbot].VariableScope.Mining.Config.OrbitRocksDistance}]
+						</OnLoad>
+						<OnChange>
+							Script[Tehbot].VariableScope.Mining.Config:SetOrbitRocksDistance[${This.Text}]
+						</OnChange>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@Movement/Positioning/Misc@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["How many meters should we orbit this rock at?"]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@Movement/Positioning/Misc@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Textentry>
+					<Text name='OrbitRocksDistance'>
+						<X>16%</X>
+						<Y>14%</Y>
+						<Width>20%</Width>
+						<Height>5%</Height>
+						<Alignment>Left</Alignment>
+						<Text>Rock Orbit Distance (Meters)</Text>
+					</Text>
+
+					<Checkbox name='OrbitBoss'>
+						<X>1%</X>
+						<Y>19%</Y>
+						<Width>30%</Width>
+						<Height>5%</Height>
+						<Text>Orbit Boss</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.Mining.Config.OrbitBoss}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.Mining.Config:SetOrbitBoss[${This.Checked}]
+						</OnLeftClick>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@Movement/Positioning/Misc@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["This indicates that we want to orbit Da Boss"]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@Movement/Positioning/Misc@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Checkbox>
+					<Textentry Name="OrbitBossDistance2">
+						<Font template='Information.Font' />
+						<BackgroundColor>FF000000</BackgroundColor>
+						<Border>1</Border>
+						<BorderColor>FFFFFFFF</BorderColor>
+						<X>11%</X>
+						<Y>19%</Y>
+						<Width>5%</Width>
+						<Height>5%</Height>
+						<OnLoad>
+							This:SetText[${Script[Tehbot].VariableScope.Mining.Config.OrbitBossDistance}]
+						</OnLoad>
+						<OnChange>
+							Script[Tehbot].VariableScope.Mining.Config:SetOrbitBossDistance[${This.Text}]
+						</OnChange>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@Movement/Positioning/Misc@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["How many meters should we orbit Da Boss at?"]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@Movement/Positioning/Misc@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Textentry>
+					<Text name='OrbitBossDistance'>
+						<X>16%</X>
+						<Y>19%</Y>
+						<Width>20%</Width>
+						<Height>5%</Height>
+						<Alignment>Left</Alignment>
+						<Text>Rock Orbit Distance (Meters)</Text>
+					</Text>
+
+					<Checkbox name='AlignHomeStructure'>
+						<X>1%</X>
+						<Y>24%</Y>
+						<Width>30%</Width>
+						<Height>5%</Height>
+						<Text>Align to Home Structure</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.Mining.Config.AlignHomeStructure}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.Mining.Config:SetAlignHomeStructure[${This.Checked}]
+						</OnLeftClick>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@Movement/Positioning/Misc@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["If this is selected, we will immediately align to our home structure and mine until we are full / out of range / other things. If we get out of range we bookmark an asteroid to return to, warp out, and back."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@Movement/Positioning/Misc@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Checkbox>					
+					
+					<Checkbox name='UseExperimentalAntiStick'>
+						<X>1%</X>
+						<Y>29%</Y>
+						<Width>30%</Width>
+						<Height>5%</Height>
+						<Text>Experimental Anti Stick</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.Mining.Config.UseExperimentalAntiStick}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.Mining.Config:SetUseExperimentalAntiStick[${This.Checked}]
+						</OnLeftClick>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@Movement/Positioning/Misc@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["Experimental Anti Stick will, if you are stuck trying to warp too long, and if I ever finish coding it, warp you to a bookmark prefixed by the next box. If you don't make a bookmark it will try a star, and then different planets. Either you get out or you die."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@Movement/Positioning/Misc@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Checkbox>
+
+					<Textentry Name="UseExperimentalAntiStickBookmarkPrefix">
+						<Font template='Information.Font' />
+						<BackgroundColor>FF000000</BackgroundColor>
+						<Border>1</Border>
+						<BorderColor>FFFFFFFF</BorderColor>
+						<X>21%</X>
+						<Y>29%</Y>
+						<Width>30%</Width>
+						<Height>5%</Height>
+						<OnLoad>
+							This:SetText[${Script[Tehbot].VariableScope.Mining.Config.UseExperimentalAntiStickBookmarkPrefix}]
+						</OnLoad>
+						<OnChange>
+							Script[Tehbot].VariableScope.Mining.Config:SetUseExperimentalAntiStickBookmarkPrefix[${This.Text}]
+						</OnChange>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@Movement/Positioning/Misc@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["Start the bookmark name with this."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@Movement/Positioning/Misc@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Textentry>
+					
+					<Text name='WarpInDistanceTitle'>
+						<X>6%</X>
+						<Y>34%</Y>
+						<Width>30%</Width>
+						<Height>6%</Height>
+						<Alignment>Left</Alignment>
+						<Text>Mining Range Limit</Text>
+					</Text>
+					<Textentry Name="WarpInDistance">
+						<Font template='Information.Font' />
+						<BackgroundColor>FF000000</BackgroundColor>
+						<Border>1</Border>
+						<BorderColor>FFFFFFFF</BorderColor>
+						<X>1%</X>
+						<Y>34%</Y>
+						<Width>5%</Width>
+						<Height>3%</Height>
+						<OnLoad>
+							This:SetText[${Script[Tehbot].VariableScope.Mining.Config.WarpInDistance}]
+						</OnLoad>
+						<OnChange>
+							Script[Tehbot].VariableScope.Mining.Config:SetWarpInDistance[${This.Text}]
+						</OnChange>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@Movement/Positioning/Misc@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["Warp to mining site at how many meters?"]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@Movement/Positioning/Misc@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Textentry>					
+						
+					<Text name='InformationFrameTitle'>
+						<X>1%</X>
+						<Y>88%</Y>
+						<Width>32%</Width>
+						<Height>4%</Height>
+						<Text>Information</Text>
+						<OnLoad>
+							This.Font:SetColor[FFFFFF00]
+						</OnLoad>
+					</Text>
+					<Frame name="InformationFrame">
+						<X>0%</X>
+						<Y>90%</Y>
+						<Width>100%</Width>
+						<Height>12%</Height>
+						<BackgroundColor>FF000000</BackgroundColor>
+						<Border>1</Border>
+						<BorderColor>FFFFFFFF</BorderColor>
+						<Children>
+							<Text name='Information'>
+								<X>5%</X>
+								<Y>5%</Y>
+								<Width>90%</Width>
+								<Height>90%</Height>
+								<Wrap />
+								<VerticalAlignment>Center</VerticalAlignment>
+							</Text>
+						</Children>
+					</Frame>
+					</Tab>
+					<Tab Name='Fleeing/Danger'>
+						<frame name='Fleeing/Danger'>
+							<BackgroundColor>FF000000</BackgroundColor>
+							<Border>1</Border>
+							<BorderColor>FFFFFFFF</BorderColor>
+							<X>0</X>
+							<Y>0</Y>
+							<Height>100%</Height>
+							<Width>100%</Width>
+							<OnLoad>
+								This:SetLeftClickThru[TRUE]
+							</OnLoad>
+						</frame>
+					
+					<Checkbox name='FightNPCs'>
+						<X>1%</X>
+						<Y>4%</Y>
+						<Width>30%</Width>
+						<Height>5%</Height>
+						<Text>Fight NPCs</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.Mining.Config.FightNPCs}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.Mining.Config:SetFightNPCs[${This.Checked}]
+						</OnLeftClick>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@Fleeing/Danger@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["This indicates that we want to not run from NPCs, and instead wait for DroneControl to do something about them. Enable DroneControl minimode or nothing will happe"]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@Fleeing/Danger@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Checkbox>
+					
+					<Checkbox name='RunFromBads'>
+						<X>1%</X>
+						<Y>9%</Y>
+						<Width>30%</Width>
+						<Height>5%</Height>
+						<Text>Run from Bads</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.Mining.Config.RunFromBads}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.Mining.Config:SetRunFromBads[${This.Checked}]
+						</OnLeftClick>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@Fleeing/Danger@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["Run away from bad people. Going to use LocalCheck for this for now, ensure the LocalCheck minimode is enabled."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@Fleeing/Danger@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Checkbox>		
+
+					<Checkbox name='RunFromSuspicious'>
+						<X>1%</X>
+						<Y>14%</Y>
+						<Width>30%</Width>
+						<Height>5%</Height>
+						<Text>Run from Suspicious</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.Mining.Config.RunFromSuspicious}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.Mining.Config:SetRunFromSuspicious[${This.Checked}]
+						</OnLeftClick>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@Fleeing/Danger@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["Provided I get around to coding it and can think up the exact criteria, this will have you treat people doing certain things as though they had bad standings and run from them."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@Fleeing/Danger@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Checkbox>	
+					<Checkbox name='UsePOSHidingSpot'>
+						<X>1%</X>
+						<Y>19%</Y>
+						<Width>30%</Width>
+						<Height>5%</Height>
+						<Text>Use POS Hiding Spot</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.Mining.Config.UsePOSHidingSpot}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.Mining.Config:SetUsePOSHidingSpot[${This.Checked}]
+						</OnLeftClick>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@Fleeing/Danger@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["This indicates that we want to run to a POS, like its the year 2008. The text box is the exact name of the POS bookmark."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@Fleeing/Danger@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Checkbox>	
+
+					<Textentry Name="POSBookmarkName">
+						<Font template='Information.Font' />
+						<BackgroundColor>FF000000</BackgroundColor>
+						<Border>1</Border>
+						<BorderColor>FFFFFFFF</BorderColor>
+						<X>21%</X>
+						<Y>19%</Y>
+						<Width>30%</Width>
+						<Height>5%</Height>
+						<OnLoad>
+							This:SetText[${Script[Tehbot].VariableScope.Mining.Config.POSBookmarkName}]
+						</OnLoad>
+						<OnChange>
+							Script[Tehbot].VariableScope.Mining.Config:SetPOSBookmarkName[${This.Text}]
+						</OnChange>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@Fleeing/Danger@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["The literal exact name of the Bookmark for the POS."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@Fleeing/Danger@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Textentry>
+
+					<Checkbox name='UseWeirdNavigation'>
+						<X>1%</X>
+						<Y>24%</Y>
+						<Width>30%</Width>
+						<Height>5%</Height>
+						<Text>Use Weird Navigation</Text>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.Mining.Config.UseWeirdNavigation}
+							{
+								This:SetChecked
+							}
+						</OnLoad>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.Mining.Config:SetUseWeirdNavigation[${This.Checked}]
+						</OnLeftClick>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@Fleeing/Danger@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["This indicates that we want to use Weird Navigation, which means we will warp to bookmarks prefixed by the text in the next box BEFORE we go to our safe spot. This will probably be most useful for your boosting ship so it doesnt land on the citadel with a weapons timer"]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@Fleeing/Danger@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Checkbox>	
+
+					<Textentry Name="WeirdBookmarkPrefix">
+						<Font template='Information.Font' />
+						<BackgroundColor>FF000000</BackgroundColor>
+						<Border>1</Border>
+						<BorderColor>FFFFFFFF</BorderColor>
+						<X>21%</X>
+						<Y>24%</Y>
+						<Width>30%</Width>
+						<Height>5%</Height>
+						<OnLoad>
+							This:SetText[${Script[Tehbot].VariableScope.Mining.Config.WeirdBookmarkPrefix}]
+						</OnLoad>
+						<OnChange>
+							Script[Tehbot].VariableScope.Mining.Config:SetWeirdBookmarkPrefix[${This.Text}]
+						</OnChange>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@Fleeing/Danger@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["Prefix the bookmark name with this"]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@Fleeing/Danger@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Textentry>
+
+					<Text name='Hide Duration'>
+						<X>6%</X>
+						<Y>29%</Y>
+						<Width>30%</Width>
+						<Height>6%</Height>
+						<Alignment>Left</Alignment>
+						<Text>Hiding Time Duration (Minutes)</Text>
+					</Text>
+					<Textentry Name="HideHowLong">
+						<Font template='Information.Font' />
+						<BackgroundColor>FF000000</BackgroundColor>
+						<Border>1</Border>
+						<BorderColor>FFFFFFFF</BorderColor>
+						<X>1%</X>
+						<Y>29%</Y>
+						<Width>5%</Width>
+						<Height>3%</Height>
+						<OnLoad>
+							This:SetText[${Script[Tehbot].VariableScope.Mining.Config.HideHowLong}]
+						</OnLoad>
+						<OnChange>
+							Script[Tehbot].VariableScope.Mining.Config:SetHideHowLong[${This.Text}]
+						</OnChange>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@Fleeing/Danger@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["How much time will we spend hiding after bad guys, in minutes."]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@Fleeing/Danger@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Textentry>
+									
+					<Text name='InformationFrameTitle'>
+						<X>1%</X>
+						<Y>88%</Y>
+						<Width>32%</Width>
+						<Height>4%</Height>
+						<Text>Information</Text>
+						<OnLoad>
+							This.Font:SetColor[FFFFFF00]
+						</OnLoad>
+					</Text>
+					<Frame name="InformationFrame">
+						<X>0%</X>
+						<Y>90%</Y>
+						<Width>100%</Width>
+						<Height>12%</Height>
+						<BackgroundColor>FF000000</BackgroundColor>
+						<Border>1</Border>
+						<BorderColor>FFFFFFFF</BorderColor>
+						<Children>
+							<Text name='Information'>
+								<X>5%</X>
+								<Y>5%</Y>
+								<Width>90%</Width>
+								<Height>90%</Height>
+								<Wrap />
+								<VerticalAlignment>Center</VerticalAlignment>
+							</Text>
+						</Children>
+					</Frame>
+					</Tab>
+					
+
+				
+					<Tab Name='MiningAnomTab'>
+						<frame name='MiningAnomTab'>
+							<BackgroundColor>FF000000</BackgroundColor>
+							<Border>1</Border>
+							<BorderColor>FFFFFFFF</BorderColor>
+							<X>0</X>
+							<Y>0</Y>
+							<Height>100%</Height>
+							<Width>100%</Width>
+							<OnLoad>
+								This:SetLeftClickThru[TRUE]
+							</OnLoad>
+						</frame>
+
+						<Checkbox name='AverageDarkOchreandGneissDeposit'>
+							<X>1%</X>
+							<Y>3%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Average Dark Ochre and Gneiss Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.AverageDarkOchreandGneissDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setAverageDarkOchreandGneissDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Average Dark Ochre and Gneiss Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>
+
+						<Checkbox name='AverageFrontierDeposit'>
+							<X>1%</X>
+							<Y>7%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Average Frontier Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.AverageFrontierDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setAverageFrontierDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Average Frontier Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+						
+						<Checkbox name='AverageGneissDeposit'>
+							<X>1%</X>
+							<Y>11%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Average Gneiss Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.AverageGneissDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setAverageGneissDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Average Gneiss Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+						
+						<Checkbox name='AverageHedbergiteHemorphiteandJaspetDeposit'>
+							<X>1%</X>
+							<Y>15%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Average Hedbergite, Hemorphite, and Jaspet Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.AverageHedbergiteHemorphiteandJaspetDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setAverageHedbergiteHemorphiteandJaspetDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Average Hedbergite, Hemorphite, and Jaspet Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+						
+						<Checkbox name='AverageHemorphiteJaspetandKerniteDeposit'>
+							<X>1%</X>
+							<Y>19%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Average Hemorphite, Jaspet, and Kernite Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.AverageHemorphiteJaspetandKerniteDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setAverageHemorphiteJaspetandKerniteDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Average Hemorphite, Jaspet, and Kernite Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>		
+					
+						<Checkbox name='AverageJaspetKerniteandOmberDeposit'>
+							<X>1%</X>
+							<Y>23%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Average Jaspet, Kernite and Omber Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.AverageJaspetKerniteandOmberDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setAverageJaspetKerniteandOmberDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Average Jaspet, Kernite and Omber Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+						
+						<Checkbox name='AverageKerniteandOmberDeposit'>
+							<X>1%</X>
+							<Y>27%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Average Kernite and Omber Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.AverageKerniteandOmberDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setAverageKerniteandOmberDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Average Kernite and Omber Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+						
+						<Checkbox name='Average Omber Deposit'>
+							<X>1%</X>
+							<Y>31%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Average Omber Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.Average Omber Deposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setAverage Omber Deposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Average Omber Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+						
+						<Checkbox name='AverageSpodumainCrokiteandDarkOchrerDeposit'>
+							<X>1%</X>
+							<Y>35%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Average Spodumain, Crokite, and Dark Ochre Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.AverageSpodumainCrokiteandDarkOchrerDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setAverageSpodumainCrokiteandDarkOchrerDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Average Spodumain, Crokite, and Dark Ochre Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='ColossalAsteroidCluster'>
+							<X>1%</X>
+							<Y>39%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Colossal Asteroid Cluster</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.ColossalAsteroidCluster}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setColossalAsteroidCluster[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Colossal Asteroid Cluster",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='CommonPerimeterDeposit'>
+							<X>1%</X>
+							<Y>43%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Common Perimeter Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.CommonPerimeterDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setCommonPerimeterDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Common Perimeter Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='Enormous Asteroid Cluster'>
+							<X>1%</X>
+							<Y>48%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Enormous Asteroid Cluster</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.Enormous Asteroid Cluster}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setEnormous Asteroid Cluster[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Enormous Asteroid Cluster",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='ExceptionalCoreDeposit'>
+							<X>1%</X>
+							<Y>52%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Exceptional Core Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.ExceptionalCoreDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setExceptionalCoreDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Exceptional Core Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='InfrequentCoreDeposit'>
+							<X>1%</X>
+							<Y>56%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Infrequent Core Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.InfrequentCoreDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setInfrequentCoreDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Infrequent Core Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='IsolatedCoreDeposit'>
+							<X>1%</X>
+							<Y>60%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Isolated Core Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.IsolatedCoreDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setIsolatedCoreDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Isolated Core Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='LargeAsteroidCluster'>
+							<X>1%</X>
+							<Y>64%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Large Asteroid Cluster</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.LargeAsteroidCluster}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setLargeAsteroidCluster[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Large Asteroid Cluster",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='LargeDarkOchreandGneissDeposit'>
+							<X>1%</X>
+							<Y>68%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Large Dark Ochre and Gneiss Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.LargeDarkOchreandGneissDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setLargeDarkOchreandGneissDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Large Dark Ochre and Gneiss Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='LargeGneissDeposit'>
+							<X>40%</X>
+							<Y>3%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Large Gneiss Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.LargeGneissDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setLargeGneissDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Large Gneiss Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+					
+						<Checkbox name='LargeHedbergiteHemorphiteandJaspetDeposit'>
+							<X>40%</X>
+							<Y>7%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Large Hedbergite, Hemorphite, and Jaspet Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.LargeHedbergiteHemorphiteandJaspetDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setLargeHedbergiteHemorphiteandJaspetDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Large Hedbergite, Hemorphite, and Jaspet Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='LargeHemorphiteJaspetandKerniteDeposit'>
+							<X>40%</X>
+							<Y>11%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Large Hemorphite, Jaspet, and Kernite Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.LargeHemorphiteJaspetandKerniteDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setLargeHemorphiteJaspetandKerniteDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Large Hemorphite, Jaspet, and Kernite Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='LargeJaspetKerniteandOmberDeposit'>
+							<X>40%</X>
+							<Y>15%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Large Jaspet, Kernite and Omber Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.LargeJaspetKerniteandOmberDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setLargeJaspetKerniteandOmberDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Large Jaspet, Kernite and Omber Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+						
+						<Checkbox name='LargeKerniteandOmberDeposit'>
+							<X>40%</X>
+							<Y>19%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Large Kernite and Omber Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.LargeKerniteandOmberDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setLargeKerniteandOmberDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Large Kernite and Omber Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='LargeOmberDeposit'>
+							<X>40%</X>
+							<Y>23%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Large Omber Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.LargeOmberDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setLargeOmberDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Large Omber Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='MediumAsteroidCluster'>
+							<X>1%</X>
+							<Y>73%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Medium Asteroid Cluster</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.MediumAsteroidCluster}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setMediumAsteroidCluster[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Medium Asteroid Cluster",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='OrdinaryPerimeterDeposit'>
+							<X>40%</X>
+							<Y>27%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Ordinary Perimeter Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.OrdinaryPerimeterDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setOrdinaryPerimeterDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Ordinary Perimeter Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='RarifiedCoreDeposit'>
+							<X>40%</X>
+							<Y>31%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Rarified Core Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.RarifiedCoreDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setRarifiedCoreDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Rarified Core Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='ShatteredDebrisField'>
+							<X>40%</X>
+							<Y>35%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Shattered Debris Field</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.ShatteredDebrisField}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setShatteredDebrisField[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Shattered Debris Field",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='SmallArkonorandBistotDeposit'>
+							<X>40%</X>
+							<Y>39%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Small Arkonor and Bistot Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.SmallArkonorandBistotDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setSmallArkonorandBistotDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Small Arkonor and Bistot Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='SmallAsteroidCluster'>
+							<X>40%</X>
+							<Y>43%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Small Asteroid Cluster</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.SmallAsteroidCluster}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setSmallAsteroidCluster[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Small Asteroid Cluster",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='SmallDarkOchreandGneissDeposit'>
+							<X>40%</X>
+							<Y>47%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Small Dark Ochre and Gneiss Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.SmallDarkOchreandGneissDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setSmallDarkOchreandGneissDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Small Dark Ochre and Gneiss Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='SmallGneissDeposit'>
+							<X>40%</X>
+							<Y>51%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Small Gneiss Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.SmallGneissDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setSmallGneissDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Small Gneiss Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='SmallHedbergiteHemorphiteandJaspetDeposit'>
+							<X>40%</X>
+							<Y>55%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Small Hedbergite, Hemorphite, and Jaspet Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.SmallHedbergiteHemorphiteandJaspetDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setSmallHedbergiteHemorphiteandJaspetDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Small Hedbergite, Hemorphite, and Jaspet Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='SmallHemorphiteJaspetandKerniteDeposit'>
+							<X>40%</X>
+							<Y>59%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Small Hemorphite, Jaspet, and Kernite Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.SmallHemorphiteJaspetandKerniteDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setSmallHemorphiteJaspetandKerniteDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Small Hemorphite, Jaspet, and Kernite Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='SmallJaspetKerniteandOmberDeposit'>
+							<X>40%</X>
+							<Y>63%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Small Jaspet, Kernite, and Omber Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.SmallJaspetKerniteandOmberDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setSmallJaspetKerniteandOmberDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Small Jaspet, Kernite, and Omber Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='SmallKerniteandOmberDeposit'>
+							<X>40%</X>
+							<Y>67%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Small Kernite and Omber Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.SmallKerniteandOmberDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setSmallKerniteandOmberDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Small Kernite and Omber Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='SmallOmberDeposit'>
+							<X>40%</X>
+							<Y>71%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Small Omber Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.SmallOmberDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setSmallOmberDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Small Omber Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='SmallSpodumainCrokieandDarkOchreDeposit'>
+							<X>40%</X>
+							<Y>75%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Small Spodumain, Crokite, and Dark Ochre Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.SmallSpodumainCrokieandDarkOchreDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setSmallSpodumainCrokieandDarkOchreDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Small Spodumain, Crokite, and Dark Ochre Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='UncommonCoreDeposit'>
+							<X>40%</X>
+							<Y>79%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Uncommon Core Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.UncommonCoreDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setUncommonCoreDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Uncommon Core Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='UnexceptionalFrontierDeposit'>
+							<X>40%</X>
+							<Y>83%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Unexceptional Frontier Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.UnexceptionalFrontierDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setUnexceptionalFrontierDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Unexceptional Frontier Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='UnusualCoreDeposit'>
+							<X>40%</X>
+							<Y>87%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Unusual Core Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.UnusualCoreDeposit}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setUnusualCoreDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Unusual Core Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='BlueIceBelt'>
+							<X>75%</X>
+							<Y>3%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Blue Ice Belt</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.BlueIceBelt}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setBlueIceBelt[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Blue Ice Belt",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='ClearIcicleBelt'>
+							<X>75%</X>
+							<Y>7%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Clear Icicle Belt</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.ClearIcicleBelt}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setClearIcicleBelt[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Clear Icicle Belt",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+						
+						<Checkbox name='WhiteGlazeBelt'>
+							<X>75%</X>
+							<Y>11%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>White Glaze Belt</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.WhiteGlazeBelt}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setWhiteGlazeBelt[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["White Glaze Belt",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>
+						
+						<Checkbox name='GlacialMassBelt'>
+							<X>75%</X>
+							<Y>15%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Glacial Mass Belt</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.GlacialMassBelt}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setGlacialMassBelt[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Glacial Mass Belt",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+						
+						<Checkbox name='GlareCrustBelt'>
+							<X>75%</X>
+							<Y>19%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Glare Crust Belt</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.GlareCrustBelt}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setGlareCrustBelt[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Glare Crust Belt",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='DarkGlitterBelt'>
+							<X>75%</X>
+							<Y>23%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Dark Glitter Belt</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.DarkGlitterBelt}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setDarkGlitterBelt[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Dark Glitter Belt",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='GelidusBelt'>
+							<X>75%</X>
+							<Y>27%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Gelidus Belt</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.GelidusBelt}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setGelidusBelt[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Gelidus Belt",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='KrystallosBelt'>
+							<X>75%</X>
+							<Y>31%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Krystallos Belt</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.KrystallosBelt}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setKrystallosBelt[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Krystallos Belt",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='ShatteredIceField'>
+							<X>75%</X>
+							<Y>35%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Shattered Ice Field</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.ShatteredIceField}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setShatteredIceField[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Shattered Ice Field",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='Nebula'>
+							<X>75%</X>
+							<Y>41%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Nebula</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.Nebula}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setNebula[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Nebula",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+
+						<Checkbox name='Reservoir'>
+							<X>75%</X>
+							<Y>45%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Reservoir</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.Reservoir}
+								{
+									This:SetChecked
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setReservoir[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Reservoir",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>
+
+					<button	Name='AnomListRebuild'>
+						<Font template='Button.Font' />
+						<BackgroundColor>FF000000</BackgroundColor>
+						<X>1%</X>
+						<Y>80%</Y>
+						<Width>25%</Width>
+						<Height>15%</Height>
+						<Text>Recalculate Allowed Anomalies</Text>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.Mining.RebuildAnomList:Set[TRUE]
+						</OnLeftClick>
+					</button>
+					<button	Name='EraseCurrentAnomMemory'>
+						<Font template='Button.Font' />
+						<BackgroundColor>FF000000</BackgroundColor>
+						<X>75%</X>
+						<Y>80%</Y>
+						<Width>21%</Width>
+						<Height>15%</Height>
+						<Text>Erase Current Anom Memory</Text>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.Mining.Config.setPersistentAnomID[0]
+						</OnLeftClick>
+					</button>						
+					</Tab>
+					
+					<Tab Name='MiningInformation'>
+						<frame name='MiningInformationFrame'>
+							<BackgroundColor>FF000000</BackgroundColor>
+							<Border>1</Border>
+							<BorderColor>FFFFFFFF</BorderColor>
+							<X>0</X>
+							<Y>0</Y>
+							<Height>100%</Height>
+							<Width>100%</Width>
+							<OnLoad>
+								This:SetLeftClickThru[TRUE]
+							</OnLoad>
+						</frame>
+						
+					</Tab>	
+				</Tabs>
+				<OnSelect>
+					Script[Tehbot].VariableScope.CommonConfig:SetActiveTab[${This.SelectedTab.Name}]
+						</OnSelect>
+					</TabControl>					
+				</Children>
+			</Frame>
+		</Children>
+	</window>
+
+</ISUI>

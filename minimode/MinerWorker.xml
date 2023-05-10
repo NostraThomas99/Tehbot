@@ -1,0 +1,2288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ISUI>
+	<template name='Information.Font'>
+		<Name>Segoe</Name>
+		<Size>24</Size>
+		<Color>FFFFFFFF</Color>
+	</template>
+
+	<window name='Tehbot_MinerWorker'>
+		<Visible>1</Visible>
+		<BackGroundColor></BackGroundColor>
+		<Border>0</Border>
+		<X>200</X>
+		<Y>300</Y>
+		<Width>1600</Width>
+		<Height>800</Height>
+		<TitleBar>
+			<Width>100%</Width>
+			<Height>40</Height>
+			<Border>0</Border>
+			<BackgroundColor>FF000000</BackgroundColor>
+			<Children>
+				<Text name='Tehbot_MinerWorker_TitleBar_Title'>
+					<X>0</X>
+					<Y>3</Y>
+					<Width>100%</Width>
+					<Height>40</Height>
+					<Alignment>Center</Alignment>
+					<Text>MinerWorker Configuration</Text>
+				</Text>
+				<button	Name='Close'>
+					<X>r80</X>
+					<Y>0</Y>
+					<Width>80</Width>
+					<Height>40</Height>
+					<Text>Close</Text>
+					<OnLeftClick>
+						ui -unload "&filepath;/MinerWorker"
+					</OnLeftClick>
+				</button>
+			</Children>
+		</TitleBar>
+		<Children name="Tehbot_MinerWorker_Children">
+			<Frame name="Tehbot_MinerWorker_Frame">
+				<X>0</X>
+				<Y>30</Y>
+				<Width>100%</Width>
+				<Height>100%</Height>
+				<BackgroundColor>FF000000</BackgroundColor>
+				<Border>1</Border>
+				<BorderColor>FFFFFFFF</BorderColor>
+				<Children name="Tehbot_MinerWorker_Frame_Children">
+					<Text name='obj_MinerWorkerInformation'>
+						<Font template='Information.Font' />
+						<X>1%</X>
+						<Y>1%</Y>
+						<Width>98%</Width>
+						<Height>18%</Height>
+						<Wrap />
+						<Text>Set your mining priorities here. Lower is higher priority, with the exception of 0 which is ignore.</Text>
+					</Text>
+
+			<TabControl	Name='MinerWorkerTabs'>
+				<X>0</X>
+				<Y>30</Y>
+				<Width>100%</Width>
+				<Height>100%</Height>
+				<Tabs>
+					<Tab Name='MinerWorkerOre'>
+						<frame name='MinerWorkerOreFrame'>
+							<BackgroundColor>FF000000</BackgroundColor>
+							<Border>1</Border>
+							<BorderColor>FFFFFFFF</BorderColor>
+							<X>0</X>
+							<Y>0</Y>
+							<Height>100%</Height>
+							<Width>100%</Width>
+							<OnLoad>
+								This:SetLeftClickThru[TRUE]
+							</OnLoad>
+						</frame>
+					<button	Name='OreTabRecalcButton'>
+						<Font template='Button.Font' />
+						<BackgroundColor>FF000000</BackgroundColor>
+						<X>69%</X>
+						<Y>5%</Y>
+						<Width>21%</Width>
+						<Height>15%</Height>
+						<Text>Recalculate Priorities</Text>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.MinerWorker.ReCalculatePriorities:Set[TRUE]
+						</OnLeftClick>
+					</button>
+						<Text name='ArkonorComboboxLabel'>
+							<X>4%</X>
+							<Y>3%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Arkonor</Text>
+						</Text>
+						<combobox name='ArkonorCombobox'>
+							<X>1%</X>
+							<Y>3%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.ArkonorPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.ArkonorPriority}]:Select
+
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetArkonorPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Arkonor",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+						
+						<Text name='BezdnacineComboboxLabel'>
+							<X>4%</X>
+							<Y>8%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Bezdnacine</Text>
+						</Text>
+						<combobox name='BezdnacineCombobox'>
+							<X>1%</X>
+							<Y>8%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.BezdnacinePriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.BezdnacinePriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetBezdnacinePriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Bezdnacine",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+											
+						<Text name='BistotComboboxLabel'>
+							<X>4%</X>
+							<Y>13%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Bistot</Text>
+						</Text>
+						<combobox name='BistotCombobox'>
+							<X>1%</X>
+							<Y>13%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.BistotPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.BistotPriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetBistotPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Bistot",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+						
+						<Text name='CrokiteComboboxLabel'>
+							<X>4%</X>
+							<Y>18%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Crokite</Text>
+						</Text>
+						<combobox name='CrokiteCombobox'>
+							<X>1%</X>
+							<Y>18%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.CrokitePriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.CrokitePriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetCrokitePriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Crokite",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+						
+						<Text name='DarkOchreComboboxLabel'>
+							<X>4%</X>
+							<Y>23%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>DarkOchre</Text>
+						</Text>
+						<combobox name='DarkOchreCombobox'>
+							<X>1%</X>
+							<Y>23%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.DarkOchrePriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.DarkOchrePriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetDarkOchrePriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Dark Ochre",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='DuciniumComboboxLabel'>
+							<X>4%</X>
+							<Y>28%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Ducinium</Text>
+						</Text>
+						<combobox name='DuciniumCombobox'>
+							<X>1%</X>
+							<Y>28%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.DuciniumPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.DuciniumPriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetDuciniumPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Ducinium",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='EifyriumComboboxLabel'>
+							<X>4%</X>
+							<Y>33%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Eifyrium</Text>
+						</Text>
+						<combobox name='EifyriumCombobox'>
+							<X>1%</X>
+							<Y>33%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.EifyriumPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.EifyriumPriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetEifyriumPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Eifyrium",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='GneissComboboxLabel'>
+							<X>4%</X>
+							<Y>38%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Gneiss</Text>
+						</Text>
+						<combobox name='GneissCombobox'>
+							<X>1%</X>
+							<Y>38%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.GneissPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.GneissPriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetGneissPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Gneiss",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='HedbergiteComboboxLabel'>
+							<X>4%</X>
+							<Y>43%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Hedbergite</Text>
+						</Text>
+						<combobox name='HedbergiteCombobox'>
+							<X>1%</X>
+							<Y>43%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.HedbergitePriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.HedbergitePriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetHedbergitePriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Hedbergite",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='HemorphiteComboboxLabel'>
+							<X>4%</X>
+							<Y>48%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Hemorphite</Text>
+						</Text>
+						<combobox name='HemorphiteCombobox'>
+							<X>1%</X>
+							<Y>48%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.HemorphitePriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.HemorphitePriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetHemorphitePriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Hemorphite",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='JaspetComboboxLabel'>
+							<X>4%</X>
+							<Y>53%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Jaspet</Text>
+						</Text>
+						<combobox name='JaspetCombobox'>
+							<X>1%</X>
+							<Y>53%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.JaspetPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.JaspetPriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetJaspetPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Jaspet",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='KerniteComboboxLabel'>
+							<X>4%</X>
+							<Y>58%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Kernite</Text>
+						</Text>
+						<combobox name='KerniteCombobox'>
+							<X>1%</X>
+							<Y>58%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.KernitePriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.KernitePriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetKernitePriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Kernite",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='MercoxitComboboxLabel'>
+							<X>4%</X>
+							<Y>63%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Mercoxit</Text>
+						</Text>
+						<combobox name='MercoxitCombobox'>
+							<X>1%</X>
+							<Y>63%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.MercoxitPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.MercoxitPriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetMercoxitPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Mercoxit",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='MorduniumComboboxLabel'>
+							<X>4%</X>
+							<Y>68%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Mordunium</Text>
+						</Text>
+						<combobox name='MorduniumCombobox'>
+							<X>1%</X>
+							<Y>68%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.MorduniumPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.MorduniumPriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetMorduniumPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Mordunium",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='OmberComboboxLabel'>
+							<X>4%</X>
+							<Y>73%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Omber</Text>
+						</Text>
+						<combobox name='OmberCombobox'>
+							<X>1%</X>
+							<Y>73%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.OmberPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.OmberPriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetOmberPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Omber",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='PlagioclaseComboboxLabel'>
+							<X>4%</X>
+							<Y>78%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Plagioclase</Text>
+						</Text>
+						<combobox name='PlagioclaseCombobox'>
+							<X>1%</X>
+							<Y>78%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.PlagioclasePriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.PlagioclasePriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetPlagioclasePriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Plagioclase",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='PyroxeresComboboxLabel'>
+							<X>4%</X>
+							<Y>83%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Pyroxeres</Text>
+						</Text>
+						<combobox name='PyroxeresCombobox'>
+							<X>1%</X>
+							<Y>83%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.PyroxeresPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.PyroxeresPriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetPyroxeresPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Pyroxeres",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='RakoveneComboboxLabel'>
+							<X>4%</X>
+							<Y>88%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Rakovene</Text>
+						</Text>
+						<combobox name='RakoveneCombobox'>
+							<X>1%</X>
+							<Y>88%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.RakovenePriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.RakovenePriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetRakovenePriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Rakovene",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='ScorditeComboboxLabel'>
+							<X>37%</X>
+							<Y>3%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Scordite</Text>
+						</Text>
+						<combobox name='ScorditeCombobox'>
+							<X>34%</X>
+							<Y>3%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.ScorditePriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.ScorditePriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetScorditePriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Scordite",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='SpodumainComboboxLabel'>
+							<X>37%</X>
+							<Y>8%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Spodumain</Text>
+						</Text>
+						<combobox name='SpodumainCombobox'>
+							<X>34%</X>
+							<Y>8%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.SpodumainPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.SpodumainPriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetSpodumainPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Spodumain",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='TalassoniteComboboxLabel'>
+							<X>37%</X>
+							<Y>13%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Talassonite</Text>
+						</Text>
+						<combobox name='TalassoniteCombobox'>
+							<X>34%</X>
+							<Y>13%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.TalassonitePriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.TalassonitePriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetTalassonitePriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Talassonite",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='VeldsparComboboxLabel'>
+							<X>37%</X>
+							<Y>18%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Veldspar</Text>
+						</Text>
+						<combobox name='VeldsparCombobox'>
+							<X>34%</X>
+							<Y>18%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.VeldsparPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.VeldsparPriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetVeldsparPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Veldspar",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='YtiriumComboboxLabel'>
+							<X>37%</X>
+							<Y>23%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Ytirium</Text>
+						</Text>
+						<combobox name='YtiriumCombobox'>
+							<X>34%</X>
+							<Y>23%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.YtiriumPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.YtiriumPriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetYtiriumPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Ytirium",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+						
+					</Tab>
+					<Tab Name='MinerWorkerMoon'>
+						<frame name='MinerWorkerMoonFrame'>
+							<BackgroundColor>FF000000</BackgroundColor>
+							<Border>1</Border>
+							<BorderColor>FFFFFFFF</BorderColor>
+							<X>0</X>
+							<Y>0</Y>
+							<Height>100%</Height>
+							<Width>100%</Width>
+							<OnLoad>
+								This:SetLeftClickThru[TRUE]
+							</OnLoad>
+						</frame>
+					<button	Name='MoonTabRecalcButton'>
+						<Font template='Button.Font' />
+						<BackgroundColor>FF000000</BackgroundColor>
+						<X>69%</X>
+						<Y>5%</Y>
+						<Width>21%</Width>
+						<Height>15%</Height>
+						<Text>Recalculate Priorities</Text>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.MinerWorker.ReCalculatePriorities:Set[TRUE]
+						</OnLeftClick>
+					</button>
+						<Text name='CobaltiteComboboxLabel'>
+							<X>4%</X>
+							<Y>3%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Cobaltite</Text>
+						</Text>
+						<combobox name='CobaltiteCombobox'>
+							<X>1%</X>
+							<Y>3%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.CobaltitePriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.CobaltitePriority}]:Select
+
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetCobaltitePriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Cobaltite",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+						
+						<Text name='EuxeniteComboboxLabel'>
+							<X>4%</X>
+							<Y>8%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Euxenite</Text>
+						</Text>
+						<combobox name='EuxeniteCombobox'>
+							<X>1%</X>
+							<Y>8%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.EuxenitePriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.EuxenitePriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetEuxenitePriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Euxenite",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+											
+						<Text name='TitaniteComboboxLabel'>
+							<X>4%</X>
+							<Y>13%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Titanite</Text>
+						</Text>
+						<combobox name='TitaniteCombobox'>
+							<X>1%</X>
+							<Y>13%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.TitanitePriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.TitanitePriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetTitanitePriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Titanite",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+						
+						<Text name='ScheeliteComboboxLabel'>
+							<X>4%</X>
+							<Y>18%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Scheelite</Text>
+						</Text>
+						<combobox name='ScheeliteCombobox'>
+							<X>1%</X>
+							<Y>18%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.ScheelitePriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.ScheelitePriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetScheelitePriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Scheelite",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+						
+						<Text name='BitumensComboboxLabel'>
+							<X>4%</X>
+							<Y>23%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Bitumens</Text>
+						</Text>
+						<combobox name='BitumensCombobox'>
+							<X>1%</X>
+							<Y>23%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.BitumensPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.BitumensPriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetBitumensPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Bitumens",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='CoesiteComboboxLabel'>
+							<X>4%</X>
+							<Y>28%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Coesite</Text>
+						</Text>
+						<combobox name='CoesiteCombobox'>
+							<X>1%</X>
+							<Y>28%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.CoesitePriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.CoesitePriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetCoesitePriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Coesite",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='SylviteComboboxLabel'>
+							<X>4%</X>
+							<Y>33%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Sylvite</Text>
+						</Text>
+						<combobox name='SylviteCombobox'>
+							<X>1%</X>
+							<Y>33%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.SylvitePriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.SylvitePriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetSylvitePriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Sylvite",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='ZeolitesComboboxLabel'>
+							<X>4%</X>
+							<Y>38%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Zeolites</Text>
+						</Text>
+						<combobox name='ZeolitesCombobox'>
+							<X>1%</X>
+							<Y>38%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.ZeolitesPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.ZeolitesPriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetZeolitesPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Zeolites",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='ChromiteComboboxLabel'>
+							<X>4%</X>
+							<Y>43%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Chromite</Text>
+						</Text>
+						<combobox name='ChromiteCombobox'>
+							<X>1%</X>
+							<Y>43%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.ChromitePriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.ChromitePriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetChromitePriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Chromite",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='OtaviteComboboxLabel'>
+							<X>4%</X>
+							<Y>48%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Otavite</Text>
+						</Text>
+						<combobox name='OtaviteCombobox'>
+							<X>1%</X>
+							<Y>48%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.OtavitePriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.OtavitePriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetOtavitePriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Otavite",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='SperryliteComboboxLabel'>
+							<X>4%</X>
+							<Y>53%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Sperrylite</Text>
+						</Text>
+						<combobox name='SperryliteCombobox'>
+							<X>1%</X>
+							<Y>53%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.SperrylitePriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.SperrylitePriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetSperrylitePriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Sperrylite",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='VanadiniteComboboxLabel'>
+							<X>4%</X>
+							<Y>58%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Vanadinite</Text>
+						</Text>
+						<combobox name='VanadiniteCombobox'>
+							<X>1%</X>
+							<Y>58%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.VanadinitePriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.VanadinitePriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetVanadinitePriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Vanadinite",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='CarnotiteComboboxLabel'>
+							<X>4%</X>
+							<Y>63%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Carnotite</Text>
+						</Text>
+						<combobox name='CarnotiteCombobox'>
+							<X>1%</X>
+							<Y>63%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.CarnotitePriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.CarnotitePriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetCarnotitePriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Carnotite",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='CinnabarComboboxLabel'>
+							<X>4%</X>
+							<Y>68%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Cinnabar</Text>
+						</Text>
+						<combobox name='CinnabarCombobox'>
+							<X>1%</X>
+							<Y>68%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.CinnabarPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.CinnabarPriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetCinnabarPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Cinnabar",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='PolluciteComboboxLabel'>
+							<X>4%</X>
+							<Y>73%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Pollucite</Text>
+						</Text>
+						<combobox name='PolluciteCombobox'>
+							<X>1%</X>
+							<Y>73%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.PollucitePriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.PollucitePriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetPollucitePriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Pollucite",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='ZirconComboboxLabel'>
+							<X>4%</X>
+							<Y>78%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Zircon</Text>
+						</Text>
+						<combobox name='ZirconCombobox'>
+							<X>1%</X>
+							<Y>78%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.ZirconPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.ZirconPriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetZirconPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Zircon",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='LopariteComboboxLabel'>
+							<X>4%</X>
+							<Y>83%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Loparite</Text>
+						</Text>
+						<combobox name='LopariteCombobox'>
+							<X>1%</X>
+							<Y>83%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.LoparitePriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.LoparitePriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetLoparitePriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Loparite",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='MonaziteComboboxLabel'>
+							<X>4%</X>
+							<Y>88%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Monazite</Text>
+						</Text>
+						<combobox name='MonaziteCombobox'>
+							<X>1%</X>
+							<Y>88%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.MonazitePriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.MonazitePriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetMonazitePriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Monazite",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='XenotimeComboboxLabel'>
+							<X>37%</X>
+							<Y>3%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Xenotime</Text>
+						</Text>
+						<combobox name='XenotimeCombobox'>
+							<X>34%</X>
+							<Y>3%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.XenotimePriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.XenotimePriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetXenotimePriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Xenotime",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='YtterbiteComboboxLabel'>
+							<X>37%</X>
+							<Y>8%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Ytterbite</Text>
+						</Text>
+						<combobox name='YtterbiteCombobox'>
+							<X>34%</X>
+							<Y>8%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.YtterbitePriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.YtterbitePriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetYtterbitePriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Ytterbite",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+
+					</Tab>
+
+
+					<Tab Name='MinerWorkerGas'>
+						<frame name='MinerWorkerGasFrame'>
+							<BackgroundColor>FF000000</BackgroundColor>
+							<Border>1</Border>
+							<BorderColor>FFFFFFFF</BorderColor>
+							<X>0</X>
+							<Y>0</Y>
+							<Height>100%</Height>
+							<Width>100%</Width>
+							<OnLoad>
+								This:SetLeftClickThru[TRUE]
+							</OnLoad>
+						</frame>
+						<button	Name='OreTabRecalcButton'>
+						<Font template='Button.Font' />
+						<BackgroundColor>FF000000</BackgroundColor>
+						<X>69%</X>
+						<Y>5%</Y>
+						<Width>21%</Width>
+						<Height>15%</Height>
+						<Text>Recalculate Priorities</Text>
+						<OnLeftClick>
+							Script[Tehbot].VariableScope.MinerWorker.ReCalculatePriorities:Set[TRUE]
+						</OnLeftClick>
+						</button>
+						<Text name='AmberCytoserocinComboboxLabel'>
+							<X>4%</X>
+							<Y>3%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>AmberCytoserocin</Text>
+						</Text>
+						<combobox name='AmberCytoserocinCombobox'>
+							<X>1%</X>
+							<Y>3%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.AmberCytoserocinPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.AmberCytoserocinPriority}]:Select
+
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetAmberCytoserocinPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Amber Cytoserocin",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+						
+						<Text name='AmberMykoserocinComboboxLabel'>
+							<X>4%</X>
+							<Y>8%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>AmberMykoserocin</Text>
+						</Text>
+						<combobox name='AmberMykoserocinCombobox'>
+							<X>1%</X>
+							<Y>8%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.AmberMykoserocinPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.AmberMykoserocinPriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetAmberMykoserocinPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Amber Mykoserocin",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+											
+						<Text name='AzureCytoserocinComboboxLabel'>
+							<X>4%</X>
+							<Y>13%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>AzureCytoserocin</Text>
+						</Text>
+						<combobox name='AzureCytoserocinCombobox'>
+							<X>1%</X>
+							<Y>13%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.AzureCytoserocinPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.AzureCytoserocinPriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetAzureCytoserocinPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Azure Cytoserocin",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+						
+						<Text name='AzureMykoserocinComboboxLabel'>
+							<X>4%</X>
+							<Y>18%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>AzureMykoserocin</Text>
+						</Text>
+						<combobox name='AzureMykoserocinCombobox'>
+							<X>1%</X>
+							<Y>18%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.AzureMykoserocinPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.AzureMykoserocinPriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetAzureMykoserocinPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Azure Mykoserocin",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+						
+						<Text name='CeladonCytoserocinComboboxLabel'>
+							<X>4%</X>
+							<Y>23%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>CeladonCytoserocin</Text>
+						</Text>
+						<combobox name='CeladonCytoserocinCombobox'>
+							<X>1%</X>
+							<Y>23%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.CeladonCytoserocinPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.CeladonCytoserocinPriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetCeladonCytoserocinPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Celadon Cytoserocin",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='CeladonMykoserocinComboboxLabel'>
+							<X>4%</X>
+							<Y>28%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>CeladonMykoserocin</Text>
+						</Text>
+						<combobox name='CeladonMykoserocinCombobox'>
+							<X>1%</X>
+							<Y>28%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.CeladonMykoserocinPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.CeladonMykoserocinPriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetCeladonMykoserocinPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Celadon Mykoserocin",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='GoldenCytoserocinComboboxLabel'>
+							<X>4%</X>
+							<Y>33%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>GoldenCytoserocin</Text>
+						</Text>
+						<combobox name='GoldenCytoserocinCombobox'>
+							<X>1%</X>
+							<Y>33%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.GoldenCytoserocinPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.GoldenCytoserocinPriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetGoldenCytoserocinPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Golden Cytoserocin",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='GoldenMykoserocinComboboxLabel'>
+							<X>4%</X>
+							<Y>38%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>GoldenMykoserocin</Text>
+						</Text>
+						<combobox name='GoldenMykoserocinCombobox'>
+							<X>1%</X>
+							<Y>38%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.GoldenMykoserocinPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.GoldenMykoserocinPriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetGoldenMykoserocinPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Golden Mykoserocin",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='LimeCytoserocinComboboxLabel'>
+							<X>4%</X>
+							<Y>43%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>LimeCytoserocin</Text>
+						</Text>
+						<combobox name='LimeCytoserocinCombobox'>
+							<X>1%</X>
+							<Y>43%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.LimeCytoserocinPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.LimeCytoserocinPriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetLimeCytoserocinPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Lime Cytoserocin",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='LimeMykoserocinComboboxLabel'>
+							<X>4%</X>
+							<Y>48%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>LimeMykoserocin</Text>
+						</Text>
+						<combobox name='LimeMykoserocinCombobox'>
+							<X>1%</X>
+							<Y>48%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.LimeMykoserocinPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.LimeMykoserocinPriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetLimeMykoserocinPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Lime Mykoserocin",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='MalachiteCytoserocinComboboxLabel'>
+							<X>4%</X>
+							<Y>53%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>MalachiteCytoserocin</Text>
+						</Text>
+						<combobox name='MalachiteCytoserocinCombobox'>
+							<X>1%</X>
+							<Y>53%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.MalachiteCytoserocinPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.MalachiteCytoserocinPriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetMalachiteCytoserocinPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Malachite Cytoserocin",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='MalachiteMykoserocinComboboxLabel'>
+							<X>4%</X>
+							<Y>58%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>MalachiteMykoserocin</Text>
+						</Text>
+						<combobox name='MalachiteMykoserocinCombobox'>
+							<X>1%</X>
+							<Y>58%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.MalachiteMykoserocinPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.MalachiteMykoserocinPriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetMalachiteMykoserocinPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Malachite Mykoserocin",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='VermillionCytoserocinComboboxLabel'>
+							<X>4%</X>
+							<Y>63%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>VermillionCytoserocin</Text>
+						</Text>
+						<combobox name='VermillionCytoserocinCombobox'>
+							<X>1%</X>
+							<Y>63%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.VermillionCytoserocinPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.VermillionCytoserocinPriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetVermillionCytoserocinPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Vermillion Cytoserocin",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='VermillionMykoserocinComboboxLabel'>
+							<X>4%</X>
+							<Y>68%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>VermillionMykoserocin</Text>
+						</Text>
+						<combobox name='VermillionMykoserocinCombobox'>
+							<X>1%</X>
+							<Y>68%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.VermillionMykoserocinPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.VermillionMykoserocinPriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetVermillionMykoserocinPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Vermillion Mykoserocin",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='ViridianCytoserocinComboboxLabel'>
+							<X>4%</X>
+							<Y>73%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>ViridianCytoserocin</Text>
+						</Text>
+						<combobox name='ViridianCytoserocinCombobox'>
+							<X>1%</X>
+							<Y>73%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.ViridianCytoserocinPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.ViridianCytoserocinPriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetViridianCytoserocinPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Viridian Cytoserocin",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='ViridianMykoserocinComboboxLabel'>
+							<X>4%</X>
+							<Y>78%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>ViridianMykoserocin</Text>
+						</Text>
+						<combobox name='ViridianMykoserocinCombobox'>
+							<X>1%</X>
+							<Y>78%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.ViridianMykoserocinPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.ViridianMykoserocinPriority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetViridianMykoserocinPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Viridian Mykoserocin",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='Fullerite-C28ComboboxLabel'>
+							<X>4%</X>
+							<Y>83%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Fullerite-C28</Text>
+						</Text>
+						<combobox name='Fullerite-C28Combobox'>
+							<X>1%</X>
+							<Y>83%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.Fullerite-C28Priority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.Fullerite-C28Priority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetFullerite-C28Priority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Fullerite-C28",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='Fullerite-C32ComboboxLabel'>
+							<X>4%</X>
+							<Y>88%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Fullerite-C32</Text>
+						</Text>
+						<combobox name='Fullerite-C32Combobox'>
+							<X>1%</X>
+							<Y>88%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.Fullerite-C32Priority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.Fullerite-C32Priority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetFullerite-C32Priority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Fullerite-C32",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='Fullerite-C320ComboboxLabel'>
+							<X>37%</X>
+							<Y>3%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Fullerite-C320</Text>
+						</Text>
+						<combobox name='Fullerite-C320Combobox'>
+							<X>34%</X>
+							<Y>3%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.Fullerite-C320Priority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.Fullerite-C320Priority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetFullerite-C320Priority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Fullerite-C320",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='Fullerite-C50ComboboxLabel'>
+							<X>37%</X>
+							<Y>8%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Fullerite-C50</Text>
+						</Text>
+						<combobox name='Fullerite-C50Combobox'>
+							<X>34%</X>
+							<Y>8%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.Fullerite-C50Priority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.Fullerite-C50Priority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetFullerite-C50Priority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Fullerite-C50",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='Fullerite-C540ComboboxLabel'>
+							<X>37%</X>
+							<Y>13%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Fullerite-C540</Text>
+						</Text>
+						<combobox name='Fullerite-C540Combobox'>
+							<X>34%</X>
+							<Y>13%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.Fullerite-C540Priority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.Fullerite-C540Priority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetFullerite-C540Priority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Fullerite-C540",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='Fullerite-C60ComboboxLabel'>
+							<X>37%</X>
+							<Y>18%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Fullerite-C60</Text>
+						</Text>
+						<combobox name='Fullerite-C60Combobox'>
+							<X>34%</X>
+							<Y>18%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.Fullerite-C60Priority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.Fullerite-C60Priority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetFullerite-C60Priority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Fullerite-C60",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+
+						<Text name='Fullerite-C70ComboboxLabel'>
+							<X>37%</X>
+							<Y>23%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Fullerite-C70</Text>
+						</Text>
+						<combobox name='Fullerite-C70Combobox'>
+							<X>34%</X>
+							<Y>23%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.Fullerite-C70Priority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.Fullerite-C70Priority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetFullerite-C70Priority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Fullerite-C70",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+						
+						<Text name='Fullerite-C72ComboboxLabel'>
+							<X>37%</X>
+							<Y>23%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Fullerite-C72</Text>
+						</Text>
+						<combobox name='Fullerite-C72Combobox'>
+							<X>34%</X>
+							<Y>23%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.Fullerite-C72Priority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.Fullerite-C72Priority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetFullerite-C72Priority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Fullerite-C72",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+						
+						<Text name='Fullerite-C84ComboboxLabel'>
+							<X>37%</X>
+							<Y>23%</Y>
+							<Width>50%</Width>
+							<Height>5%</Height>
+							<Alignment>Left</Alignment>
+							<Text>Fullerite-C84</Text>
+						</Text>
+						<combobox name='Fullerite-C84Combobox'>
+							<X>34%</X>
+							<Y>23%</Y>
+							<Width>40</Width> 
+							<Height>20</Height> 
+							<FullHeight>80</FullHeight>
+							<ButtonWidth>20</ButtonWidth>
+							<Items>
+								<Item Value='0'>0</Item>
+								<Item Value='1'>1</Item>
+								<Item Value='2'>2</Item>
+								<Item Value='3'>3</Item>
+							</Items>
+						<OnLoad>
+							if ${Script[Tehbot].VariableScope.MinerWorker.Config.Fullerite-C84Priority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.MinerWorker.Config.Fullerite-C84Priority}]:Select
+						</OnLoad>
+						<OnSelect>
+							Script[Tehbot].VariableScope.MinerWorker.Config:SetFullerite-C84Priority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.MinerWorker.PriorityCollection:Set["Fullerite-C84",${This.SelectedItem.Value}]
+						</OnSelect>
+						</combobox>
+						
+						
+					</Tab>
+
+					<Tab Name='MinerWorkerInformation'>
+						<frame name='MinerWorkerInformationFrame'>
+							<BackgroundColor>FF000000</BackgroundColor>
+							<Border>1</Border>
+							<BorderColor>FFFFFFFF</BorderColor>
+							<X>0</X>
+							<Y>0</Y>
+							<Height>100%</Height>
+							<Width>100%</Width>
+							<OnLoad>
+								This:SetLeftClickThru[TRUE]
+							</OnLoad>
+						</frame>
+						
+					</Tab>	
+				</Tabs>
+				<OnSelect>
+					Script[Tehbot].VariableScope.CommonConfig:SetActiveTab[${This.SelectedTab.Name}]
+						</OnSelect>
+					</TabControl>					
+				</Children>
+			</Frame>
+		</Children>
+	</window>
+
+</ISUI>
