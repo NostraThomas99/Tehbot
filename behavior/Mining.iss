@@ -129,7 +129,7 @@ objectdef obj_Configuration_Mining inherits obj_Configuration_Base
 	; The bookmark prefix for the above.
 	Setting(bool, ExperimentalAntiStickBookmarkPrefix, SetExperimentalAntiStickBookmarkPrefix)
 	; What distance in meters do we warp to the mining site at?
-	Setting(int, WarpInDistance, SetWarpInDistance}
+	Setting(int, WarpInDistance, SetWarpInDistance)
 
 	; I am going to attempt to make things more random by taking the number from the setting after this one, and using it to control a delay before
 	; We undertake certain actions. Tehbot naturally adds delta to things but with enough clients and a small enough pulse time, things will begin
