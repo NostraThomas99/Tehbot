@@ -42,8 +42,14 @@
 #define GROUP_MUTADAPTIVE_PROJECTOR	         																	2018
 #define GROUP_CLOAKING_DEVICE		 																			330
 #define GROUP_GANGLINK 																							316
+
 #define GROUP_STRIPMINER 																						464
 #define GROUP_MININGLASER 																						54
+#define GROUP_GASCLOUDHARVESTER																					4138
+#define GROUP_GASCLOUDSCOOP																						737
+#define GROUP_COMPRESSOR																						4174
+
+
 #define GROUP_ECCM 																								202
 #define GROUP_DRONECONTROLUNIT																					407
 #define GROUP_AFTERBURNER 																						46
@@ -67,6 +73,7 @@
 #define GROUP_ENERGY_TRANSFER																					67
 #define GROUP_TRACKINGCOMPUTER 																					213
 #define GROUP_AUTOMATED_TARGETING_SYSTEM																		96
+
 #define GROUP_SIEGEMODULE 																						515
 #define GROUP_CONCORDDRONE 																						301
 #define GROUP_CONVOY 																							297

@@ -32,6 +32,7 @@ objectdef obj_Configuration_Abyssal inherits obj_Configuration_Base
 	Setting(bool, UseMTU, SetUseMTU)
 	Setting(string, MTUType, SetMTUType)
 	Setting(bool, DropOffToContainer, SetDropOffToContainer)
+	Setting(string, DropOffContainerName, SetDropOffContainerName)
 	Setting(bool, OverloadThrust, SetOverloadThrust)
 	Setting(bool, Overheat, SetOverheat)
 	Setting(bool, UseDrugs, SetUseDrugs)
@@ -40,7 +41,6 @@ objectdef obj_Configuration_Abyssal inherits obj_Configuration_Base
 	Setting(int, NanitesToLoad, SetNanitesToLoad)	
 	Setting(string, HomeBase, SetHomeBase)
 	Setting(string, FilamentSite, SetFilamentSite)
-	Setting(string, DropOffContainerName, SetDropOffContainerName)
 	Setting(string, MunitionStorage, SetMunitionStorage)
 	Setting(string, MunitionStorageFolder, SetMunitionStorageFolder)
 	Setting(string, DroneType, SetDroneType)
@@ -95,11 +95,6 @@ objectdef obj_Abyssal inherits obj_StateQueue
 	method Initialize()
 	{
 		This[parent]:Initialize
-		
-		;We need to disable the ISXEVE entity cache because going to the abyss and back makes it buggy apparently?
-		;Correction, cache rules everything around me
-		;I lied, cache must be disabled
-		ISXEVE:Debug_SetEntityCacheDisabled[TRUE]
 
 		DynamicAddBehavior("Abyssal", "Abyssal Runner")
 		This.PulseFrequency:Set[3500]
@@ -152,6 +147,10 @@ objectdef obj_Abyssal inherits obj_StateQueue
 
 		Tehbot.Paused:Set[FALSE]
 		UIElement[Run@TitleBar@Tehbot]:SetText[Stop]
+		;We need to disable the ISXEVE entity cache because going to the abyss and back makes it buggy apparently?
+		;Correction, cache rules everything around me
+		;I lied, cache must be disabled
+		ISXEVE:Debug_SetEntityCacheDisabled[TRUE]
 	}
 
 	method Stop()
@@ -160,6 +159,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 		This:Clear
 		Tehbot.Paused:Set[TRUE]
 		UIElement[Run@TitleBar@Tehbot]:SetText[Run]
+		ISXEVE:Debug_SetEntityCacheDisabled[FALSE]
 	}
 
 	member:bool test()

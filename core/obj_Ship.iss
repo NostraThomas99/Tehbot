@@ -74,6 +74,11 @@ objectdef obj_Ship inherits obj_StateQueue
 		This:AddModuleList[AutoTarget, "ToItem.GroupID = GROUP_AUTOMATED_TARGETING_SYSTEM"]
 		This:AddModuleList[Siege, "ToItem.GroupID = GROUP_SIEGEMODULE"]
 		
+		This:AddModuleList[OreMining, "ToItem.GroupID = GROUP_MININGLASER || ToItem.GroupID = GROUP_STRIPMINER || ToItem.GroupID = GROUP_FREQUENCYMININGLASER"]
+		This:AddModuleList[GasMining, "ToItem.GroupID = GROUP_GASCLOUDHARVESTER	 || ToItem.GroupID = GROUP_GASCLOUDSCOOP"]
+		This:AddModuleList[IceMining, "(ToItem.GroupID = GROUP_MININGLASER || ToItem.GroupID = GROUP_STRIPMINER) && Name =- Ice"]		
+		This:AddModuleList[Compressors, "ToItem.GroupID = GROUP_COMPRESSOR"]	
+		
 		This:AddModuleList[Disruptor, "ToItem.GroupID = GROUP_SCRAMBLER && Name =- Disruptor"]
 		This:AddModuleList[Scrambler, "ToItem.GroupID = GROUP_SCRAMBLER && Name =- Scrambler"]
 		This:AddModuleList[StasisWeb, "ToItem.GroupID = GROUP_STASIS_WEB"]
@@ -90,11 +95,11 @@ objectdef obj_Ship inherits obj_StateQueue
 		This:AddModuleList[ECMR, "ToItem.GroupID = GROUP_ECM && Name =- Radar"]		
 		This:AddModuleList[ECMG, "ToItem.GroupID = GROUP_ECM && Name =- Gravimetric"]		
 		This:AddModuleList[ECML, "ToItem.GroupID = GROUP_ECM && Name =- Ladar"]		
-		This:AddModuleList[ECMM, "ToItem.GroupID = GROUP_ECM && Name =- Magnetometric']	
-		This:AddModuleList[ECMMS, "ToItem.GroupID = GROUP_ECM && Name =- Multispectrum']			
-		This:AddModuleList[ECMB, "ToItem.GroupID = 80']
+		This:AddModuleList[ECMM, "ToItem.GroupID = GROUP_ECM && Name =- Magnetometric"]	
+		This:AddModuleList[ECMMS, "ToItem.GroupID = GROUP_ECM && Name =- Multispectrum"]			
+		This:AddModuleList[ECMB, "ToItem.GroupID = 80"]
 		
-		This:AddModuleList[RSD, "ToItem.GroupID = GROUP_RSD']
+		This:AddModuleList[RSD, "ToItem.GroupID = GROUP_RSD"]
 
 		
 		This:AddModuleList[TargetModules, "MaxRange>0"]

@@ -69,10 +69,15 @@ objectdef obj_TargetList inherits obj_StateQueue
 
 	method AddAllPC()
 	{
-		This:AddQueryString["Distance < 150000 && !IsFleetMember && IsPC && !IsMoribund"]
+		This:AddQueryString["Distance < 300000 && !IsFleetMember && IsPC && !IsMoribund"]
 		NeedUpdate:Set[TRUE]
 	}
 
+	method AddAllFleetPC()
+	{
+		This:AddQueryString["Distance < 300000 && IsFleetMember && IsPC && !IsMoribund"]
+		NeedUpdate:Set[TRUE]
+	}
 	method RequestUpdate()
 	{
 		variable iterator TargetIterator

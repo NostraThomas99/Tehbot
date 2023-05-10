@@ -48,6 +48,7 @@
 #include behavior/Salvager.iss
 #include behavior/Mission.iss
 #include behavior/Abyssal.iss
+#include behavior/Mining.iss
 
 #include minimode/Automate.iss
 #include minimode/AutoModule.iss
@@ -60,6 +61,9 @@
 #include minimode/Salvage.iss
 #include minimode/UndockWarp.iss
 ;#include minimode/PanicButtons.iss
+#include minimode/MinerForeman.iss
+#include minimode/MinerWorker.iss
+#include minimode/LocalCheck.iss
 
 function atexit()
 {
@@ -93,6 +97,7 @@ function main(string Character="")
 	declarevariable MissionParser obj_MissionParser script
 	declarevariable Mission obj_Mission script
 	declarevariable Abyssal obj_Abyssal script
+	declarevariable Mining obj_Mining script
 
 	declarevariable Automate obj_Automate script
 	declarevariable AutoModule obj_AutoModule script
@@ -105,6 +110,9 @@ function main(string Character="")
 	declarevariable Salvage obj_Salvage script
 	declarevariable DroneControl obj_DroneControl script
 	;declarevariable PanicButtons obj_PanicButtons script
+	declarevariable MinerForeman obj_MinerForeman script
+	declarevariable MinerWorker obj_MinerWorker script
+	declarevariable LocalCheck obj_LocalCheck script
 
 	Dynamic:PopulateBehaviors
 	Dynamic:PopulateMiniModes
@@ -142,6 +150,8 @@ function main(string Character="")
 	;Another two global variables, these are supposed to indicate when the target choice is FINAL for both TargetManager and DroneControl | Let us see what happens.
 	declarevariable finalizedTM bool global
 	declarevariable finalizedDC bool global
+	;Global variable for localcheck minimode
+	declarevariable FriendlyLocal bool global
 
 
 	Logger:Log["Tehbot", "Module initialization complete", "y"]

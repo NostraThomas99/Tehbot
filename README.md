@@ -34,3 +34,7 @@ Important sidenote. If you are not going to use a gila (its a really stupid idea
 Functionality for approaching things outside your range is not implemented except for the case of those battleships that hug the edge of the safe zone. Keep your 10km rocket fits at home.
 
 As always, let me know in the Discord if things don't behave correctly.
+
+_______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+I am now working on bringing mining to this fork. As of May 10th it is incomplete.
