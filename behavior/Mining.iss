@@ -1128,7 +1128,7 @@ objectdef obj_Mining inherits obj_StateQueue
 			
 			
 			}
-			; We want to keep our mooks in range of the mineables.
+			; We want to keep our mooks in range of the mineables without any other considerations.
 			if !${Config.AlignHomeStructure}
 			{
 
@@ -1142,7 +1142,12 @@ objectdef obj_Mining inherits obj_StateQueue
 			; We want to orbit the boss, it is up to the boss to keep us in range of mineables.
 			if ${Config.OrbitBoss}
 			{
-			
+				if !${MyShip.ToEntity.Approaching.ID.Equal[${Config.DaBossID}]}
+				{
+					Move:Orbit[${Config.DaBossID}, {Config.OrbitBossDistance}]
+					return FALSE
+				}
+				return FALSE
 			}
 			; We want to stay within boost/compression range of the boss. There will be no setup for not staying near the boss.
 			if !${Config.OrbitBoss}
@@ -1173,15 +1178,31 @@ objectdef obj_Mining inherits obj_StateQueue
 		; We are flying solo
 		if !${Config.FleetUp}
 		{	
-			; We want to stay aligned at all times.
+			; We want to stay aligned at all times. This is gonna take some real math yo.
 			if ${Config.AlignHomeStructure} && !${Config.OrbitRocks}
 			{
-			
-			
-			
+				if ${Config.HomeStructure.NotNULLOrEmpty} && ${Me.ToEntity.Mode} != MOVE_ALIGNED
+				{
+					This:LogInfo["Aligning To ${Config.HomeStructure}"]
+					Bookmark[${Config.HomeStructure}]:AlignTo
+					if ${Me.ToEntity.Mode == MOVE_ALIGNED
+					{
+						if
+						{
+						
+						}
+					
+					}
+					return FALSE
+				}
+				else
+				{
+					This:LogInfo["Don't know how you made it this far with Home Structure unset - Stopping"]
+					This:Stop				
+				}
 			}
-			; We want to orbit rocks
-			if ${Config.OrbitRocks} && !${Config.AlignHomeStructure}
+			; We want to orbit rocks (Asteroid case)
+			if ${Config.OrbitRocks} && !${Config.AlignHomeStructure} && ${MinerWorker.AsteroidsDistant.TargetList.Get[1]}
 			{
 				if ${MinerWorker.Asteroids.LockedTargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.Asteroids.LockedTargetList.Get[1]}]}
 				{
@@ -1194,6 +1215,34 @@ objectdef obj_Mining inherits obj_StateQueue
 					return FALSE	
 				}			
 			}
+			; We want to orbit rocks (Ice case)
+			if ${Config.OrbitRocks} && !${Config.AlignHomeStructure} && ${MinerWorker.IceDistant.TargetList.Get[1]}
+			{
+				if ${MinerWorker.Ice.LockedTargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.Ice.LockedTargetList.Get[1]}]}
+				{
+					Move:Orbit[${MinerWorker.Ice.LockedTargetList.Get[1]}, ${Config.OrbitRocksDistance}]
+					return FALSE
+				}
+				if ${MinerWorker.IceDistant.TargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.IceDistant.TargetList.Get[1]}]} && !${MinerWorker.Ice.LockedTargetList.Get[1]}
+				{
+					Move:Orbit[${MinerWorker.IceDistant.TargetList.Get[1]}, ${Config.OrbitRocksDistance}]
+					return FALSE	
+				}			
+			}
+			; We want to orbit rocks (Gas case)
+			if ${Config.OrbitRocks} && !${Config.AlignHomeStructure} && ${MinerWorker.GasDistant.TargetList.Get[1]}
+			{
+				if ${MinerWorker.Gas.LockedTargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.Gas.LockedTargetList.Get[1]}]}
+				{
+					Move:Orbit[${MinerWorker.Gas.LockedTargetList.Get[1]}, ${Config.OrbitRocksDistance}]
+					return FALSE
+				}
+				if ${MinerWorker.GasDistant.TargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.GasDistant.TargetList.Get[1]}]} && !${MinerWorker.Gas.LockedTargetList.Get[1]}
+				{
+					Move:Orbit[${MinerWorker.GasDistant.TargetList.Get[1]}, ${Config.OrbitRocksDistance}]
+					return FALSE	
+				}			
+			}
 			; We are a clown and we chose both aligning structure and orbiting rocks
 			if ${Config.OrbitRocks} && ${Config.AlignHomeStructure}
 			{
@@ -1202,7 +1251,7 @@ objectdef obj_Mining inherits obj_StateQueue
 				This:InsertState["Traveling"]
 				This:Stop
 			}
-			; We want to wander the mining site, searching for meaning.
+			; We want to wander the mining site, searching for meaning. (Asteroid case)
 			if ${MinerWorker.Asteroids.LockedTargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.Asteroids.LockedTargetList.Get[1]}]}
 			{
 				Move:Approach[${MinerWorker.Asteroids.LockedTargetList.Get[1]},${Math.Calc[${Ship.ModuleList_OreMining.Range} * .5]}]
@@ -1211,6 +1260,28 @@ objectdef obj_Mining inherits obj_StateQueue
 			if ${MinerWorker.AsteroidsDistant.TargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.AsteroidsDistant.TargetList.Get[1]}]} && !${MinerWorker.Asteroids.LockedTargetList.Get[1]}
 			{
 				Move:Approach[${MinerWorker.AsteroidsDistant.TargetList.Get[1]}, ${Math.Calc[${Ship.ModuleList_OreMining.Range} * .5]}]
+				return FALSE	
+			}
+			; We want to wander the mining site, searching for meaning. (Ice case)
+			if ${MinerWorker.Ice.LockedTargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.Ice.LockedTargetList.Get[1]}]}
+			{
+				Move:Approach[${MinerWorker.Ice.LockedTargetList.Get[1]},${Math.Calc[${Ship.ModuleList_IceMining.Range} * .5]}]
+				return FALSE
+			}
+			if ${MinerWorker.IceDistant.TargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.IceDistant.TargetList.Get[1]}]} && !${MinerWorker.Ice.LockedTargetList.Get[1]}
+			{
+				Move:Approach[${MinerWorker.IceDistant.TargetList.Get[1]}, ${Math.Calc[${Ship.ModuleList_IceMining.Range} * .5]}]
+				return FALSE	
+			}
+			; We want to wander the mining site, searching for meaning. (Gas case)
+			if ${MinerWorker.Gas.LockedTargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.Gas.LockedTargetList.Get[1]}]}
+			{
+				Move:Approach[${MinerWorker.Gas.LockedTargetList.Get[1]},${Math.Calc[${Ship.ModuleList_GasMining.Range} * .5]}]
+				return FALSE
+			}
+			if ${MinerWorker.GasDistant.TargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.GasDistant.TargetList.Get[1]}]} && !${MinerWorker.Gas.LockedTargetList.Get[1]}
+			{
+				Move:Approach[${MinerWorker.GasDistant.TargetList.Get[1]}, ${Math.Calc[${Ship.ModuleList_GasMining.Range} * .5]}]
 				return FALSE	
 			}
 		}
