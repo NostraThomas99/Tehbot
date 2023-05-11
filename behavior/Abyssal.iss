@@ -2035,7 +2035,7 @@ objectdef obj_Abyssal inherits obj_StateQueue
 		else
 		{
 			This:LogInfo["Checkpoint 2, loading complete"]
-			This:QueueState["CheckForWork]
+			This:QueueState["CheckForWork"]
 			This:InsertState["StackShip"]
 			return TRUE
 		}

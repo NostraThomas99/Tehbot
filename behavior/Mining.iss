@@ -228,11 +228,15 @@ objectdef obj_Mining inherits obj_StateQueue
 	variable bool reload = TRUE
 	variable bool halt = FALSE
 
+	; MinerWorker or MinerForeman can trigger this. If true it will send us back to station.
+	variable bool ReturnToStation
+
 	variable bool StatusGreen
 	variable bool StatusChecked	
 	variable bool CompressionRequest
 	variable bool CompressionActive
-	variable bool ClearToMine
+	; This will be used for timekeeping after a fleeing event.
+	variable int64 ClearToMine
 	; This bool will be set by an event triggered ostensibly by Da Boss. It says to come out and mine its time.
 	variable bool LeaderSummons
 	
@@ -260,6 +264,9 @@ objectdef obj_Mining inherits obj_StateQueue
 	variable set EmptyBelts
 	variable stack:int64 BeltStack
 	
+	; This is an exit condition, sends the Miners back home and has them warp back when the boss says to.
+	variable bool ScramYaMooks
+	
 
 	method Initialize()
 	{
@@ -285,7 +292,10 @@ objectdef obj_Mining inherits obj_StateQueue
 		Event[WhoIsOutThere]:AttachAtom[This:WhoIsOutThereEvent]
 		
 		LavishScript:RegisterEvent[WhoIsDaBoss]
-		Event[WhoIsDaBoss]:AttachAtom[This:WhoIsDaBossEvent]		
+		Event[WhoIsDaBoss]:AttachAtom[This:WhoIsDaBossEvent]
+
+		LavishScript:RegisterEvent[TimeToScram]
+		Event[TimeToScram]:AttachAtom[This:TimeToScramEvent]			
 
 		LavishScript:RegisterEvent[Tehbot_ScheduleHalt]
 		Event[Tehbot_ScheduleHalt]:AttachAtom[This:ScheduleHalt]
@@ -318,6 +328,12 @@ objectdef obj_Mining inherits obj_StateQueue
 	{
 		CurrentParticipants:Set[${Name}, ${CharID}]
 	}
+	
+	method TimeToScramEvent(bool Scram)
+	{
+		ScramYaMooks:Set[${Scram}]
+	}
+	
 	method ScheduleHalt()
 	{
 		halt:Set[TRUE]
@@ -394,6 +410,70 @@ objectdef obj_Mining inherits obj_StateQueue
 			This:LogInfo["We dead"]
 			This:Stop
 		}
+		; People with neutral standings or worse are in local, and we are configured to run. Run.
+		if !${FriendlyLocal} && ${Config.RunFromBads} && !${Me.InStation}
+		{
+			This:LogInfo["Jerks in Local, lets get out of here"]
+			; If we are set to run to a POSBookmarkName
+			if ${Config.UsePOSHidingSpot} && ${Config.POSBookmarkName.NotNULLOrEmpty}
+			{
+				if ${Config.HideHowLong} == 0
+				{
+					ClearToMine:Set[${Math.Calc[${LavishScript.RunningTime} + 999999999999999999999999999999999999]}]	
+				}
+				else
+				{
+					ClearToMine:Set[${Math.Calc[${LavishScript.RunningTime} + (${Config.HideHowLong} * 60000)]}]
+				}
+				This:LogInfo["Hope there is actually a POS here"]
+				This:InsertState["FleeToPOS"]
+				return TRUE
+			}
+			if ${Config.UseWeirdNavigation} && ${Config.WeirdBookmarkPrefix.NotNULLOrEmpty}
+			{
+				if ${Config.HideHowLong} == 0
+				{
+					ClearToMine:Set[${Math.Calc[${LavishScript.RunningTime} + 999999999999999999999999999999999999]}]	
+				}
+				else
+				{
+					ClearToMine:Set[${Math.Calc[${LavishScript.RunningTime} + (${Config.HideHowLong} * 60000)]}]
+				}			
+				This:LogInfo["Commence Weird Navigation"]
+				This:InsertState["WeirdNavigation"]
+				return TRUE
+			}
+			
+			if ${Config.HideHowLong} == 0
+			{
+				ClearToMine:Set[${Math.Calc[${LavishScript.RunningTime} + 999999999999999999999999999999999999]}]	
+			}
+			else
+			{
+				ClearToMine:Set[${Math.Calc[${LavishScript.RunningTime} + (${Config.HideHowLong} * 60000)]}]
+			}
+			Move:Bookmark["${Config.HomeStructure}"]
+			This:InsertState["Traveling"]
+			return TRUE
+		}
+		; We are in a station, there are jerks, and we are set to run. Update the wait timer.
+		if !${FriendlyLocal} && ${Config.RunFromBads}
+		{
+			if ${Config.HideHowLong} == 0
+			{
+				This:Stop
+				return TRUE
+			}
+			else
+			{
+				ClearToMine:Set[${Math.Calc[${LavishScript.RunningTime} + (${Config.HideHowLong} * 60000)]}]
+			}			
+		}
+		; We are in a station, we are still inside the time set by a Fleeing Event
+		if ${LavishScript.RunningTime} < ${ClearToMine}
+		{
+			return FALSE
+		}
 		; We are in station, and ore holds are a pain in the ass, make active.
 		if ${Me.InSpace} && ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold](exists)} && ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold].UsedCapacity} < 0
 		{
@@ -430,6 +510,7 @@ objectdef obj_Mining inherits obj_StateQueue
 		; We are in station and everything is good, lets establish our mining location.
 		if ${Me.InStation} && ${StatusGreen}
 		{
+			ReturnToStation:Set[FALSE]
 			This:LogInfo["Figure out mining location"]
 			This:QueueState["EstablishMiningLocation", 5000]
 			return TRUE
@@ -822,6 +903,13 @@ objectdef obj_Mining inherits obj_StateQueue
 		{
 			return FALSE
 		}
+		
+		if ${Client.InSpace} && ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold](exists)}
+		{
+			EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold]:MakeActive
+			return FALSE
+		}
+		
 		EVE:QueryEntities[beltIndex, "GroupID = 9"]
 		beltIndex:GetIterator[beltIterator]
 		
@@ -838,7 +926,7 @@ objectdef obj_Mining inherits obj_StateQueue
 			{
 				if !${EmptyBelts.Contains[${beltIterator.Value.Name}]}
 				{
-					BeltStack:Push[${beltIterator.Value.ID}
+					BeltStack:Push[${beltIterator.Value.ID}]
 					This:LogInfo["Adding Belt ${beltIterator.Value.Name} to Stack"]
 					NumberBelts:Inc[1]
 				}
@@ -904,6 +992,12 @@ objectdef obj_Mining inherits obj_StateQueue
 	; This is where we travel to our mining location. Fleet members that aren't Da Boss will not touch this normally.
 	member:bool NavigateToMiningLocation()
 	{
+		if ${Client.InSpace} && ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold](exists)}
+		{
+			EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold]:MakeActive
+			return FALSE
+		}
+		
 		This:LogInfo["Begin Navigation to Mining Location"]
 		if ${MiningBookmarkQueue.Peek}
 		{
@@ -911,6 +1005,7 @@ objectdef obj_Mining inherits obj_StateQueue
 			Move:Bookmark[${MiningBookmarkQueue.Peek}, FALSE, ${Config.WarpInDistance}, FALSE]
 			This:InsertState["Traveling"]
 			This:QueueState["StartWorking", 4000]
+			return TRUE
 		}
 		if ${BeltStack.Top}
 		{
@@ -918,6 +1013,7 @@ objectdef obj_Mining inherits obj_StateQueue
 			Move:Entity[${BeltStack.Top}, ${Config.WarpInDistance}, FALSE]
 			This:InsertState["Traveling"]
 			This:QueueState["StartWorking", 4000]
+			return TRUE
 		}
 	}
 	; This is where we travel to Da Boss.
@@ -959,10 +1055,180 @@ objectdef obj_Mining inherits obj_StateQueue
 	; We are at the mining location, commence the minings.
 	member:bool StartWorking()
 	{
-		This:LogInfo["Time to get to work"]
+		; People with neutral standings or worse are in local, (or npcs and we don't fight npcs) and we are configured to run. Run.
+		if (!${FriendlyLocal} && ${Config.RunFromBads}) || (${MinerWorker.ActiveNPCs.TargetList.Used} && !${FightNPCs})
+		{
+			This:LogInfo["Jerks in Local, lets get out of here"]
+			; If we are set to run to a POSBookmarkName
+			if ${Config.UsePOSHidingSpot} && ${Config.POSBookmarkName.NotNULLOrEmpty}
+			{
+				if ${Config.HideHowLong} == 0
+				{
+					ClearToMine:Set[${Math.Calc[${LavishScript.RunningTime} + 999999999999999999999999999999999999]}]	
+				}
+				else
+				{
+					ClearToMine:Set[${Math.Calc[${LavishScript.RunningTime} + (${Config.HideHowLong} * 60000)]}]
+				}
+				This:LogInfo["Hope there is actually a POS here"]
+				This:InsertState["FleeToPOS"]
+				return TRUE
+			}
+			if ${Config.UseWeirdNavigation} && ${Config.WeirdBookmarkPrefix.NotNULLOrEmpty}
+			{
+				if ${Config.HideHowLong} == 0
+				{
+					ClearToMine:Set[${Math.Calc[${LavishScript.RunningTime} + 999999999999999999999999999999999999]}]	
+				}
+				else
+				{
+					ClearToMine:Set[${Math.Calc[${LavishScript.RunningTime} + (${Config.HideHowLong} * 60000)]}]
+				}			
+				This:LogInfo["Commence Weird Navigation"]
+				This:InsertState["WeirdNavigation"]
+				return TRUE
+			}
+			
+			if ${Config.HideHowLong} == 0
+			{
+				ClearToMine:Set[${Math.Calc[${LavishScript.RunningTime} + 999999999999999999999999999999999999]}]	
+			}
+			else
+			{
+				ClearToMine:Set[${Math.Calc[${LavishScript.RunningTime} + (${Config.HideHowLong} * 60000)]}]
+			}
+			This:InsertState["GoToStation", 3000]
+			return TRUE
+			
+		}
+		; This is an exit condition triggered by MinerForeman or MinerWorker. Usually due to a full ore bay or running out of
+		; supplies.
+		if ${ReturnToStation}
+		{
+			This:LogInfo["Need to dropoff or load supplies, back to base"]
+			StatusGreen:Set[FALSE]
+			StatusChecked:Set[FALSE]
+			This:InsertState["GoToStation", 3000]
+			return TRUE
+		}
+		; This is a temporary exit condition Da Boss can call, we use it if the boss needs to reposition at the site
+		; and repositioning with them is foolish and dangerous. 
+		if ${ScramYaMooks} && !${Config.FleetBoss}
+		{
+			This:LogInfo["Boss says its time to beat it, lets scram"]
+			This:InsertState["GoToStation", 3000]
+			return TRUE
+		}
+		; We are the fleet boss
+		if ${Config.FleetBoss}
+		{
+			; We want to stay aligned at all times.
+			if ${Config.AlignHomeStructure}
+			{
+			
+			
+			}
+			; We want to keep our mooks in range of the mineables.
+			if !${Config.AlignHomeStructure}
+			{
 
+
+			}
+		}
+		
+		; We are in a fleet but not the boss
+		if ${Config.FleetUp} && !${Config.FleetBoss}
+		{
+			; We want to orbit the boss, it is up to the boss to keep us in range of mineables.
+			if ${Config.OrbitBoss}
+			{
+			
+			}
+			; We want to stay within boost/compression range of the boss. There will be no setup for not staying near the boss.
+			if !${Config.OrbitBoss}
+			{
+				; We want to orbit rocks, which is fine provided they are near the boss.
+				if ${Config.OrbitRocks}
+				{
+				
+				
+				}
+				; We want to maintain alignment to the Home Structure, which is fine if we are near the boss and also the mineables.
+				if ${Config.AlignHomeStructure}
+				{
+				
+				
+				}
+				; We are a clown and we chose both aligning structure and orbiting rocks
+				if ${Config.OrbitRocks} && ${Config.AlignHomeStructure}
+				{
+					This:LogInfo["Do not set both orbit rocks and align structure - Stopping"]
+					Move:Bookmark["${Config.HomeStructure}"]
+					This:InsertState["Traveling"]
+					This:Stop
+				}
+			}
+		}
+		
+		; We are flying solo
+		if !${Config.FleetUp}
+		{	
+			; We want to stay aligned at all times.
+			if ${Config.AlignHomeStructure} && !${Config.OrbitRocks}
+			{
+			
+			
+			
+			}
+			; We want to orbit rocks
+			if ${Config.OrbitRocks} && !${Config.AlignHomeStructure}
+			{
+				if ${MinerWorker.Asteroids.LockedTargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.Asteroids.LockedTargetList.Get[1]}]}
+				{
+					Move:Orbit[${MinerWorker.Asteroids.LockedTargetList.Get[1]}, ${Config.OrbitRocksDistance}]
+					return FALSE
+				}
+				if ${MinerWorker.AsteroidsDistant.TargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.AsteroidsDistant.TargetList.Get[1]}]} && !${MinerWorker.Asteroids.LockedTargetList.Get[1]}
+				{
+					Move:Orbit[${MinerWorker.AsteroidsDistant.TargetList.Get[1]}, ${Config.OrbitRocksDistance}]
+					return FALSE	
+				}			
+			}
+			; We are a clown and we chose both aligning structure and orbiting rocks
+			if ${Config.OrbitRocks} && ${Config.AlignHomeStructure}
+			{
+				This:LogInfo["Do not set both orbit rocks and align structure - Stopping"]
+				Move:Bookmark["${Config.HomeStructure}"]
+				This:InsertState["Traveling"]
+				This:Stop
+			}
+			; We want to wander the mining site, searching for meaning.
+			if ${MinerWorker.Asteroids.LockedTargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.Asteroids.LockedTargetList.Get[1]}]}
+			{
+				Move:Approach[${MinerWorker.Asteroids.LockedTargetList.Get[1]},${Math.Calc[${Ship.ModuleList_OreMining.Range} * .5]}]
+				return FALSE
+			}
+			if ${MinerWorker.AsteroidsDistant.TargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.AsteroidsDistant.TargetList.Get[1]}]} && !${MinerWorker.Asteroids.LockedTargetList.Get[1]}
+			{
+				Move:Approach[${MinerWorker.AsteroidsDistant.TargetList.Get[1]}, ${Math.Calc[${Ship.ModuleList_OreMining.Range} * .5]}]
+				return FALSE	
+			}
+		}
+		return FALSE
 	}
 
+	; We use this to flee to a POS and hang out there until the heat is gone.
+	member:bool FleeToPOS()
+	{
+	
+	
+	}
+	; This is Weird Navigation, we use it to bounce around a bit before going to our fleeing destination
+	member:bool WeirdNavigation()
+	{
+	
+	
+	}
 	; We use this to build our list of valid anomalies we are allowed to run. We will do this once
 	; on starting the bot, and on demand with a button in the UI.
 	member:bool BuildAnomaliesList()
@@ -1513,6 +1779,7 @@ objectdef obj_Mining inherits obj_StateQueue
 		}
 		else
 		{
+			This:QueueState["CheckForWork"]
 			This:InsertState["StackShip"]
 			return TRUE
 		}
@@ -1588,10 +1855,10 @@ objectdef obj_Mining inherits obj_StateQueue
 			Client:Wait[2000]
 			This:LogInfo["Checkpoint 18"]
 			
-			if ${Config.DropOffToContainer} && ${Config.DropOffContainerName.NotNULLOrEmpty}
-			{
-				EVEWindow[Inventory].ChildWindow["StationCorpHangar", ${Config.MunitionStorageFolder}]:GetItems[items]
-			}
+			;if ${Config.DropOffToContainer} && ${Config.DropOffContainerName.NotNULLOrEmpty}
+			;{
+			;	EVEWindow[Inventory].ChildWindow["StationCorpHangar", ${Config.MunitionStorageFolder}]:GetItems[items]
+			;}
 		}
 		elseif ${Config.MunitionStorage.Equal[Personal Hangar]}
 		{
@@ -1625,10 +1892,10 @@ objectdef obj_Mining inherits obj_StateQueue
 			
 			EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems]:StackAll
 
-			if ${Config.DropOffToContainer} && ${Config.DropOffContainerName.NotNULLOrEmpty}
-			{
-				EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems]:GetItems[items]
-			}
+			;if ${Config.DropOffToContainer} && ${Config.DropOffContainerName.NotNULLOrEmpty}
+			;{
+			;	EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems]:GetItems[items]
+			;}
 		}
 
 		items:GetIterator[itemIterator]
@@ -1658,6 +1925,8 @@ objectdef obj_Mining inherits obj_StateQueue
 			}
 			while ${itemIterator:Next(exists)}
 		}
+		This:LogInfo["Stacked Hangar"]
+		This:QueueState["CheckForWork", 5000]
 		return TRUE
 	}
 

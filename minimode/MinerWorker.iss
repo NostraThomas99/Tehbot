@@ -122,6 +122,12 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 	variable obj_TargetList Ice
 	; This will be Gas
 	variable obj_TargetList Gas
+	; This will be Asteroids without a distance limitation
+	variable obj_TargetList AsteroidsDistant
+	; This will be Ice without a distance limitation
+	variable obj_TargetList IceDistant
+	; This will be Gas without a distance limitation
+	variable obj_TargetList GasDistant
 	
 	; This collection is to help create the sets below. Key is the name of the mineable
 	; Value is the priority number assigned.
@@ -134,6 +140,8 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 	variable set MediumPriorityMineables
 	; This set is for Lowest Priority Mineables
 	variable set LowPriorityMineables
+	
+	; This is going to be 
 	
 	; This string is for creating our prioritization query for Asteroids
 	variable string PrioAst = ""
@@ -166,6 +174,25 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 	; and this is the stupidest way I could think of to do it.
 	variable int YouOnlyRunTwice
 
+	; This will all be so I can sort the stuff by distance.
+	; First up, 3 collections, one for each mineable category. Key is DISTANCE, value is entity ID.
+	variable collection:int64 AsteroidSort
+	variable collection:int64 IceSort
+	variable collection:int64 GasSort
+	
+	; Next up, 3 queues, so we can sort ascending.
+	variable queue:int64 AsteroidSortAscend
+	variable queue:int64 IceSortAscend
+	variable queue:int64 GasSortAscend
+	
+	; Next up, 3 stacks, so we can sort descending
+	variable stack:int64 AsteroidSortDescend
+	variable stack:int64 IceSortDescend
+	variable stack:int64 GasSortDescend
+	
+	; Next up, two variables for storing the IDs of the current furthest and closest MineableSorting
+	variable int64 ClosestMineable
+	variable int64 FurthestMineable
 	
 	variable int64 BurstTimer
 
@@ -174,13 +201,15 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 		This[parent]:Initialize
 
 		DynamicAddMiniMode("MinerWorker", "MinerWorker")
-		This.PulseFrequency:Set[2000]
+		This.PulseFrequency:Set[4000]
 
 		This.NonGameTiedPulse:Set[TRUE]
 		
 		if !${PriorityCollection.FirstValue}
 		{
 			timedcommand 0 "ui -load \"${Script.CurrentDirectory}/minimode/MinerWorker.xml\""
+			
+			timedcommand 30 "ui -unload \"${Script.CurrentDirectory}/minimode/MinerWorker.xml\""
 		}
 		This.LogLevelBar:Set[${Config.LogLevelBar}]
 		
@@ -207,12 +236,13 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 	method CreateTargetQueries()
 	{
 		; I'm not sure why I am clearing and re-entering the queries for these over and over. I'm sure there is a reason.
-		ActiveNPCs:ClearQueryString
-		FleetPCs:ClearQueryString
-		PCs:ClearQueryString
-		Asteroids:ClearQueryString
-		Ice:ClearQueryString
-		Gas:ClearQueryString
+		; Maybe not, lets see what happens eh.
+		; ActiveNPCs:ClearQueryString
+		; FleetPCs:ClearQueryString
+		; PCs:ClearQueryString
+		; Asteroids:ClearQueryString
+		; Ice:ClearQueryString
+		; Gas:ClearQueryString
 		
 		; First up, All NPCs, filtering out the ones we really don't want to mess with.
 		ActiveNPCs:AddAllNPCs
@@ -224,16 +254,125 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 		if !${Mining.JustMineIt}
 		{
 			Asteroids:AddQueryString["CategoryID = 25 && Name !~ Ice && Distance < ${Ship.ModuleList_OreMining.Range} && (${PrioAst})"]
+			AsteroidsDistant:AddQueryString["CategoryID = 25 && Name !~ Ice && (${PrioAst})"]
 			Ice:AddQueryString["CategoryID = 25 && Name =- Ice && Distance < ${Ship.ModuleList_IceMining.Range}"]
+			IceDistant:AddQueryString["CategoryID = 25 && Name =- Ice"]
 			Gas:AddQueryString["GroupID = 711 && Distance < ${Ship.ModuleList_GasMining.Range} && (${PrioGas})"]
+			GasDistant:AddQueryString["GroupID = 711 && (${PrioGas})"]
 		}
 		else
 		{
 			Asteroids:AddQueryString["CategoryID = 25 && Name !~ Ice && Distance < ${Ship.ModuleList_OreMining.Range}"]
+			AsteroidsDistant:AddQueryString["CategoryID = 25 && Name !~ Ice"]
 			Ice:AddQueryString["CategoryID = 25 && Name =- Ice && Distance < ${Ship.ModuleList_IceMining.Range}"]
+			IceDistant:AddQueryString["CategoryID = 25 && Name =- Ice"]
 			Gas:AddQueryString["GroupID = 711 && Distance < ${Ship.ModuleList_GasMining.Range}"]
+			GasDistant:AddQueryString["GroupID = 711"]
 		}
 		TargetQueriesCreated:Set[TRUE]
+	}
+	
+	; This method will be so I can get that ore/gas/ice sort/reverse sort thing going. Wonder how expensive this will be CPU wise.
+	
+	method MineableSorting()
+	{
+		; This will all be so I can sort the stuff by distance.
+		; First up, 3 collections, one for each mineable category. Key is DISTANCE, value is entity ID.
+		variable collection:int64 AsteroidSort
+		variable collection:int64 IceSort
+		variable collection:int64 GasSort
+		
+		; Next up, 3 queues, so we can sort ascending.
+		variable queue:int64 AsteroidSortAscend
+		variable queue:int64 IceSortAscend
+		variable queue:int64 GasSortAscend
+		
+		; Next up, 3 stacks, so we can sort descending
+		variable stack:int64 AsteroidSortDescend
+		variable stack:int64 IceSortDescend
+		variable stack:int64 GasSortDescend		
+		
+		variable index:entity Mineables
+		variable iterator MineablesIterator
+		
+		EVE:QueryEntities[Mineables, "CategoryID = 25 || CategoryID = 711"]
+		Mineables:GetIterator[MineablesIterator]
+		
+		if ${MineablesIterator:First(exists)}
+		{
+			do
+			{
+				if ${MineablesIterator.Value.CategoryID} == 25 && !${MineablesIterator.Value.Name.Find[Ice]}
+				{
+					AsteroidSort:Set[${MineablesIterator.Value.Distance.Int.LeadingZeroes[16]}, ${MineablesIterator.Value.ID}]
+					echo - DEBUG - Adding ${MineablesIterator.Value.Name} to ASTSORT				
+				}
+				if ${MineablesIterator.Value.CategoryID} == 25 && ${MineablesIterator.Value.Name.Find[Ice]}
+				{
+					IceSort:Set[${MineablesIterator.Value.Distance.Int.LeadingZeroes[16]}, ${MineablesIterator.Value.ID}]
+					echo - DEBUG - Adding ${MineablesIterator.Value.Name} to ICESORT
+				}
+				if ${MineablesIterator.Value.CategoryID} == 711
+				{
+					GasSort:Set[${MineablesIterator.Value.Distance.Int.LeadingZeroes[16]}, ${MineablesIterator.Value.ID}]
+					echo - DEBUG - Adding ${MineablesIterator.Value.Name} to GASSORT			
+				}
+			}
+			while ${MineablesIterator:Next(exists)}
+		}
+		if ${AsteroidSort.FirstKey}
+		{
+			do
+			{
+				AsteroidSortAscend:Queue[${AsteroidSort.CurrentValue}]
+				AsteroidSortDescend:Push[${AsteroidSort.CurrentValue}]
+			}
+			while ${AsteroidSort.NextKey(exists)}
+		}
+		if ${IceSort.FirstKey}
+		{
+			do
+			{
+				IceSortAscend:Queue[${IceSort.CurrentValue}]
+				IceSortDescend:Push[${IceSort.CurrentValue}]
+			}
+			while ${IceSort.NextKey(exists)}
+		}
+		if ${GasSort.FirstKey}
+		{
+			do
+			{
+				GasSortAscend:Queue[${GasSort.CurrentValue}]
+				GasSortDescend:Push[${GasSort.CurrentValue}]
+			}
+			while ${GasSort.NextKey(exists)}
+		}
+		if ${AsteroidSortAscend.Used}
+		{
+			ClosestMineable:Set[${AsteroidSortAscend.Peek}]
+		}
+		if ${AsteroidSortDescend.Used}
+		{
+			FurthestMineable:Set[${AsteroidSortDescend.Top}]
+		}
+		if ${IceSortAscend.Used}
+		{
+			ClosestMineable:Set[${IceSortAscend.Peek}]
+		}
+		if ${IceSortDescend.Used}
+		{
+			FurthestMineable:Set[${IceSortDescend.Top}]
+		}
+		if ${GasSortAscend.Used}
+		{
+			ClosestMineable:Set[${GasSortAscend.Peek}]
+		}
+		if ${GasSortDescend.Used}
+		{
+			FurthestMineable:Set[${GasSortDescend.Top}]
+		}
+		echo DEBUG - ${Entity[${FurthestMineable}].Name} ${Entity[${FurthestMineable}].Distance.Int.LeadingZeroes[16]} ${Entity[${FurthestMineable}].ID}
+		echo DEBUG - ${Entity[${ClosestMineable}].Name} ${Entity[${ClosestMineable}].Distance.Int.LeadingZeroes[16]} ${Entity[${ClosestMineable}].ID}
 	}
 	
 	method CheckOreHold()
@@ -344,8 +483,11 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 	method CheckForMineables()
 	{
 		Asteroids:RequestUpdate
+		AsteroidsDistant:RequestUpdate
 		Ice:RequestUpdate
+		IceDistant:RequestUpdate
 		Gas:RequestUpdate
+		GasDistant:RequestUpdate
 	}
 
 	; Use TargetList to see if we have anything to run away from here
@@ -543,7 +685,7 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 				}
 			}
 		}
-		
+		This:MineableSorting
 		This:CheckOreHold
 		
 		if (!${Asteroids.TargetList.Used} && !${Ice.TargetList.Used} && !${Gas.TargetList.Used})
