@@ -251,7 +251,18 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 		; Next up, non fleet member players on grid.
 		PCs:AddAllPC
 		; Is there mineable stuff in range of our mining equipment?
-		if !${Mining.JustMineIt}
+		; We are using prioritization and ARE the fleetboss. Range is hardcoded for now.
+		if !${Mining.JustMineIt} && ${Mining.Config.FleetBoss}
+		{
+			Asteroids:AddQueryString["CategoryID = 25 && Name !~ Ice && Distance < 40000 && (${PrioAst})"]
+			AsteroidsDistant:AddQueryString["CategoryID = 25 && Name !~ Ice && (${PrioAst})"]
+			Ice:AddQueryString["CategoryID = 25 && Name =- Ice && Distance < 40000"]
+			IceDistant:AddQueryString["CategoryID = 25 && Name =- Ice"]
+			Gas:AddQueryString["GroupID = 711 && Distance < 40000 && (${PrioGas})"]
+			GasDistant:AddQueryString["GroupID = 711 && (${PrioGas})"]
+		}
+		; We are using prioritization and aren't the fleetboss.
+		elseif !${Mining.JustMineIt} && !${Mining.Config.FleetBoss}
 		{
 			Asteroids:AddQueryString["CategoryID = 25 && Name !~ Ice && Distance < ${Ship.ModuleList_OreMining.Range} && (${PrioAst})"]
 			AsteroidsDistant:AddQueryString["CategoryID = 25 && Name !~ Ice && (${PrioAst})"]
@@ -380,6 +391,10 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 		if !${Client.Inventory}
 		{
 			echo inventory not open
+		}
+		if !${EVEWindow[Inventory].ChildWindow[${MyShip.ID}, ShipGeneralMiningHold](exists)}
+		{
+			return FALSE
 		}
 		if ${EVEWindow[Inventory].ChildWindow[${MyShip.ID}, ShipGeneralMiningHold].UsedCapacity} / ${EVEWindow[Inventory].ChildWindow[${MyShip.ID}, ShipGeneralMiningHold].Capacity} > 0.8
 		{
@@ -595,6 +610,7 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 			{
 				timedcommand 0 "ui -unload \"${Script.CurrentDirectory}/minimode/MinerWorker.xml\""
 				ReCalculatePriorities:Set[TRUE]
+				This:CreateTargetQueries
 			}
 		}
 		; This bool will be set by a UI button. You click it and it sorts priority collection into lists. It will also be triggered once automatically
@@ -629,7 +645,7 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 		; All navigation is being handled by the mainmode, we don't care about local. We don't care about NPCs or other players, none of
 		; That shit even matters AT ALL here because hey this is a minimode, it can do whatever it wants while whatever else is going on.
 		
-		if (${Asteroids.TargetList.Used} || ${Ice.TargetList.Used} || ${Gas.TargetList.Used})
+		if (${Asteroids.TargetList.Used} || ${Ice.TargetList.Used} || ${Gas.TargetList.Used}) && !${Mining.Config.FleetBoss}
 		{
 			if ${Asteroids.TargetList.Used}
 			{
@@ -693,6 +709,11 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 			Asteroids.AutoLock:Set[FALSE]
 			Ice.AutoLock:Set[FALSE]
 			Gas.AutoLock:Set[FALSE]
+			if (!${AsteroidsDistant.TargetList.Used} && !${IceDistant.TargetList.Used} && !${GasDistant.TargetList.Used}) && ${MiningTime}
+			{
+				This:LogInfo["Mining Location Depleted"]
+				Mining.LocationDepleted:Set[TRUE]
+			}
 		}
 	
 		return FALSE

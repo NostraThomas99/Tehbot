@@ -267,6 +267,9 @@ objectdef obj_Mining inherits obj_StateQueue
 	; This is an exit condition, sends the Miners back home and has them warp back when the boss says to.
 	variable bool ScramYaMooks
 	
+	; This is a bool that MinerWorker will use to say that it has depleted the area.
+	variable bool LocationDepleted
+	
 
 	method Initialize()
 	{
@@ -411,10 +414,10 @@ objectdef obj_Mining inherits obj_StateQueue
 			This:Stop
 		}
 		; People with neutral standings or worse are in local, and we are configured to run. Run.
-		if !${FriendlyLocal} && ${Config.RunFromBads} && !${Me.InStation}
+		if !${FriendlyLocal} && ${Config.RunFromBads} && !${Me.InStation} && !${Bookmark[${Config.POSBookmarkName}].Distance} < 50000
 		{
 			This:LogInfo["Jerks in Local, lets get out of here"]
-			; If we are set to run to a POSBookmarkName
+			; If we are set to run to a POS
 			if ${Config.UsePOSHidingSpot} && ${Config.POSBookmarkName.NotNULLOrEmpty}
 			{
 				if ${Config.HideHowLong} == 0
@@ -456,8 +459,8 @@ objectdef obj_Mining inherits obj_StateQueue
 			This:InsertState["Traveling"]
 			return TRUE
 		}
-		; We are in a station, there are jerks, and we are set to run. Update the wait timer.
-		if !${FriendlyLocal} && ${Config.RunFromBads}
+		; We are in a station (or in a POS), there are jerks, and we are set to run. Update the wait timer.
+		if (!${FriendlyLocal} && ${Config.RunFromBads}) && (${Me.InStation} || ${Bookmark[${Config.POSBookmarkName}].Distance} < 50000)
 		{
 			if ${Config.HideHowLong} == 0
 			{
@@ -904,7 +907,7 @@ objectdef obj_Mining inherits obj_StateQueue
 			return FALSE
 		}
 		
-		if ${Client.InSpace} && ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold](exists)}
+		if ${Client.InSpace} && ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold](exists)} && ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold].UsedCapacity} < 0
 		{
 			EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold]:MakeActive
 			return FALSE
@@ -992,7 +995,7 @@ objectdef obj_Mining inherits obj_StateQueue
 	; This is where we travel to our mining location. Fleet members that aren't Da Boss will not touch this normally.
 	member:bool NavigateToMiningLocation()
 	{
-		if ${Client.InSpace} && ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold](exists)}
+		if ${Client.InSpace} && ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold](exists)} && ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold].UsedCapacity} < 0
 		{
 			EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold]:MakeActive
 			return FALSE
@@ -1054,10 +1057,14 @@ objectdef obj_Mining inherits obj_StateQueue
 	}
 	; We are at the mining location, commence the minings.
 	member:bool StartWorking()
-	{
+	{	
+		MinerWorker.MiningTime:Set[TRUE]
 		; People with neutral standings or worse are in local, (or npcs and we don't fight npcs) and we are configured to run. Run.
 		if (!${FriendlyLocal} && ${Config.RunFromBads}) || (${MinerWorker.ActiveNPCs.TargetList.Used} && !${FightNPCs})
 		{
+			MinerForeman.InhibitBursts:Set[TRUE]
+			MinerWorker.MiningTime:Set[FALSE]
+			relay "all" -event LeaderSummoningEvent FALSE
 			This:LogInfo["Jerks in Local, lets get out of here"]
 			; If we are set to run to a POSBookmarkName
 			if ${Config.UsePOSHidingSpot} && ${Config.POSBookmarkName.NotNULLOrEmpty}
@@ -1105,6 +1112,8 @@ objectdef obj_Mining inherits obj_StateQueue
 		; supplies.
 		if ${ReturnToStation}
 		{
+		MinerForeman.InhibitBursts:Set[TRUE]
+			MinerWorker.MiningTime:Set[FALSE]
 			This:LogInfo["Need to dropoff or load supplies, back to base"]
 			StatusGreen:Set[FALSE]
 			StatusChecked:Set[FALSE]
@@ -1115,14 +1124,31 @@ objectdef obj_Mining inherits obj_StateQueue
 		; and repositioning with them is foolish and dangerous. 
 		if ${ScramYaMooks} && !${Config.FleetBoss}
 		{
+			MinerWorker.MiningTime:Set[FALSE]
 			This:LogInfo["Boss says its time to beat it, lets scram"]
 			This:InsertState["GoToStation", 3000]
+			return TRUE
+		}
+		; Our current mining location is depleted, find another.
+		if ${LocationDepleted} && (${Config.FleetBoss} || !${Config.FleetUp})
+		{
+			MinerWorker.MiningTime:Set[FALSE]
+			if ${Config.FleetBoss}
+			{
+				relay "all" -event TimeToScramEvent TRUE
+				relay "all" -event LeaderSummoningEvent FALSE
+				MinerForeman.InhibitBursts:Set[TRUE]
+				
+			}
+			This:InsertState["CheckForWork"]
 			return TRUE
 		}
 		; We are the fleet boss
 		if ${Config.FleetBoss}
 		{
+			MinerForeman.InhibitBursts:Set[FALSE]
 			; We want to stay aligned at all times.
+			; Not done yet, math.
 			if ${Config.AlignHomeStructure}
 			{
 			
@@ -1131,7 +1157,51 @@ objectdef obj_Mining inherits obj_StateQueue
 			; We want to keep our mooks in range of the mineables without any other considerations.
 			if !${Config.AlignHomeStructure}
 			{
-
+				; We want to wander the mining site, searching for meaning. (Asteroid case)
+				if ${MinerWorker.Asteroids.TargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.Asteroids.TargetList.Get[1]}]}
+				{
+					relay "all" -event LeaderSummoningEvent TRUE
+					relay "all" -event TimeToScramEvent FALSE
+					Move:Approach[${MinerWorker.Asteroids.TargetList.Get[1]},10000]
+					return FALSE
+				}
+				if ${MinerWorker.AsteroidsDistant.TargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.AsteroidsDistant.TargetList.Get[1]}]} && !${MinerWorker.Asteroids.TargetList.Get[1]}
+				{
+					relay "all" -event LeaderSummoningEvent TRUE
+					relay "all" -event TimeToScramEvent FALSE
+					Move:Approach[${MinerWorker.AsteroidsDistant.TargetList.Get[1]},10000]}]
+					return FALSE	
+				}
+				; We want to wander the mining site, searching for meaning. (Ice case)
+				if ${MinerWorker.Ice.TargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.Ice.TargetList.Get[1]}]}
+				{
+					relay "all" -event LeaderSummoningEvent TRUE
+					relay "all" -event TimeToScramEvent FALSE
+					Move:Approach[${MinerWorker.Ice.TargetList.Get[1]},10000]
+					return FALSE
+				}
+				if ${MinerWorker.IceDistant.TargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.IceDistant.TargetList.Get[1]}]} && !${MinerWorker.Ice.TargetList.Get[1]}
+				{
+					relay "all" -event LeaderSummoningEvent TRUE
+					relay "all" -event TimeToScramEvent FALSE
+					Move:Approach[${MinerWorker.IceDistant.TargetList.Get[1]},10000]
+					return FALSE	
+				}
+				; We want to wander the mining site, searching for meaning. (Gas case)
+				if ${MinerWorker.Gas.TargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.Gas.TargetList.Get[1]}]}
+				{
+					relay "all" -event LeaderSummoningEvent TRUE
+					relay "all" -event TimeToScramEvent FALSE
+					Move:Approach[${MinerWorker.Gas.TargetList.Get[1]},10000]
+					return FALSE
+				}
+				if ${MinerWorker.GasDistant.TargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.GasDistant.TargetList.Get[1]}]} && !${MinerWorker.Gas.TargetList.Get[1]}
+				{
+					relay "all" -event LeaderSummoningEvent TRUE
+					relay "all" -event TimeToScramEvent FALSE
+					Move:Approach[${MinerWorker.GasDistant.TargetList.Get[1]},10000]
+					return FALSE	
+				}
 
 			}
 		}
@@ -1150,15 +1220,58 @@ objectdef obj_Mining inherits obj_StateQueue
 				return FALSE
 			}
 			; We want to stay within boost/compression range of the boss. There will be no setup for not staying near the boss.
+			; Incomplete for now, need to think up a good way to keep the miners within range of their chosen mineables but also
+			; Within range of Da Boss
 			if !${Config.OrbitBoss}
 			{
 				; We want to orbit rocks, which is fine provided they are near the boss.
 				if ${Config.OrbitRocks}
 				{
-				
-				
+					; We want to orbit rocks (Asteroid case)
+					if ${MinerWorker.AsteroidsDistant.TargetList.Get[1]}
+					{
+						if ${MinerWorker.Asteroids.LockedTargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.Asteroids.LockedTargetList.Get[1]}]}
+						{
+							Move:Orbit[${MinerWorker.Asteroids.LockedTargetList.Get[1]}, ${Config.OrbitRocksDistance}]
+							return FALSE
+						}
+						if ${MinerWorker.AsteroidsDistant.TargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.AsteroidsDistant.TargetList.Get[1]}]} && !${MinerWorker.Asteroids.LockedTargetList.Get[1]}
+						{
+							Move:Orbit[${MinerWorker.AsteroidsDistant.TargetList.Get[1]}, ${Config.OrbitRocksDistance}]
+							return FALSE	
+						}			
+					}
+					; We want to orbit rocks (Ice case)
+					if ${MinerWorker.IceDistant.TargetList.Get[1]}
+					{
+						if ${MinerWorker.Ice.LockedTargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.Ice.LockedTargetList.Get[1]}]}
+						{
+							Move:Orbit[${MinerWorker.Ice.LockedTargetList.Get[1]}, ${Config.OrbitRocksDistance}]
+							return FALSE
+						}
+						if ${MinerWorker.IceDistant.TargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.IceDistant.TargetList.Get[1]}]} && !${MinerWorker.Ice.LockedTargetList.Get[1]}
+						{
+							Move:Orbit[${MinerWorker.IceDistant.TargetList.Get[1]}, ${Config.OrbitRocksDistance}]
+							return FALSE	
+						}			
+					}
+					; We want to orbit rocks (Gas case)
+					if ${MinerWorker.GasDistant.TargetList.Get[1]}
+					{
+						if ${MinerWorker.Gas.LockedTargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.Gas.LockedTargetList.Get[1]}]}
+						{
+							Move:Orbit[${MinerWorker.Gas.LockedTargetList.Get[1]}, ${Config.OrbitRocksDistance}]
+							return FALSE
+						}
+						if ${MinerWorker.GasDistant.TargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.GasDistant.TargetList.Get[1]}]} && !${MinerWorker.Gas.LockedTargetList.Get[1]}
+						{
+							Move:Orbit[${MinerWorker.GasDistant.TargetList.Get[1]}, ${Config.OrbitRocksDistance}]
+							return FALSE	
+						}			
+					}				
 				}
 				; We want to maintain alignment to the Home Structure, which is fine if we are near the boss and also the mineables.
+				; Not done, math.
 				if ${Config.AlignHomeStructure}
 				{
 				
@@ -1179,28 +1292,28 @@ objectdef obj_Mining inherits obj_StateQueue
 		if !${Config.FleetUp}
 		{	
 			; We want to stay aligned at all times. This is gonna take some real math yo.
-			if ${Config.AlignHomeStructure} && !${Config.OrbitRocks}
-			{
-				if ${Config.HomeStructure.NotNULLOrEmpty} && ${Me.ToEntity.Mode} != MOVE_ALIGNED
-				{
-					This:LogInfo["Aligning To ${Config.HomeStructure}"]
-					Bookmark[${Config.HomeStructure}]:AlignTo
-					if ${Me.ToEntity.Mode == MOVE_ALIGNED
-					{
-						if
-						{
-						
-						}
-					
-					}
-					return FALSE
-				}
-				else
-				{
-					This:LogInfo["Don't know how you made it this far with Home Structure unset - Stopping"]
-					This:Stop				
-				}
-			}
+			;if ${Config.AlignHomeStructure} && !${Config.OrbitRocks}
+			;{
+			;	if ${Config.HomeStructure.NotNULLOrEmpty} && ${Me.ToEntity.Mode} != MOVE_ALIGNED
+			;	{
+			;		This:LogInfo["Aligning To ${Config.HomeStructure}"]
+			;		Bookmark[${Config.HomeStructure}]:AlignTo
+			;		if ${Me.ToEntity.Mode} == MOVE_ALIGNED
+			;		{
+			;			if
+			;			{
+			;			
+			;			}
+			;		
+			;		}
+			;;		return FALSE
+			;	}
+			;	else
+			;	{
+			;		This:LogInfo["Don't know how you made it this far with Home Structure unset - Stopping"]
+			;		This:Stop				
+			;	}
+			;}
 			; We want to orbit rocks (Asteroid case)
 			if ${Config.OrbitRocks} && !${Config.AlignHomeStructure} && ${MinerWorker.AsteroidsDistant.TargetList.Get[1]}
 			{
@@ -1291,13 +1404,19 @@ objectdef obj_Mining inherits obj_StateQueue
 	; We use this to flee to a POS and hang out there until the heat is gone.
 	member:bool FleeToPOS()
 	{
-	
-	
+		if !${Config.UseWeirdNavigation}
+		{
+			Move:Bookmark["${POSBookmarkName}"]
+			This:InsertState["Traveling"]
+			This:QueueState["CheckForWork"]
+		}
+		
 	}
 	; This is Weird Navigation, we use it to bounce around a bit before going to our fleeing destination
+	; Not done yet.
 	member:bool WeirdNavigation()
 	{
-	
+		
 	
 	}
 	; We use this to build our list of valid anomalies we are allowed to run. We will do this once
@@ -1399,6 +1518,15 @@ objectdef obj_Mining inherits obj_StateQueue
 	}
 	
 	
+	; Alright so, if we are going to be always aligned we need to know when to warp out for non-emergencies.
+	; Either we get lazy and go strictly by distance from the central point of the mining site, or we go by
+	; Some crazy bullshit math garbage that I don't entirely understand and will be making it up as I go.
+	; If this fails I'll leave the guts here as a testament to my hubris.
+	method HubristicPathAnalysis()
+	{
+	
+	
+	}
 	
 	; Load up required items. If you are Foreman: load up Heavy Water, Command Burst Charges, Drones.
 	; If you are a Miner Worker: load up Mining Crystals and Drones.
