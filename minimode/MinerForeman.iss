@@ -147,10 +147,10 @@ objectdef obj_MinerForeman inherits obj_StateQueue
 		{
 			return FALSE
 		}
-		if !${Mining.ClearToMine}
-		{
-			return FALSE
-		}
+		;if !${Mining.ClearToMine}
+		;{
+		;	return FALSE
+		;}
 		This:CreateTargetQueries
 		This:CheckForMineables
 		This:CheckForHostiles

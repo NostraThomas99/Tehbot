@@ -64,6 +64,7 @@
 #include minimode/MinerForeman.iss
 #include minimode/MinerWorker.iss
 #include minimode/LocalCheck.iss
+#include minimode/LavishNavTest.iss
 
 function atexit()
 {
@@ -113,6 +114,7 @@ function main(string Character="")
 	declarevariable MinerForeman obj_MinerForeman script
 	declarevariable MinerWorker obj_MinerWorker script
 	declarevariable LocalCheck obj_LocalCheck script
+	declarevariable LavishNavTest	obj_LavishNavTest script
 
 	Dynamic:PopulateBehaviors
 	Dynamic:PopulateMiniModes

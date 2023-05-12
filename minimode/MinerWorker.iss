@@ -152,6 +152,9 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 	; This string is so I can do stupid crap to modify the query string the way I need to.
 	variable string PrioSeperator = ""
 	
+	; This string is for a large string of all allowable mineables
+	variable string SuperAllowablesList = ""
+	
 	; Lets not create these queries over and over
 	variable bool TargetQueriesCreated = FALSE
 	; Is it in fact, time to mine?
@@ -173,6 +176,8 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 	; Need to close the UI element we have to force open, but without making it unusable in the future
 	; and this is the stupidest way I could think of to do it.
 	variable int YouOnlyRunTwice
+	; This collection will be used in my travel corridor thing. Key is ID, int64 is also entity ID, don't ask
+	variable collection:int64 MineablesCollection
 
 	; This will all be so I can sort the stuff by distance.
 	; First up, 3 collections, one for each mineable category. Key is DISTANCE, value is entity ID.
@@ -194,7 +199,17 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 	variable int64 ClosestMineable
 	variable int64 FurthestMineable
 	
-	variable int64 BurstTimer
+	; Next up, a bool that uses our distant target list combined with the LavishNavTest minimode to 
+	; See if we have any mineables within 5 minutes (for now) of us on our current path of movement.
+	; Intended to be used with AlignHomeStructure.
+	variable bool MineablesAhead
+	; This int is the threshold for mineables ahead where we consider it "worth it" to continue
+	
+
+	; This timer will be used to limit the refresh speed on updating our mineables list and checking our travel corridor for mineables.
+	variable int64 UpdateTimer	
+	; This int will define how often in seconds we want to update the above. Lets start with a hardcoded 30.
+	variable int UpdateFrequency = 30
 
 	method Initialize()
 	{
@@ -252,7 +267,7 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 		PCs:AddAllPC
 		; Is there mineable stuff in range of our mining equipment?
 		; We are using prioritization and ARE the fleetboss. Range is hardcoded for now.
-		if !${Mining.JustMineIt} && ${Mining.Config.FleetBoss}
+		if !${Mining.Config.JustMineIt} && ${Mining.Config.FleetBoss}
 		{
 			Asteroids:AddQueryString["CategoryID = 25 && Name !~ Ice && Distance < 40000 && (${PrioAst})"]
 			AsteroidsDistant:AddQueryString["CategoryID = 25 && Name !~ Ice && (${PrioAst})"]
@@ -262,7 +277,7 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 			GasDistant:AddQueryString["GroupID = 711 && (${PrioGas})"]
 		}
 		; We are using prioritization and aren't the fleetboss.
-		elseif !${Mining.JustMineIt} && !${Mining.Config.FleetBoss}
+		elseif !${Mining.Config.JustMineIt} && !${Mining.Config.FleetBoss}
 		{
 			Asteroids:AddQueryString["CategoryID = 25 && Name !~ Ice && Distance < ${Ship.ModuleList_OreMining.Range} && (${PrioAst})"]
 			AsteroidsDistant:AddQueryString["CategoryID = 25 && Name !~ Ice && (${PrioAst})"]
@@ -306,9 +321,20 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 		variable index:entity Mineables
 		variable iterator MineablesIterator
 		
-		EVE:QueryEntities[Mineables, "CategoryID = 25 || CategoryID = 711"]
-		Mineables:GetIterator[MineablesIterator]
+
 		
+		EVE:QueryEntities[Mineables, "CategoryID = 25 || CategoryID = 711"]
+		echo ${Mineables.Used}
+		if ${Mineables.Used} == 0
+		{
+			MineablesCollection:Set[0]
+		}
+		Mineables:GetIterator[MineablesIterator]
+
+		if !${Mining.Config.JustMineIt}
+		{
+			Mineables:RemoveByQuery[${LavishScript.CreateQuery["(${SuperAllowablesList})"]}, FALSE]
+		}
 		if ${MineablesIterator:First(exists)}
 		{
 			do
@@ -316,20 +342,27 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 				if ${MineablesIterator.Value.CategoryID} == 25 && !${MineablesIterator.Value.Name.Find[Ice]}
 				{
 					AsteroidSort:Set[${MineablesIterator.Value.Distance.Int.LeadingZeroes[16]}, ${MineablesIterator.Value.ID}]
-					echo - DEBUG - Adding ${MineablesIterator.Value.Name} to ASTSORT				
+					MineablesCollection:Set[${MineablesIterator.Value.ID}, ${MineablesIterator.Value.ID}]
+					;echo - DEBUG - Adding ${MineablesIterator.Value.Name} to ASTSORT				
 				}
 				if ${MineablesIterator.Value.CategoryID} == 25 && ${MineablesIterator.Value.Name.Find[Ice]}
 				{
 					IceSort:Set[${MineablesIterator.Value.Distance.Int.LeadingZeroes[16]}, ${MineablesIterator.Value.ID}]
-					echo - DEBUG - Adding ${MineablesIterator.Value.Name} to ICESORT
+					MineablesCollection:Set[${MineablesIterator.Value.ID}, ${MineablesIterator.Value.ID}]
+					;echo - DEBUG - Adding ${MineablesIterator.Value.Name} to ICESORT
 				}
 				if ${MineablesIterator.Value.CategoryID} == 711
 				{
 					GasSort:Set[${MineablesIterator.Value.Distance.Int.LeadingZeroes[16]}, ${MineablesIterator.Value.ID}]
-					echo - DEBUG - Adding ${MineablesIterator.Value.Name} to GASSORT			
+					MineablesCollection:Set[${MineablesIterator.Value.ID}, ${MineablesIterator.Value.ID}]
+					;echo - DEBUG - Adding ${MineablesIterator.Value.Name} to GASSORT			
 				}
 			}
 			while ${MineablesIterator:Next(exists)}
+		}
+		if ${Mineables.Used} <= 0
+		{
+			MinerWorker.MineablesCollection:Erase
 		}
 		if ${AsteroidSort.FirstKey}
 		{
@@ -562,6 +595,22 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 	{
 		PrioAst:Set["Name =- ThisSpaceForRent"]
 		PrioGas:Set["Name =- ThisSpaceForRent"]
+		SuperAllowablesList:Set["Name =- ThisSpaceForRent"]
+		
+		; Need this block to make the master allowed mineables list
+		if ${HighPriorityMineables.Used} > 0
+		{
+			HighPriorityMineables:ForEach["SuperAllowablesList:Concat[\" || Name =- \"\${ForEach.Value}\"\"]"]
+		}
+		if ${MediumPriorityMineables.Used} > 0
+		{
+			MediumPriorityMineables:ForEach["SuperAllowablesList:Concat[\" || Name =- \"\${ForEach.Value}\"\"]"]
+		}
+		if ${LowPriorityMineables.Used} > 0
+		{
+			LowPriorityMineables:ForEach["SuperAllowablesList:Concat[\" || Name =- \"\${ForEach.Value}\"\"]"]
+		}
+		
 		if ${HighPriorityMineables.Used} > 0
 		{
 			HighPriorityMineables:ForEach["PrioAst:Concat[\" || Name =- \"\${ForEach.Value}\"\"]"]
@@ -585,7 +634,37 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 		}
 	
 	}
-	
+	; This is the method where we use that lavishnav shit I just suffered through to determine if our VALID MINEABLES are in a box shaped corridor ahead of us
+	; Defined by being 300 * our current velocity meters long, and 80% of our mining equipment range across. Pointed ahead of us, naturally. It will set a bool that Mining
+	; Mainmode will read to decide whether to leave its current location or not.
+	method LookAhead()
+	{
+		variable int ValidMineablesAhead
+		if ${MineablesCollection.FirstValue}
+		{
+			; Yep its another do while loop sorry.
+			do
+			{
+				if ${LNavRegion[Corridor.TheGrid](exists)}
+				{
+					if ${LNavRegion[Corridor.TheGrid].Contains[${Entity[${MineablesCollection.CurrentValue}].X},${Entity[${MineablesCollection.CurrentValue}].Y},${Entity[${MineablesCollection.CurrentValue}].Z}]}
+					{
+						ValidMineablesAhead:Inc[1]
+					}
+				}
+			}
+			while ${MineablesCollection.NextValue(exists)}
+		}
+		; We're going to start with a hardcoded 0 here for now
+		if ${ValidMineablesAhead} > 0
+		{
+			MineablesAhead:Set[TRUE]
+		}
+		else
+		{
+			MineablesAhead:Set[FALSE]
+		}
+	}
 	; Main loop for this minimode.
 	member:bool MinerWorker()
 	{
@@ -620,7 +699,7 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 			TargetQueriesCreated:Set[FALSE]
 			This:ReCalcPriorities
 		}
-		if !${Mining.Config.JustMineIt}
+		if !${Mining.Config.JustMineIt} 
 		{
 			This:CommencePrioritization
 		}
@@ -632,12 +711,22 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 		{
 			This:CreateTargetQueries
 		}
-		This:CheckForMineables
+		if (${LavishScript.RunningTime} > ${UpdateTimer})
+		{
+			UpdateTimer:Set[${Math.Calc[${LavishScript.RunningTime} + ${Math.Calc[${UpdateFrequency} * 1000 ]}]}]
+			This:CheckForMineables
+			LavishNavTest.TimeForOrb:Set[TRUE]
+		}
 		This:CheckForHostiles
 		This:CheckForFriendlies
 
+		; DEBUG this will be removed after I make sure it god damn works.
+		This:LookAhead
 		
-		echo ${Asteroids.TargetList.Used} ${Ice.TargetList.Used} ${Gas.TargetList.Used}
+		
+		echo ${Asteroids.TargetList.Used}
+		echo ${Asteroids.LockedTargetList.Used}
+		;Asteroids.TargetList:ForEach["echo ${Entity[${ForEach.Value}].X} ${Entity[${ForEach.Value}].Y} ${Entity[${ForEach.Value}].Z}"]
 		
 		; Alright, lets get down to business here. This minimode exists for the actual miners to do actual mining.
 		; This is the mining equivalent of TargetManager, really. What does that mean?
@@ -703,7 +792,17 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 		}
 		This:MineableSorting
 		This:CheckOreHold
-		
+		echo DEBUG - MINEABLES COLLECTION ${MineablesCollection.Used}
+		; This is where we see if our mineables fall within a region defined by our travel path, using that minimode I made.
+		if ${Mining.Config.AlignHomeStructure} && (${LavishScript.RunningTime} > ${UpdateTimer})
+		{
+			if ${MineablesCollection.Used}
+			{
+				echo DEBUG - MINERWORKER LOOK AHEAD TRIGGER
+				This:LookAhead
+			}
+			
+		}
 		if (!${Asteroids.TargetList.Used} && !${Ice.TargetList.Used} && !${Gas.TargetList.Used})
 		{
 			Asteroids.AutoLock:Set[FALSE]
@@ -716,6 +815,7 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 			}
 		}
 	
+		
 		return FALSE
 	}
 }
