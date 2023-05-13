@@ -791,6 +791,7 @@ objectdef obj_Mining inherits obj_StateQueue
 				This:LogInfo["Not in a fleet, awaiting invite from Da Boss"]
 				Move:Bookmark["${Config.HomeStructure}]
 				This:QueueState["WaitForFleetInvite", 10000]
+				return TRUE
 			}
 			; We mine at the leader, and we've been summoned
 			elseif ${Config.MineAtLeader} && ${LeaderSummons}
@@ -866,11 +867,11 @@ objectdef obj_Mining inherits obj_StateQueue
 		variable iterator BookmarkIterator
 		if !${Config.WarpBackToName.NotNULLOrEmpty}
 		{
-			MiningBookmarks:RemoveByQuery[${LavishScript.CreateQuery[SolarSystemID == ${Me.SolarSystemID} && Name =- "${MineAtBookmarkPrefix}")]}, FALSE]	
+			MiningBookmarks:RemoveByQuery[${LavishScript.CreateQuery[SolarSystemID == ${Me.SolarSystemID} && Name =- "${Config.MineAtBookmarkPrefix}")]}, FALSE]	
 		}
 		if ${Config.WarpBackToName.NotNULLOrEmpty}
 		{
-			MiningBookmarks:RemoveByQuery[${LavishScript.CreateQuery[SolarSystemID == ${Me.SolarSystemID} && (Name =- "${MineAtBookmarkPrefix}" || Name =- "${Config.WarpBackToName}")]}, FALSE]	
+			MiningBookmarks:RemoveByQuery[${LavishScript.CreateQuery[SolarSystemID == ${Me.SolarSystemID} && (Name =- "${Config.MineAtBookmarkPrefix}" || Name =- "${Config.WarpBackToName}")]}, FALSE]	
 		}
 		MiningBookmarks:Collapse		
 		
