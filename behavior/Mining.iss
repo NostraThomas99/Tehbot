@@ -573,7 +573,7 @@ objectdef obj_Mining inherits obj_StateQueue
 		{
 			if !${MyShip.Cargo${Config.CommandBurstOne}](exists)} || ( ${MyShip.Cargo[${Config.CommandBurstOne}].Quantity} < ${Math.Calc[${Config.CommandBurstAmount} * .2]} )
 			{
-				This:LogInfo["Short on ${Config.LRAmmo}"]
+				This:LogInfo["Short on ${Config.CommandBurstOne}"]
 				StatusGreen:Set[FALSE]
 				StatusChecked:Set[TRUE]
 				This:InsertState["CheckForWork", 5000]
@@ -867,7 +867,7 @@ objectdef obj_Mining inherits obj_StateQueue
 		MiningBookmarks:RemoveByQuery[${LavishScript.CreateQuery[SolarSystemID == ${Me.SolarSystemID} && (Name =- "${MineAtBookmarkPrefix}" || Name =- "${Config.WarpBackToName})]}, FALSE]
 		MiningBookmarks:Collapse		
 		
-		EVE:GetMiningBookmarks[MiningBookmarks]
+		EVE:GetBookmarks[MiningBookmarks]
 		MiningBookmarks:GetIterator[BookmarkIterator]
 
 		if !${BookmarkIterator:First(exists)}
