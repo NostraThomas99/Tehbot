@@ -894,6 +894,8 @@ objectdef obj_Mining inherits obj_StateQueue
 			while ${BookmarkIterator:Next(exists)}
 		}
 		This:LogInfo["Mining Bookmark List Assembled - ${MiningBookmarkQueue.Used} Bookmarks Found"]
+		This:LogInfo["Need to be Undocked for this part"]
+		Move:Undock
 		This:QueueState["NavigateToMiningLocation", 5000]
 		return TRUE
 	}
@@ -1031,7 +1033,7 @@ objectdef obj_Mining inherits obj_StateQueue
 			This:QueueState["StartWorking", 4000]
 			return TRUE
 		}
-		if ${MiningBookmarkQueue.Peek}
+		if ${MiningBookmarkQueue.Peek.NotNULLOrEmpty}
 		{
 			This:LogInfo["Moving to Bookmark"]
 			Move:Bookmark[${MiningBookmarkQueue.Peek}, FALSE, ${Config.WarpInDistance}, FALSE]
