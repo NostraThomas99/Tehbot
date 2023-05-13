@@ -864,7 +864,11 @@ objectdef obj_Mining inherits obj_StateQueue
 	{
 		variable index:bookmark MiningBookmarks
 		variable iterator BookmarkIterator
-		MiningBookmarks:RemoveByQuery[${LavishScript.CreateQuery[SolarSystemID == ${Me.SolarSystemID} && (Name =- "${MineAtBookmarkPrefix}" || Name =- "${Config.WarpBackToName})]}, FALSE]
+		MiningBookmarks:RemoveByQuery[${LavishScript.CreateQuery[SolarSystemID == ${Me.SolarSystemID} && (Name =- "${MineAtBookmarkPrefix}" || Name =- "${Config.WarpBackToName}")]}, FALSE]
+		if ${Config.WarpBackToName.NotNULLOrEmpty}
+		{
+			MiningBookmarks:RemoveByQuery[${LavishScript.CreateQuery[SolarSystemID == ${Me.SolarSystemID} && Name =- "${Config.WarpBackToName}")]}, FALSE]	
+		}
 		MiningBookmarks:Collapse		
 		
 		EVE:GetBookmarks[MiningBookmarks]
