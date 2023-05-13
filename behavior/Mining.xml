@@ -662,7 +662,7 @@
 							}
 							This.ItemByText[${Script[Tehbot].VariableScope.Mining.Config.CommandBurstOne}]:Select
 							This:SetZOrder[movetop]
-							if !${Script[Tehbot].VariableScope.Mining.Config.CommandBurstOne}
+							if !${Script[Tehbot].VariableScope.Mining.Config.UseCommandBurstOne}
 							{
 								This:Hide
 							}
@@ -754,7 +754,7 @@
 							}
 							This.ItemByText[${Script[Tehbot].VariableScope.Mining.Config.CommandBurstTwo}]:Select
 							This:SetZOrder[movetop]
-							if !${Script[Tehbot].VariableScope.Mining.Config.CommandBurstTwo}
+							if !${Script[Tehbot].VariableScope.Mining.Config.UseCommandBurstTwo}
 							{
 								This:Hide
 							}
@@ -846,7 +846,7 @@
 							}
 							This.ItemByText[${Script[Tehbot].VariableScope.Mining.Config.CommandBurstThree}]:Select
 							This:SetZOrder[movetop]
-							if !${Script[Tehbot].VariableScope.Mining.Config.CommandBurstThree}
+							if !${Script[Tehbot].VariableScope.Mining.Config.UseCommandBurstThree}
 							{
 								This:Hide
 							}

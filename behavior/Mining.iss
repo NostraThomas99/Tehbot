@@ -865,26 +865,26 @@ objectdef obj_Mining inherits obj_StateQueue
 	{
 		variable index:bookmark MiningBookmarks
 		variable iterator BookmarkIterator
-		if !${Config.WarpBackToName.NotNULLOrEmpty}
-		{
-			MiningBookmarks:RemoveByQuery[${LavishScript.CreateQuery[SolarSystemID == ${Me.SolarSystemID} && Name =- "${Config.MineAtBookmarkPrefix}")]}, FALSE]	
-		}
-		if ${Config.WarpBackToName.NotNULLOrEmpty}
-		{
-			MiningBookmarks:RemoveByQuery[${LavishScript.CreateQuery[SolarSystemID == ${Me.SolarSystemID} && (Name =- "${Config.MineAtBookmarkPrefix}" || Name =- "${Config.WarpBackToName}")]}, FALSE]	
-		}
+		EVE:GetBookmarks[MiningBookmarks]
+		
+		MiningBookmarks:RemoveByQuery[${LavishScript.CreateQuery[SolarSystemID != "${Me.SolarSystemID}"]}, TRUE]	
+
+		;if ${Config.WarpBackToName.NotNULLOrEmpty}
+		;{
+		;	MiningBookmarks:RemoveByQuery[${LavishScript.CreateQuery[Name =- "${Config.WarpBackToName}"]}, FALSE]	
+		;}
 		MiningBookmarks:Collapse		
 		
-		EVE:GetBookmarks[MiningBookmarks]
+
 		MiningBookmarks:GetIterator[BookmarkIterator]
 
-		if !${BookmarkIterator:First(exists)}
-		{
-			This:LogInfo["No valid bookmarks found - Stopping"]
-			Move:Bookmark["${Config.HomeStructure}"]
-			This:InsertState["Traveling"]
-			This:Stop
-		}
+		;if !${BookmarkIterator:First(exists)}
+		;{
+		;	This:LogInfo["No valid bookmarks found - Stopping"]
+		;	Move:Bookmark["${Config.HomeStructure}"]
+		;	This:InsertState["Traveling"]
+		;	This:Stop
+		;}
 		; Going to shove every valid bookmark into a queue because queues are fun hell yeah lets use
 		; a container I haven't really used for no good reason.
 		if ${BookmarkIterator:First(exists)}
@@ -895,9 +895,11 @@ objectdef obj_Mining inherits obj_StateQueue
 				{
 					WarpBackery:Set[${Config.WarpBackToName}]
 				}
-				MiningBookmarkQueue:Queue[${BookmarkIterator.Value.Label}]
-				This:LogInfo["Queueing up Mining Bookmark ${BookmarkIterator.Value.Label}"]
-			
+				if ${BookmarkIterator.Value.Label.Find[${Config.MineAtBookmarkPrefix}]}
+				{
+					MiningBookmarkQueue:Queue[${BookmarkIterator.Value.Label}]
+					This:LogInfo["Queueing up Mining Bookmark ${BookmarkIterator.Value.Label}"]
+				}
 			}
 			while ${BookmarkIterator:Next(exists)}
 		}
