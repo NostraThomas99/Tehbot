@@ -812,6 +812,18 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 			{
 				This:LogInfo["Mining Location Depleted"]
 				Mining.LocationDepleted:Set[TRUE]
+				if ${Mining.Config.MineAtBookmark} && ${Mining.MiningBookmarkQueue.Peek.NotNULLOrEmpty}
+				{
+					This:LogInfo["Removing Mining Bookmark"]
+					EVE.Bookmark[${Mining.MiningBookmarkQueue.Peek}]:Remove
+					Mining.MiningBookmarkQueue:DeQueue
+				}
+				if ${Mining.Config.MineAtLocalBelt} && ${Mining.BeltStack.Top}
+				{
+					This:LogInfo["Adding belt to Empty Belts List"]
+					EmptyBelts:Add[${Entity[${Mining.MiningBookmarkQueue.Peek}].Name}]
+					Mining.BeltStack:Pop		
+				}
 			}
 		}
 	
