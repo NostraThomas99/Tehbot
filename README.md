@@ -38,3 +38,29 @@ As always, let me know in the Discord if things don't behave correctly.
 _______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
 I am now working on bringing mining to this fork. As of May 10th it is incomplete.
+
+
+_______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+As of May 13th, most (all?) solo mining usecases are in.
+The UI elements for this are numerous.
+
+For solo mining you will want to be in the Mining Mainmode, with Group and Fleet unselected, do not select Da Boss either.
+You will want to have the minimodes enabled : AutoThrust, AutoModule, LocalCheck, LavishNavTest, DroneControl (this will not handle mining drones, I hate mining drones), and MinerWorker.
+You can mine at a bookmark (it will delete bookmarks when the area is depleted [probably, untested]).
+You can mine at a belt like its 2007 all over again (it will add the belt to the empty belt list, does not persist between sessions).
+You can mine at an anomaly (untested, for now, I'm fairly sure it works).
+
+You can orbit rocks, you can approach rocks, you can always maintain alignment with your home structure (if you so choose).
+You can ignore/fight NPCs, or run from them.
+You can ignore local standings, or run based on them (ccp broke local so this is proving very annoying to test).
+You can decide how long you want to hide for.
+
+TO DO:
+Fleet stuff, most of it is implemented just untested. This includes fleet compression, command bursts, fleet member management.
+Implement Breaks, that is to say, taking breaks. How long and how often will be configurable.
+I am FAIRLY SURE that if you are in a citadel, the station hangar inventory is called something else so I will fix that at some point.
+
+
+Look forward to:
+I am working on combat anomalies next after this. Using the stuff from the abyssal mode, and what I learned/implemented in the Mining mode, we should be able to slam this out in record time.
