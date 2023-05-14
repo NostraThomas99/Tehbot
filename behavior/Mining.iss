@@ -339,7 +339,7 @@ objectdef obj_Mining inherits obj_StateQueue
 	method WhoIsDaBossEvent(int64 BossID)
 	{
 		echo DEBUG - Who Is Da Boss Event ${BossID}
-		Config.DaBossID:Set[${BossID}]
+		Script[Tehbot].VariableScope.Mining.Config:SetDaBossID[${BossID}]
 	}	
 	
 	method WhoIsOutThereEvent(string Name, int64 CharID)
@@ -1057,7 +1057,7 @@ objectdef obj_Mining inherits obj_StateQueue
 			This:LogInfo["Moving back to where we left off"]
 			Move:Bookmark[${WarpBackery, FALSE, ${Config.WarpInDistance}, FALSE]
 			This:InsertState["Traveling"]
-			Config.WarpBackToName:Set[""]
+			Script[Tehbot].VariableScope.Mining.Config:SetWarpBackToName[""]
 			This:QueueState["StartWorking", 4000]
 			return TRUE
 		}
@@ -1393,6 +1393,7 @@ objectdef obj_Mining inherits obj_StateQueue
 						{
 							; Just a simple bookmarking, Using its distance for now.
 							Entity[${MinerWorker.FurthestMineable}]:CreateBookmark["${Entity[${MinerWorker.FurthestMineable}].Distance.Int}", "", "", 1]
+							Script[Tehbot].VariableScope.Mining.Config:SetWarpBackToName[${Entity[${MinerWorker.FurthestMineable}].Distance.Int}]
 							; Just a simple return to station set
 							ReturnToStation:Set[TRUE]
 							return FALSE
@@ -1562,7 +1563,7 @@ objectdef obj_Mining inherits obj_StateQueue
 				; I'm too lazy to add like 50 gas sites to this sorry
 				elseif ${ValidAnomalies.Contains[Nebula]} && ${MyAnomalies_Iterator.Value.Name.Find["Nebula"]} && ${MyAnomalies_Iterator.Value.ID} != ${Config.PersistentAnomID}
 				{
-					Config.PersistentAnomID:Set[${MyAnomalies_Iterator.Value.ID}]
+					Script[Tehbot].VariableScope.Mining.Config:SetPersistentAnomID[${MyAnomalies_Iterator.Value.ID}]
 					MyAnomalies_Iterator.Value:WarpTo[${Config.WarpInDistance}, FALSE]
 					This:LogInfo["Anomaly Found - ${MyAnomalies_Iterator.Value.Name} - Warping]
 					This:InsertState["Traveling", 5000]
@@ -1571,7 +1572,7 @@ objectdef obj_Mining inherits obj_StateQueue
 				}
 				elseif ${ValidAnomalies.Contains[Reservoir]} && ${MyAnomalies_Iterator.Value.Name.Find["Reservoir"]} && ${MyAnomalies_Iterator.Value.ID} != ${Config.PersistentAnomID}
 				{
-					Config.PersistentAnomID:Set[${MyAnomalies_Iterator.Value.ID}]
+					Script[Tehbot].VariableScope.Mining.Config:SetPersistentAnomID[${MyAnomalies_Iterator.Value.ID}]
 					MyAnomalies_Iterator.Value:WarpTo[${Config.WarpInDistance}, FALSE]
 					This:LogInfo["Anomaly Found - ${MyAnomalies_Iterator.Value.Name} - Warping]
 					This:InsertState["Traveling", 5000]
@@ -1581,7 +1582,7 @@ objectdef obj_Mining inherits obj_StateQueue
 				; Everything else goes here
 				elseif ${ValidAnomalies.Contains[${MyAnomalies_Iterator.Value.Name}]} && ${MyAnomalies_Iterator.Value.ID} != ${Config.PersistentAnomID}
 				{
-					Config.PersistentAnomID:Set[${MyAnomalies_Iterator.Value.ID}]
+					Script[Tehbot].VariableScope.Mining.Config:SetPersistentAnomID[${MyAnomalies_Iterator.Value.ID}]
 					MyAnomalies_Iterator.Value:WarpTo[${Config.WarpInDistance}, FALSE]
 					This:LogInfo["Anomaly Found - ${MyAnomalies_Iterator.Value.Name} - Warping]
 					This:InsertState["Traveling", 5000]
