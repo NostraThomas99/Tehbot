@@ -79,7 +79,37 @@
 								This:SetLeftClickThru[TRUE]
 							</OnLoad>
 						</frame>
-
+					<Text name='ExpectedParticipantsTitle'>
+						<X>2%</X>
+						<Y>1%</Y>
+						<Width>30%</Width>
+						<Height>6%</Height>
+						<Alignment>Left</Alignment>
+						<Text>Expected Fleet Particpants (#)</Text>
+					</Text>
+					<Textentry Name="ExpectedParticipants">
+						<Font template='Information.Font' />
+						<BackgroundColor>FF000000</BackgroundColor>
+						<Border>1</Border>
+						<BorderColor>FFFFFFFF</BorderColor>
+						<X>1%</X>
+						<Y>1%</Y>
+						<Width>2%</Width>
+						<Height>3%</Height>
+						<OnLoad>
+							This:SetText[${Script[Tehbot].VariableScope.Mining.Config.ExpectedParticipants}]
+						</OnLoad>
+						<OnChange>
+							Script[Tehbot].VariableScope.Mining.Config:SetExpected Particpants[${This.Text}]
+						</OnChange>
+						<OnMouseEnter>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["How many fleet members should there be?"]
+						</OnMouseEnter>
+						<OnMouseExit>
+							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText[""]
+						</OnMouseExit>
+					</Textentry>
+					
 					<Checkbox name='GroupMining'>
 						<X>1%</X>
 						<Y>4%</Y>
@@ -662,7 +692,7 @@
 							}
 							This.ItemByText[${Script[Tehbot].VariableScope.Mining.Config.CommandBurstOne}]:Select
 							This:SetZOrder[movetop]
-							if !${Script[Tehbot].VariableScope.Mining.Config.CommandBurstOne}
+							if !${Script[Tehbot].VariableScope.Mining.Config.UseCommandBurstOne}
 							{
 								This:Hide
 							}
@@ -754,7 +784,7 @@
 							}
 							This.ItemByText[${Script[Tehbot].VariableScope.Mining.Config.CommandBurstTwo}]:Select
 							This:SetZOrder[movetop]
-							if !${Script[Tehbot].VariableScope.Mining.Config.CommandBurstTwo}
+							if !${Script[Tehbot].VariableScope.Mining.Config.UseCommandBurstTwo}
 							{
 								This:Hide
 							}
@@ -846,7 +876,7 @@
 							}
 							This.ItemByText[${Script[Tehbot].VariableScope.Mining.Config.CommandBurstThree}]:Select
 							This:SetZOrder[movetop]
-							if !${Script[Tehbot].VariableScope.Mining.Config.CommandBurstThree}
+							if !${Script[Tehbot].VariableScope.Mining.Config.UseCommandBurstThree}
 							{
 								This:Hide
 							}

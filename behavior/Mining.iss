@@ -14,6 +14,9 @@ objectdef obj_Configuration_Mining inherits obj_Configuration_Base
 		This.ConfigRef:AddSetting[FleetBoss, FALSE]
 		This.ConfigRef:AddSetting[HomeStructure, ""]
 		This.ConfigRef:AddSetting[LogLevelBar, LOG_INFO]
+		This.ConfigRef:AddSetting[PersistentAnomID, ""]
+		This.ConfigRef:AddSetting[DaBossID, ""]
+		This.ConfigRef:AddSetting[WarpBackToName, ""]		
 	}
 
 	Setting(bool, Halt, SetHalt)
@@ -37,6 +40,8 @@ objectdef obj_Configuration_Mining inherits obj_Configuration_Base
 	Setting(bool, FleetUp, SetFleetUp)
 	; Are we Da Boss?
 	Setting(bool, FleetBoss, SetFleetBoss)
+	; We need a number for the expected participants
+	Setting(bool, ExpectedParticipants, SetExpectedParticipants)
 
 	; Use Mining Crystals
 	Setting(bool, UseMiningCrystals, SetUseMiningCrystals)
@@ -315,31 +320,37 @@ objectdef obj_Mining inherits obj_StateQueue
 
 	method CompressorRequestEvent(bool Help)
 	{
+		echo DEBUG - Compressor Request Event ${Help}
 		CompressionRequest:Set[${Help}]
 	}
 	
 	method CompressionActiveEvent(bool Help2)
 	{
+		echo DEBUG - Compression Active Event ${Help2}
 		CompressionActive:Set[${Help2}]
 	}	
 
 	method LeaderSummoningEvent(bool Help3)
 	{
+		echo DEBUG - Leader Summoning Event ${Help3}
 		LeaderSummons:Set[${Help3}]
 	}
 	
 	method WhoIsDaBossEvent(int64 BossID)
 	{
+		echo DEBUG - Who Is Da Boss Event ${BossID}
 		Config.DaBossID:Set[${BossID}]
 	}	
 	
 	method WhoIsOutThereEvent(string Name, int64 CharID)
 	{
+		echo Debug - Who Is Out There Event ${Name} is ${CharID}
 		CurrentParticipants:Set[${Name}, ${CharID}]
 	}
 	
 	method TimeToScramEvent(bool Scram)
 	{
+		echo Debug - Time To Scram Event ${Scram}
 		ScramYaMooks:Set[${Scram}]
 	}
 	
@@ -502,11 +513,24 @@ objectdef obj_Mining inherits obj_StateQueue
 			This:InsertState["CheckStatus", 5000]
 			return TRUE
 		}
-		; We are in station and everything is good, lets establish our mining location.
+		; We are in station and we haven't checked status. Do so.
 		if ${Me.InStation} && !${StatusChecked}
 		{
 			This:LogInfo["Status Check"]
 			This:InsertState["CheckStatus", 5000]
+			return TRUE
+		}
+		; We are in station and need repairs or resupply.
+		if ${Me.InStation} && !${StatusGreen}
+		{
+			if ${Config.UseMiningCrystals}
+			{
+				This:LogInfo["Loading \ao${ammo}", "o"]
+			}
+			StatusGreen:Set[TRUE]
+			This:QueueState["Repair"]
+			This:QueueState["DropOffLoot", 5000]
+			This:InsertState["LoadSupplies", 3000]
 			return TRUE
 		}
 		; We are in space,  and we have no problems. Lets establish our mining location.
@@ -529,19 +553,6 @@ objectdef obj_Mining inherits obj_StateQueue
 		{
 			This:LogInfo["Go back to the station"]
 			This:InsertState["GoToStation"]
-			return TRUE
-		}
-		; We are in station and need repairs or resupply.
-		if ${Me.InStation} && !${StatusGreen}
-		{
-			if ${Config.UseMiningCrystals}
-			{
-				This:LogInfo["Loading \ao${ammo}", "o"]
-			}
-			StatusGreen:Set[TRUE]
-			This:QueueState["Repair"]
-			This:QueueState["DropOffLoot", 5000]
-			This:InsertState["LoadSupplies", 3000]
 			return TRUE
 		}
 		; We have hit the halt button, might want to like, stop the bot or something.
@@ -573,7 +584,7 @@ objectdef obj_Mining inherits obj_StateQueue
 		{
 			if !${MyShip.Cargo${Config.CommandBurstOne}](exists)} || ( ${MyShip.Cargo[${Config.CommandBurstOne}].Quantity} < ${Math.Calc[${Config.CommandBurstAmount} * .2]} )
 			{
-				This:LogInfo["Short on ${Config.LRAmmo}"]
+				This:LogInfo["Short on ${Config.CommandBurstOne}"]
 				StatusGreen:Set[FALSE]
 				StatusChecked:Set[TRUE]
 				This:InsertState["CheckForWork", 5000]
@@ -733,14 +744,19 @@ objectdef obj_Mining inherits obj_StateQueue
 		if ${Config.FleetBoss} && ${Config.FleetUp}
 		{	
 			echo Boss + Fleet
-			relay "all" -event WhoIsDaBossEvent ${Me.CharID}
+			relay all -event WhoIsDaBoss ${Me.CharID}
 			; We aren't in a fleet yet, lets fix that.
 			if !${Me.Fleet}
 			{
 				This:LogInfo["Not actually fleeted up, attempt to fleet"]
 				Me:InviteToFleet
-				This:QueueState["StartFleetDance", 5000]
+				This:InsertState["StartFleetDance", 5000]
 				return TRUE
+			}
+			if ${Me.Fleet.Size} <= 1
+			{
+				This:InsertState["StartFleetDance", 10000]
+				return TRUE			
 			}
 			; Hey clowno, if you are the leader and yet you mine at the leader, how do you think that is gonna work?
 			elseif ${Config.MineAtLeader}
@@ -791,6 +807,7 @@ objectdef obj_Mining inherits obj_StateQueue
 				This:LogInfo["Not in a fleet, awaiting invite from Da Boss"]
 				Move:Bookmark["${Config.HomeStructure}]
 				This:QueueState["WaitForFleetInvite", 10000]
+				return TRUE
 			}
 			; We mine at the leader, and we've been summoned
 			elseif ${Config.MineAtLeader} && ${LeaderSummons}
@@ -803,7 +820,7 @@ objectdef obj_Mining inherits obj_StateQueue
 			elseif ${Config.MineAtLeader} && !${LeaderSummons}
 			{
 				This:LogInfo["Waiting for Leader Summons"]
-				This:QueueState["EstablishMiningLocation", 150000]
+				This:QueueState["EstablishMiningLocation", 15000]
 				return TRUE
 			}
 		}
@@ -864,19 +881,26 @@ objectdef obj_Mining inherits obj_StateQueue
 	{
 		variable index:bookmark MiningBookmarks
 		variable iterator BookmarkIterator
-		MiningBookmarks:RemoveByQuery[${LavishScript.CreateQuery[SolarSystemID == ${Me.SolarSystemID} && (Name =- "${MineAtBookmarkPrefix}" || Name =- "${Config.WarpBackToName})]}, FALSE]
+		EVE:GetBookmarks[MiningBookmarks]
+		
+		MiningBookmarks:RemoveByQuery[${LavishScript.CreateQuery[SolarSystemID != "${Me.SolarSystemID}"]}, TRUE]	
+
+		;if ${Config.WarpBackToName.NotNULLOrEmpty}
+		;{
+		;	MiningBookmarks:RemoveByQuery[${LavishScript.CreateQuery[Name =- "${Config.WarpBackToName}"]}, FALSE]	
+		;}
 		MiningBookmarks:Collapse		
 		
-		EVE:GetMiningBookmarks[MiningBookmarks]
+
 		MiningBookmarks:GetIterator[BookmarkIterator]
 
-		if !${BookmarkIterator:First(exists)}
-		{
-			This:LogInfo["No valid bookmarks found - Stopping"]
-			Move:Bookmark["${Config.HomeStructure}"]
-			This:InsertState["Traveling"]
-			This:Stop
-		}
+		;if !${BookmarkIterator:First(exists)}
+		;{
+		;	This:LogInfo["No valid bookmarks found - Stopping"]
+		;	Move:Bookmark["${Config.HomeStructure}"]
+		;	This:InsertState["Traveling"]
+		;	This:Stop
+		;}
 		; Going to shove every valid bookmark into a queue because queues are fun hell yeah lets use
 		; a container I haven't really used for no good reason.
 		if ${BookmarkIterator:First(exists)}
@@ -887,13 +911,17 @@ objectdef obj_Mining inherits obj_StateQueue
 				{
 					WarpBackery:Set[${Config.WarpBackToName}]
 				}
-				MiningBookmarkQueue:Queue[${BookmarkIterator.Value.Label}]
-				This:LogInfo["Queueing up Mining Bookmark ${BookmarkIterator.Value.Label}"]
-			
+				if ${BookmarkIterator.Value.Label.Find[${Config.MineAtBookmarkPrefix}]}
+				{
+					MiningBookmarkQueue:Queue[${BookmarkIterator.Value.Label}]
+					This:LogInfo["Queueing up Mining Bookmark ${BookmarkIterator.Value.Label}"]
+				}
 			}
 			while ${BookmarkIterator:Next(exists)}
 		}
 		This:LogInfo["Mining Bookmark List Assembled - ${MiningBookmarkQueue.Used} Bookmarks Found"]
+		This:LogInfo["Need to be Undocked for this part"]
+		Move:Undock
 		This:QueueState["NavigateToMiningLocation", 5000]
 		return TRUE
 	}
@@ -964,7 +992,8 @@ objectdef obj_Mining inherits obj_StateQueue
 	member:bool StartFleetDance()
 	{
 		This:LogInfo["Triggering who is out there event"]
-		relay "all other" "Event[WhoIsOutThereEvent]:Execute[${Me.Name},${Me.CharID}]"
+		relay all "Event[WhoIsOutThere]:Execute[${Me.Name},${Me.CharID}]"
+		echo DEBUG - ${CurrentParticipants.Used} participants answered 
 		
 		if ${Me.Fleet.Size} < ${CurrentParticipants.Used}
 		{
@@ -972,11 +1001,12 @@ objectdef obj_Mining inherits obj_StateQueue
 			{
 				do
 				{
-					if ${Local[${CurrentParticipants.CurrentValue}].ToFleetMember(exists)}
-					{
-						continue
-					}
-					elseif ${Being[${CurrentParticipants.CurrentValue}](exists)}
+					; Please, ccp, fix local.
+					;if ${Local[${CurrentParticipants.CurrentValue}].ToFleetMember(exists)}
+					;{
+					;	continue
+					;}
+					if ${Being[${CurrentParticipants.CurrentValue}](exists)}
 					{
 						Being[${CurrentParticipants.CurrentValue}]:InviteToFleet
 					}
@@ -994,15 +1024,15 @@ objectdef obj_Mining inherits obj_StateQueue
 		if !${Me.Fleet}
 		{
 			This:LogInfo["Triggering who is out there event"]
-			relay "all other" "Event[WhoIsOutThereEvent]:Execute[${Me.Name},${Me.CharID}]"
+			relay all "Event[WhoIsOutThere]:Execute[${Me.Name},${Me.CharID}]"
 		}
-		if ${CurrentParticipants.FirstKey(exists)} && ${Me.Fleet.Invited} && ${CurrentParticipants.Used} > 0
+		if ${CurrentParticipants.FirstKey(exists)} && ${EVEWindow[ByName,modal](exists)}
 		{
 			do
 			{
-				if ${Me.Fleet.InvitationText.Find[${CurrentParticipants.CurrentKey}]}
+				if ${EVEWindow[ByName,modal].Text.Find[${CurrentParticipants.CurrentKey}]}
 				{
-					Me.Fleet:AcceptInvite
+					EVEWindow[ByName,modal]:ClickButtonYes
 					This:QueueState["EstablishMiningLocation"]
 					return TRUE
 				}
@@ -1031,7 +1061,7 @@ objectdef obj_Mining inherits obj_StateQueue
 			This:QueueState["StartWorking", 4000]
 			return TRUE
 		}
-		if ${MiningBookmarkQueue.Peek}
+		if ${MiningBookmarkQueue.Peek.NotNULLOrEmpty}
 		{
 			This:LogInfo["Moving to Bookmark"]
 			Move:Bookmark[${MiningBookmarkQueue.Peek}, FALSE, ${Config.WarpInDistance}, FALSE]
@@ -1089,11 +1119,11 @@ objectdef obj_Mining inherits obj_StateQueue
 	{	
 		MinerWorker.MiningTime:Set[TRUE]
 		; People with neutral standings or worse are in local, (or npcs and we don't fight npcs) and we are configured to run. Run.
-		if (!${FriendlyLocal} && ${Config.RunFromBads}) || (${MinerWorker.ActiveNPCs.TargetList.Used} && !${FightNPCs})
+		if (!${FriendlyLocal} && ${Config.RunFromBads}) || (${MinerWorker.ActiveNPCs.TargetList.Used} && !${Config.FightNPCs})
 		{
 			MinerForeman.InhibitBursts:Set[TRUE]
 			MinerWorker.MiningTime:Set[FALSE]
-			relay "all" -event LeaderSummoningEvent FALSE
+			relay "all" -event LeaderSummoning FALSE
 			This:LogInfo["Jerks in Local, lets get out of here"]
 			; If we are set to run to a POSBookmarkName
 			if ${Config.UsePOSHidingSpot} && ${Config.POSBookmarkName.NotNULLOrEmpty}
@@ -1164,8 +1194,8 @@ objectdef obj_Mining inherits obj_StateQueue
 			MinerWorker.MiningTime:Set[FALSE]
 			if ${Config.FleetBoss}
 			{
-				relay "all" -event TimeToScramEvent TRUE
-				relay "all" -event LeaderSummoningEvent FALSE
+				relay "all" -event TimeToScram TRUE
+				relay "all" -event LeaderSummoning FALSE
 				MinerForeman.InhibitBursts:Set[TRUE]
 				
 			}
@@ -1175,6 +1205,25 @@ objectdef obj_Mining inherits obj_StateQueue
 		; We are the fleet boss
 		if ${Config.FleetBoss}
 		{
+			if ${Me.Fleet.Size} < ${Config.ExpectedParticipants}
+			{
+				if ${CurrentParticipants.FirstKey(exists)}
+				{
+					do
+					{
+						; Please, ccp, fix local.
+						;if ${Local[${CurrentParticipants.CurrentValue}].ToFleetMember(exists)}
+						;{
+						;	continue
+						;}
+						if ${Being[${CurrentParticipants.CurrentValue}](exists)}
+						{
+							Being[${CurrentParticipants.CurrentValue}]:InviteToFleet
+						}
+					}
+					while ${CurrentParticipants.NextKey(exists)}
+				}
+			}
 			MinerForeman.InhibitBursts:Set[FALSE]
 			; We want to stay aligned at all times.
 			; Not done yet, math.
@@ -1189,45 +1238,45 @@ objectdef obj_Mining inherits obj_StateQueue
 				; We want to wander the mining site, searching for meaning. (Asteroid case)
 				if ${MinerWorker.Asteroids.TargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.Asteroids.TargetList.Get[1]}]}
 				{
-					relay "all" -event LeaderSummoningEvent TRUE
-					relay "all" -event TimeToScramEvent FALSE
+					relay "all" -event LeaderSummoning TRUE
+					relay "all" -event TimeToScram FALSE
 					Move:Approach[${MinerWorker.Asteroids.TargetList.Get[1]},10000]
 					return FALSE
 				}
 				if ${MinerWorker.AsteroidsDistant.TargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.AsteroidsDistant.TargetList.Get[1]}]} && !${MinerWorker.Asteroids.TargetList.Get[1]}
 				{
-					relay "all" -event LeaderSummoningEvent TRUE
-					relay "all" -event TimeToScramEvent FALSE
+					relay "all" -event LeaderSummoning TRUE
+					relay "all" -event TimeToScram FALSE
 					Move:Approach[${MinerWorker.AsteroidsDistant.TargetList.Get[1]},10000]}]
 					return FALSE	
 				}
 				; We want to wander the mining site, searching for meaning. (Ice case)
 				if ${MinerWorker.Ice.TargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.Ice.TargetList.Get[1]}]}
 				{
-					relay "all" -event LeaderSummoningEvent TRUE
-					relay "all" -event TimeToScramEvent FALSE
+					relay "all" -event LeaderSummoning TRUE
+					relay "all" -event TimeToScram FALSE
 					Move:Approach[${MinerWorker.Ice.TargetList.Get[1]},10000]
 					return FALSE
 				}
 				if ${MinerWorker.IceDistant.TargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.IceDistant.TargetList.Get[1]}]} && !${MinerWorker.Ice.TargetList.Get[1]}
 				{
-					relay "all" -event LeaderSummoningEvent TRUE
-					relay "all" -event TimeToScramEvent FALSE
+					relay "all" -event LeaderSummoning TRUE
+					relay "all" -event TimeToScram FALSE
 					Move:Approach[${MinerWorker.IceDistant.TargetList.Get[1]},10000]
 					return FALSE	
 				}
 				; We want to wander the mining site, searching for meaning. (Gas case)
 				if ${MinerWorker.Gas.TargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.Gas.TargetList.Get[1]}]}
 				{
-					relay "all" -event LeaderSummoningEvent TRUE
-					relay "all" -event TimeToScramEvent FALSE
+					relay "all" -event LeaderSummoning TRUE
+					relay "all" -event TimeToScram FALSE
 					Move:Approach[${MinerWorker.Gas.TargetList.Get[1]},10000]
 					return FALSE
 				}
 				if ${MinerWorker.GasDistant.TargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.GasDistant.TargetList.Get[1]}]} && !${MinerWorker.Gas.TargetList.Get[1]}
 				{
-					relay "all" -event LeaderSummoningEvent TRUE
-					relay "all" -event TimeToScramEvent FALSE
+					relay "all" -event LeaderSummoning TRUE
+					relay "all" -event TimeToScram FALSE
 					Move:Approach[${MinerWorker.GasDistant.TargetList.Get[1]},10000]
 					return FALSE	
 				}
