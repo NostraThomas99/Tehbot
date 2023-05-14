@@ -216,7 +216,7 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 		This[parent]:Initialize
 
 		DynamicAddMiniMode("MinerWorker", "MinerWorker")
-		This.PulseFrequency:Set[4000]
+		This.PulseFrequency:Set[5000]
 
 		This.NonGameTiedPulse:Set[TRUE]
 		
@@ -459,10 +459,12 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 						}
 					}
 					while ${OreIterator:Next(exists)}
+					
 					if ${EVEWindow[compression_window](exists)}
 					{
-						EVEWindow[compression_window].Button[1]:Press
-						EVEWindow[compression_window]:Close
+						
+						timedcommand 20 "EVEWindow[compression_window].Button[2]:Press"
+						timedcommand 30 EVEWindow[compression_window]:Close
 					}
 				}
 				else

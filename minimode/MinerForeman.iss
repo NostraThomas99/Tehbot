@@ -66,7 +66,7 @@ objectdef obj_MinerForeman inherits obj_StateQueue
 		This[parent]:Initialize
 
 		DynamicAddMiniMode("MinerForeman", "MinerForeman")
-		This.PulseFrequency:Set[2000]
+		This.PulseFrequency:Set[5000]
 
 		This.NonGameTiedPulse:Set[TRUE]
 
