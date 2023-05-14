@@ -444,7 +444,7 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 				{
 					This:LogInfo["Compression Active - Compressing Ore"]
 					
-					variable index:int64 OreBayContents
+					variable index:item OreBayContents
 					variable iterator OreIterator
 		
 					MyShip:GetOreHoldCargo[OreBayContents]
@@ -456,10 +456,14 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 						if (${OreIterator.Value.CategoryID} == 25 && !${OreIterator.Value.Name.Find["Compressed"]}) || (${OreIterator.Value.GroupID} == 711)
 						{
 							OreIterator.Value:Compress
-							This:Compression
 						}
 					}
 					while ${OreIterator:Next(exists)}
+					if ${EVEWindow[compression_window](exists)}
+					{
+						EVEWindow[compression_window].Button[1]:Press
+						EVEWindow[compression_window]:Close
+					}
 				}
 				else
 				{
@@ -476,7 +480,7 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 		}
 		else
 		{
-			if ${Mining.Config.UseCompressor}
+			if ${Mining.Config.UseCompressor} && !${Mining.Config.FleetBoss}
 			{
 				relay all -event CompressionRequest FALSE
 				This:LogInfo["No need for compression at this time."]
@@ -484,18 +488,6 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 		}
 	}
 	
-	; Press the damn compress button yo
-	;method Compression()
-	;{
-		;if 
-		;{
-		;	
-		;}
-		;else
-		;{
-		;	
-		;}
-	;}
 	; This will hopefully, if I can code it, return a bool. True if we have too much compressed stuff. False if we do not.
 	; Will tinker with the ratio later.
 	member:bool FullOfCompressed()

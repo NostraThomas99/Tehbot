@@ -1062,6 +1062,7 @@ objectdef obj_Mining inherits obj_StateQueue
 	member:bool NavigateToMiningLocation()
 	{
 		MinerWorker.MineablesCollection:Erase
+		MinerWorker.ReCalculatePriorities:Set[TRUE]
 		if ${Client.InSpace} && ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold](exists)} && ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold].UsedCapacity} < 0
 		{
 			EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold]:MakeActive
@@ -1120,6 +1121,7 @@ objectdef obj_Mining inherits obj_StateQueue
 		}
 		if ${Client.InSpace}
 		{
+			MinerWorker.ReCalculatePriorities:Set[TRUE]
 			This:LogInfo["Moving to Da Boss"]
 			Move:Fleetmember[${Config.DaBossID}, FALSE, ${Config.WarpInDistance}]
 			This:InsertState["Traveling"]
@@ -1228,11 +1230,11 @@ objectdef obj_Mining inherits obj_StateQueue
 				{
 					do
 					{
-						; Please, ccp, fix local.
-						;if ${Local[${CurrentParticipants.CurrentValue}].ToFleetMember(exists)}
-						;{
-						;	continue
-						;}
+						; Lets see if this behaves with local torn asunder
+						if ${Me.Fleet.Member[${CurrentParticipants.CurrentValue}](exists)}
+						{
+							continue
+						}
 						if ${Being[${CurrentParticipants.CurrentValue}](exists)}
 						{
 							Being[${CurrentParticipants.CurrentValue}]:InviteToFleet
