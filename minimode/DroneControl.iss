@@ -530,6 +530,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		RemoteRepJerkz:RequestUpdate
 		StarvingJerks:RequestUpdate
 
+		echo DEBUG - IS THIS THING EVEN ON? DRONE CONTROL
 		;echo WEEWOOWEEWOO ${Marshal.TargetList.Used}
 		ActiveNPCs.MinLockCount:Set[${Config.LockCount}]
 

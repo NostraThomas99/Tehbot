@@ -1306,7 +1306,7 @@ objectdef obj_Mining inherits obj_StateQueue
 				}
 				if !${MyShip.ToEntity.Approaching.ID.Equal[${DaBossEntityID}]}
 				{
-					Move:Orbit[${DaBossEntityID},{Config.OrbitBossDistance}]
+					Move:Orbit[${DaBossEntityID},${Script[Tehbot].VariableScope.Mining.Config.OrbitBossDistance}]
 					return FALSE
 				}
 				return FALSE
