@@ -80,9 +80,9 @@
 							</OnLoad>
 						</frame>
 					<Text name='ExpectedParticipantsTitle'>
-						<X>2%</X>
+						<X>7%</X>
 						<Y>1%</Y>
-						<Width>30%</Width>
+						<Width>40%</Width>
 						<Height>6%</Height>
 						<Alignment>Left</Alignment>
 						<Text>Expected Fleet Particpants (#)</Text>
@@ -100,7 +100,7 @@
 							This:SetText[${Script[Tehbot].VariableScope.Mining.Config.ExpectedParticipants}]
 						</OnLoad>
 						<OnChange>
-							Script[Tehbot].VariableScope.Mining.Config:SetExpected Particpants[${This.Text}]
+							Script[Tehbot].VariableScope.Mining.Config:SetExpectedParticipants[${This.Text}]
 						</OnChange>
 						<OnMouseEnter>
 							UIElement[Information@InformationFrame@MainMiningTab@MiningTabs@Tehbot_Mining_Frame@Tehbot_Mining]:SetText["How many fleet members should there be?"]
