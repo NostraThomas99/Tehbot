@@ -41,7 +41,7 @@ objectdef obj_Configuration_Mining inherits obj_Configuration_Base
 	; Are we Da Boss?
 	Setting(bool, FleetBoss, SetFleetBoss)
 	; We need a number for the expected participants
-	Setting(bool, ExpectedParticipants, SetExpectedParticipants)
+	Setting(int, ExpectedParticipants, SetExpectedParticipants)
 
 	; Use Mining Crystals
 	Setting(bool, UseMiningCrystals, SetUseMiningCrystals)
