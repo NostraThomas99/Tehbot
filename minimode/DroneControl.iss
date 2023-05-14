@@ -546,12 +546,10 @@ objectdef obj_DroneControl inherits obj_StateQueue
 			if ${Me.MaxLockedTargets} < ${MyShip.MaxLockedTargets}
 				MaxTarget:Set[${Me.MaxLockedTargets}]
 			MaxTarget:Dec[2]
-
+			ActiveNPCs:RequestUpdate
 			ActiveNPCs.MinLockCount:Set[${MaxTarget}]
 			ActiveNPCs.AutoLock:Set[TRUE]
 		}
-		;echo DEBUG - IS THIS THING EVEN ON? DRONE CONTROL
-		;echo WEEWOOWEEWOO ${Marshal.TargetList.Used}
 		ActiveNPCs.MinLockCount:Set[${Config.LockCount}]
 
 		if !${Client.InSpace}
@@ -1035,7 +1033,7 @@ objectdef obj_DroneControl inherits obj_StateQueue
 			Drones:RefreshActiveTypes
 		}
 
-		if ${currentTarget} == 0 && ${Drones.ActiveDroneCount["ToEntity.GroupID = GROUP_SCOUT_DRONE || ToEntity.GroupID = GROUP_COMBAT_DRONE"]} > 0 && !${This.JerkzPresent}
+		if ${currentTarget} == 0 && ${Drones.ActiveDroneCount["ToEntity.GroupID = GROUP_SCOUT_DRONE || ToEntity.GroupID = GROUP_COMBAT_DRONE"]} > 0 &&  ( !${This.JerkzPresent} && ${CommonConfig.Tehbot_Mode.Equal["Abyssal"]} )
 		{
 			Drones:Recall["ToEntity.GroupID = GROUP_SCOUT_DRONE || ToEntity.GroupID = GROUP_COMBAT_DRONE"]
 			This:QueueState["Idle", 5000]
