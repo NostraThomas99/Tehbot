@@ -14,6 +14,9 @@ objectdef obj_Configuration_Mining inherits obj_Configuration_Base
 		This.ConfigRef:AddSetting[FleetBoss, FALSE]
 		This.ConfigRef:AddSetting[HomeStructure, ""]
 		This.ConfigRef:AddSetting[LogLevelBar, LOG_INFO]
+		This.ConfigRef:AddSetting[PersistentAnomID, ""]
+		This.ConfigRef:AddSetting[DaBossID, ""]
+		This.ConfigRef:AddSetting[WarpBackToName, ""]		
 	}
 
 	Setting(bool, Halt, SetHalt)
