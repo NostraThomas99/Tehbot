@@ -255,16 +255,19 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		if ${This.IsIdle}
 		{
 			This:LogInfo["Starting."]
-			Dramiels.AutoLock:Set[TRUE]			
-			Cynabals.AutoLock:Set[TRUE]			
-			Drekavacs.AutoLock:Set[TRUE]			
-			Vedmaks.AutoLock:Set[TRUE]		
-			Damaviks.AutoLock:Set[TRUE]		
-			Kikimoras.AutoLock:Set[TRUE]	
-			Leshaks.AutoLock:Set[TRUE]			
-			StarvingJerks.AutoLock:Set[TRUE]
-			Marshal.Autolock:Set[TRUE]
-			RemoteRepJerkz.Autolock:Set[TRUE]
+			if ${CommonConfig.Tehbot_Mode.Equal["Abyssal"]}
+			{
+				Dramiels.AutoLock:Set[TRUE]			
+				Cynabals.AutoLock:Set[TRUE]			
+				Drekavacs.AutoLock:Set[TRUE]			
+				Vedmaks.AutoLock:Set[TRUE]		
+				Damaviks.AutoLock:Set[TRUE]		
+				Kikimoras.AutoLock:Set[TRUE]	
+				Leshaks.AutoLock:Set[TRUE]			
+				StarvingJerks.AutoLock:Set[TRUE]
+				Marshal.AutoLock:Set[TRUE]
+				RemoteRepJerkz.AutoLock:Set[TRUE]
+			}
 			ActiveNPCs.MaxRange:Set[${droneEngageRange}]
 			variable int MaxTarget = ${MyShip.MaxLockedTargets}
 			if ${Me.MaxLockedTargets} < ${MyShip.MaxLockedTargets}
@@ -280,10 +283,10 @@ objectdef obj_DroneControl inherits obj_StateQueue
 	method Stop()
 	{
 		This:LogInfo["Stopping."]
-		Marshal.Autolock:Set[FALSE]
+		Marshal.AutoLock:Set[FALSE]
 		ActiveNPCs.AutoLock:Set[FALSE]
-		RemoteRepJerkz.Autolock:Set[FALSE]
-		StarvingJerks.Autolock:Set[FALSE]
+		RemoteRepJerkz.AutoLock:Set[FALSE]
+		StarvingJerks.AutoLock:Set[FALSE]
 		Dramiels.AutoLock:Set[FALSE]			
 		Cynabals.AutoLock:Set[FALSE]			
 		Drekavacs.AutoLock:Set[FALSE]			
@@ -355,29 +358,33 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		variable string groups = ""
 		variable string seperator = ""
 
-		Marshal:ClearQueryString
 		ActiveNPCs:ClearQueryString
-		RemoteRepJerkz:ClearQueryString
-		StarvingJerks:ClearQueryString
-		Dramiels:ClearQueryString
-		Cynabals:ClearQueryString
-		Drekavacs:ClearQueryString
-		Vedmaks:ClearQueryString
-		Damaviks:ClearQueryString
-		Kikimoras:ClearQueryString
-		Leshaks:ClearQueryString
-
-
-		Dramiels:AddQueryString["Name =- \"Dramiel\" && !IsMoribund"]
-		Cynabals:AddQueryString["Name =- \"Cynabal\" && !IsMoribund"]
-		Drekavacs:AddQueryString["Name =- \"Drekavac\" && !IsMoribund"]
-		Vedmaks:AddQueryString["Name =- \"Vedmak\" && !IsMoribund"]
-		Damaviks:AddQueryString["Name =- \"Damavik\" && !IsMoribund"]
-		Kikimoras:AddQueryString["Name =- \"Kikimora\" && !IsMoribund"]
-		Leshaks:AddQueryString["Name =- \"Leshak\" && !IsMoribund"]	
-		StarvingJerks:AddQueryString["Name =- \"Starving\" && !IsMoribund"]
-		RemoteRepJerkz:AddQueryString["Name =- \"Renewing\" || Name =- \"Fieldweaver\" || Name =- \"Plateforger\" || Name =- \"Burst\"|| Name =- \"Preserver\" && !IsMoribund"]
-		Marshal:AddQueryString["(TypeID == 56177 || TypeID == 56176 || TypeID == 56178) && !IsMoribund"]
+		if ${CommonConfig.Tehbot_Mode.Equal["Abyssal"]}
+		{
+			Marshal:ClearQueryString
+			RemoteRepJerkz:ClearQueryString
+			StarvingJerks:ClearQueryString
+			Dramiels:ClearQueryString
+			Cynabals:ClearQueryString
+			Drekavacs:ClearQueryString
+			Vedmaks:ClearQueryString
+			Damaviks:ClearQueryString
+			Kikimoras:ClearQueryString
+			Leshaks:ClearQueryString
+		}
+		if ${CommonConfig.Tehbot_Mode.Equal["Abyssal"]}
+		{
+			Dramiels:AddQueryString["Name =- \"Dramiel\" && !IsMoribund"]
+			Cynabals:AddQueryString["Name =- \"Cynabal\" && !IsMoribund"]
+			Drekavacs:AddQueryString["Name =- \"Drekavac\" && !IsMoribund"]
+			Vedmaks:AddQueryString["Name =- \"Vedmak\" && !IsMoribund"]
+			Damaviks:AddQueryString["Name =- \"Damavik\" && !IsMoribund"]
+			Kikimoras:AddQueryString["Name =- \"Kikimora\" && !IsMoribund"]
+			Leshaks:AddQueryString["Name =- \"Leshak\" && !IsMoribund"]	
+			StarvingJerks:AddQueryString["Name =- \"Starving\" && !IsMoribund"]
+			RemoteRepJerkz:AddQueryString["Name =- \"Renewing\" || Name =- \"Fieldweaver\" || Name =- \"Plateforger\" || Name =- \"Burst\"|| Name =- \"Preserver\" && !IsMoribund"]
+			Marshal:AddQueryString["(TypeID == 56177 || TypeID == 56176 || TypeID == 56178) && !IsMoribund"]
+		}
 
 		variable int range = ${Math.Calc[${MyShip.MaxTargetRange} * .95]}
 
@@ -525,12 +532,25 @@ objectdef obj_DroneControl inherits obj_StateQueue
 		variable int MaxDroneCount = ${Config.MaxDroneCount}
 
 		This:BuildActiveNPCs
-		ActiveNPCs:RequestUpdate
-		Marshal:RequestUpdate
-		RemoteRepJerkz:RequestUpdate
-		StarvingJerks:RequestUpdate
+		if ${CommonConfig.Tehbot_Mode.Equal["Abyssal"]}
+		{
+			ActiveNPCs:RequestUpdate
+			Marshal:RequestUpdate
+			RemoteRepJerkz:RequestUpdate
+			StarvingJerks:RequestUpdate
+		}
+		if ${CommonConfig.Tehbot_Mode.Equal["Mining"]}
+		{
+			ActiveNPCs.MaxRange:Set[${droneEngageRange}]
+			variable int MaxTarget = ${MyShip.MaxLockedTargets}
+			if ${Me.MaxLockedTargets} < ${MyShip.MaxLockedTargets}
+				MaxTarget:Set[${Me.MaxLockedTargets}]
+			MaxTarget:Dec[2]
 
-		echo DEBUG - IS THIS THING EVEN ON? DRONE CONTROL
+			ActiveNPCs.MinLockCount:Set[${MaxTarget}]
+			ActiveNPCs.AutoLock:Set[TRUE]
+		}
+		;echo DEBUG - IS THIS THING EVEN ON? DRONE CONTROL
 		;echo WEEWOOWEEWOO ${Marshal.TargetList.Used}
 		ActiveNPCs.MinLockCount:Set[${Config.LockCount}]
 
