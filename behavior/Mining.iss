@@ -247,6 +247,8 @@ objectdef obj_Mining inherits obj_StateQueue
 	variable int64 ClearToMine
 	; This bool will be set by an event triggered ostensibly by Da Boss. It says to come out and mine its time.
 	variable bool LeaderSummons
+	; This int64 will store the entity ID of the boss so we can goddamn orbit them, fuck.
+	variable int64 DaBossEntityID
 	
 	; Needed for anomaly integration
 	variable index:systemanomaly MyAnomalies
@@ -280,6 +282,7 @@ objectdef obj_Mining inherits obj_StateQueue
 	
 	; This string holds the name of the BM we are warping back to
 	variable string WarpBackery
+	
 	
 
 	method Initialize()
@@ -514,7 +517,7 @@ objectdef obj_Mining inherits obj_StateQueue
 			return TRUE
 		}
 		; We are in station and we haven't checked status. Do so.
-		if ${Me.InStation} && !${StatusChecked}
+		if ${Me.InStation} && !${StatusChecked} && !${ReturnToStation}
 		{
 			This:LogInfo["Status Check"]
 			This:InsertState["CheckStatus", 5000]
@@ -528,20 +531,22 @@ objectdef obj_Mining inherits obj_StateQueue
 				This:LogInfo["Loading \ao${ammo}", "o"]
 			}
 			StatusGreen:Set[TRUE]
+			ReturnToStation:Set[FALSE]
 			This:QueueState["Repair"]
 			This:QueueState["DropOffLoot", 5000]
 			This:InsertState["LoadSupplies", 3000]
 			return TRUE
 		}
 		; We are in space,  and we have no problems. Lets establish our mining location.
-		if ${Client.InSpace} && ${StatusGreen}
+		if ${Client.InSpace} && ${StatusGreen} && ${StatusChecked}
 		{
+			ReturnToStation:Set[FALSE]
 			This:LogInfo["Figure out mining location"]
 			This:InsertState["EstablishMiningLocation", 5000]
 			return TRUE
 		}
 		; We are in station and everything is good, lets establish our mining location.
-		if ${Me.InStation} && ${StatusGreen}
+		if ${Me.InStation} && ${StatusGreen} && ${StatusChecked}
 		{
 			ReturnToStation:Set[FALSE]
 			This:LogInfo["Figure out mining location"]
@@ -582,7 +587,7 @@ objectdef obj_Mining inherits obj_StateQueue
 		; If we are using Command Burst Charge 1
 		if ${Config.UseCommandBurstOne}
 		{
-			if !${MyShip.Cargo${Config.CommandBurstOne}](exists)} || ( ${MyShip.Cargo[${Config.CommandBurstOne}].Quantity} < ${Math.Calc[${Config.CommandBurstAmount} * .2]} )
+			if !${MyShip.Cargo[${Config.CommandBurstOne}](exists)} || ( ${MyShip.Cargo[${Config.CommandBurstOne}].Quantity} < ${Math.Calc[${Config.CommandBurstAmount} * .2]} )
 			{
 				This:LogInfo["Short on ${Config.CommandBurstOne}"]
 				StatusGreen:Set[FALSE]
@@ -616,17 +621,17 @@ objectdef obj_Mining inherits obj_StateQueue
 			}
 		}
 		; If we are low on Heavy Water
-		if ${Config.UseIndustrialCore}
-		{
-			if !${MyShip.Cargo["Heavy Water"](exists)} || ( ${MyShip.Cargo["Heavy Water"].Quantity} < ${Math.Calc[${Config.UnitsHeavyWater} * .2]} )
-			{
-				This:LogInfo["Short on Heavy Water"]
-				StatusGreen:Set[FALSE]
-				StatusChecked:Set[TRUE]
-				This:InsertState["CheckForWork", 5000]
-				return TRUE
-			}
-		}
+		;if ${Config.UseIndustrialCore}
+		;{
+		;	if !${MyShip.Cargo["Heavy Water"](exists)} || ( ${MyShip.Cargo["Heavy Water"].Quantity} < ${Math.Calc[${Config.UnitsHeavyWater} * .2]} )
+		;	{
+		;		This:LogInfo["Short on Heavy Water"]
+		;		StatusGreen:Set[FALSE]
+		;		StatusChecked:Set[TRUE]
+		;		This:InsertState["CheckForWork", 5000]
+		;		return TRUE
+		;	}
+		;}
 		; Drones, I guess? Not gonna be very complicated. I lied it will be slightly more complicated as I think up dumb edgecases.
 		; If your drone bay capacity is 25m3 or less, missing 10m3 of drones triggers a reload. If it is 30 to 50, missing 20m3 triggers a reload. If it is greater than 50, triggers on 30m3.
 		if ${Config.UseDrones}
@@ -1001,11 +1006,11 @@ objectdef obj_Mining inherits obj_StateQueue
 			{
 				do
 				{
-					; Please, ccp, fix local.
-					;if ${Local[${CurrentParticipants.CurrentValue}].ToFleetMember(exists)}
-					;{
-					;	continue
-					;}
+					; Lets see if this behaves with local torn asunder
+					if ${Me.Fleet.Member[${CurrentParticipants.CurrentValue}](exists)}
+					{
+						continue
+					}
 					if ${Being[${CurrentParticipants.CurrentValue}](exists)}
 					{
 						Being[${CurrentParticipants.CurrentValue}]:InviteToFleet
@@ -1291,9 +1296,17 @@ objectdef obj_Mining inherits obj_StateQueue
 			; We want to orbit the boss, it is up to the boss to keep us in range of mineables.
 			if ${Config.OrbitBoss}
 			{
-				if !${MyShip.ToEntity.Approaching.ID.Equal[${Config.DaBossID}]}
+				if ${DaBossEntityID} == 0
 				{
-					Move:Orbit[${Config.DaBossID}, {Config.OrbitBossDistance}]
+					if ${Entity[CharID == ${Config.DaBossID}](exists)}
+					{
+						echo DEBUG - Found Da Boss Entity ID ${Entity[CharID == ${Config.DaBossID}].ID}
+						DaBossEntityID:Set[${Entity[CharID == ${Config.DaBossID}].ID}]
+					}
+				}
+				if !${MyShip.ToEntity.Approaching.ID.Equal[${DaBossEntityID}]}
+				{
+					Move:Orbit[${DaBossEntityID},{Config.OrbitBossDistance}]
 					return FALSE
 				}
 				return FALSE
@@ -1630,8 +1643,7 @@ objectdef obj_Mining inherits obj_StateQueue
 	; Stolen mostly wholesale from the Mission Mode
 	member:bool LoadSupplies()
 	{
-		if ${Config.HowManyMiningCrystals} <= 0
-			return TRUE
+		;if ${Config.HowManyMiningCrystals} <= 0
 
 		variable index:item items
 		variable iterator itemIterator
@@ -1980,54 +1992,30 @@ objectdef obj_Mining inherits obj_StateQueue
 			}
 			while ${itemIterator:Next(exists)}
 		}
-
-		if (!${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipDroneBay](exists)} || ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipDroneBay].Capacity} < 0)
+		if ${Config.UseDrones}
 		{
-			EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipDroneBay]:MakeActive
-			Client:Wait[2000]
-			This:LogInfo["Checkpoint 14"]
-			return FALSE
-		}
-
-		; Load preferred type of drones
-		items:GetIterator[itemIterator]
-		if ${droneAmountToLoad} > 0 && ${itemIterator:First(exists)}
-		{
-			do
+			if (!${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipDroneBay](exists)} || ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipDroneBay].Capacity} < 0)
 			{
-				if ${droneAmountToLoad} > 0 && ${itemIterator.Value.Name.Equal[${preferredDroneType}]}
-				{
-					loadingDroneNumber:Set[${droneAmountToLoad}]
-					if ${itemIterator.Value.Quantity} < ${droneAmountToLoad}
-					{
-						loadingDroneNumber:Set[${itemIterator.Value.Quantity}]
-					}
-					This:LogInfo["Loading ${loadingDroneNumber} \ao${preferredDroneType}\aws."]
-					itemIterator.Value:MoveTo[${MyShip.ID}, DroneBay, ${loadingDroneNumber}]
-					droneAmountToLoad:Dec[${loadingDroneNumber}]
-					return FALSE
-				}
+				EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipDroneBay]:MakeActive
+				Client:Wait[2000]
+				This:LogInfo["Checkpoint 14"]
+				return FALSE
 			}
-			while ${itemIterator:Next(exists)}
-		}
 
-		; Out of preferred type of drones, load fallback(configured) type
-		if ${droneAmountToLoad} > 0 && ${fallbackDroneType.NotNULLOrEmpty}
-		{
-			isLoadingFallbackDrones:Set[TRUE]
+			; Load preferred type of drones
 			items:GetIterator[itemIterator]
-			if ${itemIterator:First(exists)}
+			if ${droneAmountToLoad} > 0 && ${itemIterator:First(exists)}
 			{
 				do
 				{
-					if ${droneAmountToLoad} > 0 && ${itemIterator.Value.Name.Equal[${fallbackDroneType}]}
+					if ${droneAmountToLoad} > 0 && ${itemIterator.Value.Name.Equal[${preferredDroneType}]}
 					{
 						loadingDroneNumber:Set[${droneAmountToLoad}]
 						if ${itemIterator.Value.Quantity} < ${droneAmountToLoad}
 						{
 							loadingDroneNumber:Set[${itemIterator.Value.Quantity}]
 						}
-						This:LogInfo["Loading ${loadingDroneNumber} \ao${fallbackDroneType}\aws for having no \ao${preferredDroneType}\aw."]
+						This:LogInfo["Loading ${loadingDroneNumber} \ao${preferredDroneType}\aws."]
 						itemIterator.Value:MoveTo[${MyShip.ID}, DroneBay, ${loadingDroneNumber}]
 						droneAmountToLoad:Dec[${loadingDroneNumber}]
 						return FALSE
@@ -2035,8 +2023,33 @@ objectdef obj_Mining inherits obj_StateQueue
 				}
 				while ${itemIterator:Next(exists)}
 			}
-		}
 
+			; Out of preferred type of drones, load fallback(configured) type
+			if ${droneAmountToLoad} > 0 && ${fallbackDroneType.NotNULLOrEmpty}
+			{
+				isLoadingFallbackDrones:Set[TRUE]
+				items:GetIterator[itemIterator]
+				if ${itemIterator:First(exists)}
+				{
+					do
+					{
+						if ${droneAmountToLoad} > 0 && ${itemIterator.Value.Name.Equal[${fallbackDroneType}]}
+						{
+							loadingDroneNumber:Set[${droneAmountToLoad}]
+							if ${itemIterator.Value.Quantity} < ${droneAmountToLoad}
+							{
+								loadingDroneNumber:Set[${itemIterator.Value.Quantity}]
+							}
+							This:LogInfo["Loading ${loadingDroneNumber} \ao${fallbackDroneType}\aws for having no \ao${preferredDroneType}\aw."]
+							itemIterator.Value:MoveTo[${MyShip.ID}, DroneBay, ${loadingDroneNumber}]
+							droneAmountToLoad:Dec[${loadingDroneNumber}]
+							return FALSE
+						}
+					}
+					while ${itemIterator:Next(exists)}
+				}
+			}
+		}
 		if ${crystalsToLoad} > 0 && ${Config.UseMiningCrystals}
 		{
 			This:LogCritical["You're out of ${ammo}, halting."]
@@ -2421,7 +2434,68 @@ objectdef obj_Mining inherits obj_StateQueue
 			}
 			while ${itemIterator:Next(exists)}
 		}
+		items:Clear
+		itemsIterator:Clear
+		if ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, CargoHold](exists)} && ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, CargoHold].UsedCapacity} < 0
+		{
+			EVEWindow[Inventory].ChildWindow[${Me.ShipID}, CargoHold]:MakeActive
+			Client:Wait[2000]
+			This:LogInfo["Checkpoint 33"]
+			return FALSE
+		}
+		EVEWindow[Inventory].ChildWindow[${Me.ShipID}, CargoHold]:GetItems[items]
+		items:GetIterator[itemIterator]
+		if ${itemIterator:First(exists)}
+		{
+			do
+			{
+				if !${itemIterator.Value.Name.Equal[${Config.WhatMiningCrystal}]} && \
+				   !${itemIterator.Value.Name.Equal[${Config.CommandBurstOne}]} && \
+				   !${itemIterator.Value.Name.Equal[${Config.CommandBurstTwo}]} && \
+				   !${itemIterator.Value.Name.Equal[${Config.CommandBurstThree}]}
+				{
+					if ${Config.DropOffToContainer} && ${Config.DropOffContainerName.NotNULLOrEmpty} && ${dropOffContainerID} > 0
+					{
+						itemIterator.Value:MoveTo[${dropOffContainerID}, CargoHold]
+						; return FALSE
+					}
+					elseif ${Config.MunitionStorage.Equal[Corporation Hangar]}
+					{
+						if !${EVEWindow[Inventory].ChildWindow[StationCorpHangar](exists)}
+						{
+							EVEWindow[Inventory].ChildWindow[StationCorpHangars]:MakeActive
+							Client:Wait[2000]
+							This:LogInfo["Checkpoint 34"]
+							return FALSE
+						}
 
+						if !${EVEWindow[Inventory].ChildWindow["StationCorpHangar", ${Config.MunitionStorageFolder}](exists)}
+						{
+							EVEWindow[Inventory].ChildWindow["StationCorpHangar", ${Config.MunitionStorageFolder}]:MakeActive
+							Client:Wait[2000]
+							This:LogInfo["Checkpoint 35"]
+							return FALSE
+						}
+
+						itemIterator.Value:MoveTo[MyStationCorporateHangar, StationCorporateHangar, ${itemIterator.Value.Quantity}, ${This.CorporationFolder}]
+						; return FALSE
+					}
+					elseif ${Config.MunitionStorage.Equal[Personal Hangar]}
+					{
+						if !${EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems](exists)}
+						{
+							EVEWindow[Inventory].ChildWindow[${Me.Station.ID}, StationItems]:MakeActive
+							Client:Wait[2000]
+							This:LogInfo["Checkpoint 36"]
+							return FALSE
+						}
+						itemIterator.Value:MoveTo[MyStationHangar, Hangar]
+						; return FALSE
+					}
+				}
+			}
+			while ${itemIterator:Next(exists)}
+		}
 		This:InsertState["StackHangars", 3000]
 		return TRUE
 	}

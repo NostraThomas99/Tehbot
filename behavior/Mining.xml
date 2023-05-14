@@ -1409,7 +1409,7 @@
 						<Width>20%</Width>
 						<Height>5%</Height>
 						<Alignment>Left</Alignment>
-						<Text>Rock Orbit Distance (Meters)</Text>
+						<Text>Boss Orbit Distance (Meters)</Text>
 					</Text>
 
 					<Checkbox name='AlignHomeStructure'>
