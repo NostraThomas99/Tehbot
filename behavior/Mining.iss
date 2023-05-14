@@ -1105,7 +1105,8 @@ objectdef obj_Mining inherits obj_StateQueue
 		if ${Client.InSpace}
 		{
 			This:LogInfo["Moving to Da Boss"]
-			Move:FleetMember[${Config.DaBossID}, FALSE, ${Config.WarpInDistance}]
+			Move:Fleetmember[${Config.DaBossID}, FALSE, ${Config.WarpInDistance}]
+			This:InsertState["Traveling"]
 			This:QueueState["StartWorking", 4000]
 			return TRUE
 		}
