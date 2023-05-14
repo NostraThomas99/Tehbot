@@ -49,6 +49,7 @@
 #include behavior/Mission.iss
 #include behavior/Abyssal.iss
 #include behavior/Mining.iss
+;#include behavior/CombatAnoms.iss
 
 #include minimode/Automate.iss
 #include minimode/AutoModule.iss
@@ -99,6 +100,7 @@ function main(string Character="")
 	declarevariable Mission obj_Mission script
 	declarevariable Abyssal obj_Abyssal script
 	declarevariable Mining obj_Mining script
+	declarevariable CombatAnoms obj_CombatAnoms script
 
 	declarevariable Automate obj_Automate script
 	declarevariable AutoModule obj_AutoModule script

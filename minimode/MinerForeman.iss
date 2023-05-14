@@ -57,6 +57,8 @@ objectdef obj_MinerForeman inherits obj_StateQueue
 	; Are we inhibiting our Command Burst Usage (we need to dock soon, for instance)
 	variable bool InhibitBursts
 	
+	variable bool TargetQueriesCreated = FALSE
+	
 	variable int64 BurstTimer
 
 	method Initialize()
@@ -112,6 +114,7 @@ objectdef obj_MinerForeman inherits obj_StateQueue
 		Asteroids:AddQueryString["CategoryID = 25 && Name !~ Ice && Distance < 100000"]
 		Ice:AddQueryString["CategoryID = 25 && Name =- Ice && Distance < 100000"]
 		Gas:AddQueryString["GroupID = 711 && Distance < 50000"]
+		TargetQueriesCreated:Set[TRUE]
 		
 	}
 	
@@ -151,7 +154,10 @@ objectdef obj_MinerForeman inherits obj_StateQueue
 		;{
 		;	return FALSE
 		;}
-		This:CreateTargetQueries
+		if !${TargetQueriesCreated}
+		{
+			This:CreateTargetQueries
+		}
 		This:CheckForMineables
 		This:CheckForHostiles
 		This:CheckForFriendlies
@@ -217,7 +223,7 @@ objectdef obj_MinerForeman inherits obj_StateQueue
 		{
 			relay "all" -event CompressionActive FALSE
 		}		
-		if ${Ship.ModuleList_CommandBurst.Count} > 0 && !${InhibitBursts} && ${LavishScript.RunningTime} >= ${BurstTimer}
+		if ${Ship.ModuleList_CommandBurst.Count} > 0 && !${InhibitBursts} && ${LavishScript.RunningTime} >= ${BurstTimer} && ${FleetPCs.TargetList.Used} > 1
 		{
 			Ship.ModuleList_CommandBurst:ActivateAll
 			BurstTimer:Set[${Math.Calc[${LavishScript.RunningTime} + 115000]}]

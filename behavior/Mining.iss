@@ -502,11 +502,24 @@ objectdef obj_Mining inherits obj_StateQueue
 			This:InsertState["CheckStatus", 5000]
 			return TRUE
 		}
-		; We are in station and everything is good, lets establish our mining location.
+		; We are in station and we haven't checked status. Do so.
 		if ${Me.InStation} && !${StatusChecked}
 		{
 			This:LogInfo["Status Check"]
 			This:InsertState["CheckStatus", 5000]
+			return TRUE
+		}
+		; We are in station and need repairs or resupply.
+		if ${Me.InStation} && !${StatusGreen}
+		{
+			if ${Config.UseMiningCrystals}
+			{
+				This:LogInfo["Loading \ao${ammo}", "o"]
+			}
+			StatusGreen:Set[TRUE]
+			This:QueueState["Repair"]
+			This:QueueState["DropOffLoot", 5000]
+			This:InsertState["LoadSupplies", 3000]
 			return TRUE
 		}
 		; We are in space,  and we have no problems. Lets establish our mining location.
@@ -529,19 +542,6 @@ objectdef obj_Mining inherits obj_StateQueue
 		{
 			This:LogInfo["Go back to the station"]
 			This:InsertState["GoToStation"]
-			return TRUE
-		}
-		; We are in station and need repairs or resupply.
-		if ${Me.InStation} && !${StatusGreen}
-		{
-			if ${Config.UseMiningCrystals}
-			{
-				This:LogInfo["Loading \ao${ammo}", "o"]
-			}
-			StatusGreen:Set[TRUE]
-			This:QueueState["Repair"]
-			This:QueueState["DropOffLoot", 5000]
-			This:InsertState["LoadSupplies", 3000]
 			return TRUE
 		}
 		; We have hit the halt button, might want to like, stop the bot or something.
@@ -977,6 +977,7 @@ objectdef obj_Mining inherits obj_StateQueue
 	{
 		This:LogInfo["Triggering who is out there event"]
 		relay "all other" "Event[WhoIsOutThereEvent]:Execute[${Me.Name},${Me.CharID}]"
+		echo DEBUG - ${CurrentParticipants.Used} participants answered 
 		
 		if ${Me.Fleet.Size} < ${CurrentParticipants.Used}
 		{
