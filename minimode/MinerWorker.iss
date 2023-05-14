@@ -463,7 +463,7 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 				}
 				else
 				{
-					relay "all" -event CompressionRequest TRUE
+					relay all -event CompressionRequest TRUE
 					This:LogInfo["Requesting Compression"]
 				}
 			}	
@@ -478,7 +478,7 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 		{
 			if ${Mining.Config.UseCompressor}
 			{
-				relay "all" -event CompressionRequest FALSE
+				relay all -event CompressionRequest FALSE
 				This:LogInfo["No need for compression at this time."]
 			}
 		}

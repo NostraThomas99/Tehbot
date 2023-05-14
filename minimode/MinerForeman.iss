@@ -217,11 +217,11 @@ objectdef obj_MinerForeman inherits obj_StateQueue
 		}
 		if ${Ship.ModuleList_Compressors.ActiveCount} > 0
 		{
-			relay "all" -event CompressionActive TRUE
+			relay all -event CompressionActive TRUE
 		}
 		if ${Ship.ModuleList_Compressors.ActiveCount} == 0
 		{
-			relay "all" -event CompressionActive FALSE
+			relay all -event CompressionActive FALSE
 		}		
 		if ${Ship.ModuleList_CommandBurst.Count} > 0 && !${InhibitBursts} && ${LavishScript.RunningTime} >= ${BurstTimer} && ${FleetPCs.TargetList.Used} > 1
 		{

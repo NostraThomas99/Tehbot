@@ -517,14 +517,14 @@ objectdef obj_Mining inherits obj_StateQueue
 			return TRUE
 		}
 		; We are in station and we haven't checked status. Do so.
-		if ${Me.InStation} && !${StatusChecked} && !${ReturnToStation}
+		if ${Me.InStation} && !${StatusChecked}
 		{
 			This:LogInfo["Status Check"]
 			This:InsertState["CheckStatus", 5000]
 			return TRUE
 		}
 		; We are in station and need repairs or resupply.
-		if ${Me.InStation} && !${StatusGreen}
+		if ${Me.InStation} && !${StatusGreen} && ${StatusChecked}
 		{
 			if ${Config.UseMiningCrystals}
 			{
@@ -567,6 +567,7 @@ objectdef obj_Mining inherits obj_StateQueue
 			This:InsertState["HaltBot"]
 			return TRUE
 		}
+		echo DEBUG - HOW THE SHIT DID WE GET HERE
 	}
 	
 	; We should see if we need ammo, filaments, etc. This is in case the bot gets stopped in space after a few runs or whatever.
@@ -708,6 +709,16 @@ objectdef obj_Mining inherits obj_StateQueue
 			EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold]:MakeActive
 			return FALSE
 		}
+		; We're in station and have anything in the ore hold, unload it.
+		if ${Me.InStation} && ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold].UsedCapacity} > 1
+		{
+			This:LogInfo["Cargo is too full"]
+			StatusGreen:Set[FALSE]
+			StatusChecked:Set[TRUE]
+			This:InsertState["CheckForWork", 5000]
+			return TRUE		
+		}
+		
 		; Looks like we're full.
 		if (${Math.Calc[${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold].Capacity} - ${EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipGeneralMiningHold].UsedCapacity}]}) < 999
 		{
@@ -731,7 +742,7 @@ objectdef obj_Mining inherits obj_StateQueue
 		{
 			Move:Bookmark["${Config.HomeStructure}"]
 			This:InsertState["Traveling"]
-			This:QueueState["CheckForWork", 5000]
+			This:InsertState["CheckForWork", 5000]
 			return TRUE
 		}
 		else
@@ -1129,7 +1140,7 @@ objectdef obj_Mining inherits obj_StateQueue
 		{
 			MinerForeman.InhibitBursts:Set[TRUE]
 			MinerWorker.MiningTime:Set[FALSE]
-			relay "all" -event LeaderSummoning FALSE
+			relay all -event LeaderSummoning FALSE
 			This:LogInfo["Jerks in Local, lets get out of here"]
 			; If we are set to run to a POSBookmarkName
 			if ${Config.UsePOSHidingSpot} && ${Config.POSBookmarkName.NotNULLOrEmpty}
@@ -1200,8 +1211,8 @@ objectdef obj_Mining inherits obj_StateQueue
 			MinerWorker.MiningTime:Set[FALSE]
 			if ${Config.FleetBoss}
 			{
-				relay "all" -event TimeToScram TRUE
-				relay "all" -event LeaderSummoning FALSE
+				relay all -event TimeToScram TRUE
+				relay all -event LeaderSummoning FALSE
 				MinerForeman.InhibitBursts:Set[TRUE]
 				
 			}
@@ -1244,45 +1255,45 @@ objectdef obj_Mining inherits obj_StateQueue
 				; We want to wander the mining site, searching for meaning. (Asteroid case)
 				if ${MinerWorker.Asteroids.TargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.Asteroids.TargetList.Get[1]}]}
 				{
-					relay "all" -event LeaderSummoning TRUE
-					relay "all" -event TimeToScram FALSE
+					relay all -event LeaderSummoning TRUE
+					relay all -event TimeToScram FALSE
 					Move:Approach[${MinerWorker.Asteroids.TargetList.Get[1]},10000]
 					return FALSE
 				}
 				if ${MinerWorker.AsteroidsDistant.TargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.AsteroidsDistant.TargetList.Get[1]}]} && !${MinerWorker.Asteroids.TargetList.Get[1]}
 				{
-					relay "all" -event LeaderSummoning TRUE
-					relay "all" -event TimeToScram FALSE
+					relay all -event LeaderSummoning TRUE
+					relay all -event TimeToScram FALSE
 					Move:Approach[${MinerWorker.AsteroidsDistant.TargetList.Get[1]},10000]}]
 					return FALSE	
 				}
 				; We want to wander the mining site, searching for meaning. (Ice case)
 				if ${MinerWorker.Ice.TargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.Ice.TargetList.Get[1]}]}
 				{
-					relay "all" -event LeaderSummoning TRUE
-					relay "all" -event TimeToScram FALSE
+					relay all -event LeaderSummoning TRUE
+					relay all -event TimeToScram FALSE
 					Move:Approach[${MinerWorker.Ice.TargetList.Get[1]},10000]
 					return FALSE
 				}
 				if ${MinerWorker.IceDistant.TargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.IceDistant.TargetList.Get[1]}]} && !${MinerWorker.Ice.TargetList.Get[1]}
 				{
-					relay "all" -event LeaderSummoning TRUE
-					relay "all" -event TimeToScram FALSE
+					relay all -event LeaderSummoning TRUE
+					relay all -event TimeToScram FALSE
 					Move:Approach[${MinerWorker.IceDistant.TargetList.Get[1]},10000]
 					return FALSE	
 				}
 				; We want to wander the mining site, searching for meaning. (Gas case)
 				if ${MinerWorker.Gas.TargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.Gas.TargetList.Get[1]}]}
 				{
-					relay "all" -event LeaderSummoning TRUE
-					relay "all" -event TimeToScram FALSE
+					relay all -event LeaderSummoning TRUE
+					relay all -event TimeToScram FALSE
 					Move:Approach[${MinerWorker.Gas.TargetList.Get[1]},10000]
 					return FALSE
 				}
 				if ${MinerWorker.GasDistant.TargetList.Get[1]} && !${MyShip.ToEntity.Approaching.ID.Equal[${MinerWorker.GasDistant.TargetList.Get[1]}]} && !${MinerWorker.Gas.TargetList.Get[1]}
 				{
-					relay "all" -event LeaderSummoning TRUE
-					relay "all" -event TimeToScram FALSE
+					relay all -event LeaderSummoning TRUE
+					relay all -event TimeToScram FALSE
 					Move:Approach[${MinerWorker.GasDistant.TargetList.Get[1]},10000]
 					return FALSE	
 				}
@@ -1518,7 +1529,7 @@ objectdef obj_Mining inherits obj_StateQueue
 		{
 			Move:Bookmark["${POSBookmarkName}"]
 			This:InsertState["Traveling"]
-			This:QueueState["CheckForWork"]
+			This:InsertState["CheckForWork", 5000]
 		}
 		
 	}
@@ -1691,11 +1702,8 @@ objectdef obj_Mining inherits obj_StateQueue
 			}
 
 			variable float specifiedDroneVolume = ${Drones.Data.GetVolume[${Config.DroneType}]}
-			preferredDroneType:Set[${Drones.Data.SearchSimilarDroneFromRace[${Config.DroneType}, ${useDroneRace}]}]
-			if !${preferredDroneType.Equal[${Config.DroneType}]}
-			{
-				fallbackDroneType:Set[${Config.DroneType}]
-			}
+			echo DEBUG - PREFERRED DRONE SET TO ${Config.DroneType}
+			preferredDroneType:Set[${Config.DroneType}]
 			
 			Client:Wait[2000]
 			This:LogInfo["Checkpoint 2"]
@@ -1780,6 +1788,8 @@ objectdef obj_Mining inherits obj_StateQueue
 		
 		
 		batteryToLoad:Dec[${This.InventoryItemQuantity[${batteryType}, ${Me.ShipID}, "ShipCargo"]}]
+		
+		echo - DEBUG - DECREMENTING BULLSHIT
 
 		EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipCargo]:GetItems[items]
 		items:GetIterator[itemIterator]
@@ -1814,19 +1824,15 @@ objectdef obj_Mining inherits obj_StateQueue
 
 				; Move fallback drones together(to station hanger) before moving them to drone bay to ensure preferred type is loaded before fallback type.
 				; Also move ammos not in use to release cargo space.
-				if ((${Ship.ModuleList_Weapon.Count} && \
+				if ((${Ship.ModuleList_MiningLaser.Count} && \
 					!${itemIterator.Value.Name.Equal[${Ship.ModuleList_Weapon.FallbackAmmo}]} && \
 					!${itemIterator.Value.Name.Equal[${Ship.ModuleList_Weapon.FallbackLongRangeAmmo}]} && \
 					!${itemIterator.Value.Name.Equal[${ammo}]} && \
 					!${itemIterator.Value.Name.Equal[${secondaryAmmo}]}) && \
 					(${itemIterator.Value.Name.Equal[${Config.KineticAmmo}]} || \
-					${itemIterator.Value.Name.Equal[${Config.ThermalAmmo}]} || \
-					${itemIterator.Value.Name.Equal[${Config.EMAmmo}]} || \
-					${itemIterator.Value.Name.Equal[${Config.ExplosiveAmmo}]} || \
-				 	${itemIterator.Value.Name.Equal[${Config.KineticAmmoSecondary}]} || \
-				 	${itemIterator.Value.Name.Equal[${Config.ThermalAmmoSecondary}]} || \
-					${itemIterator.Value.Name.Equal[${Config.EMAmmoSecondary}]} || \
-					${itemIterator.Value.Name.Equal[${Config.ExplosiveAmmoSecondary}]})) || \
+					${itemIterator.Value.Name.Equal[${firstBurstCharge}]} || \
+					${itemIterator.Value.Name.Equal[${secondBurstCharge}]} || \
+					${itemIterator.Value.Name.Equal[${thirdBurstCharge}]} || \
 					${itemIterator.Value.Name.Equal[${fallbackDroneType}]}
 				{
 					if ${Config.MunitionStorage.Equal[Corporation Hangar]}
@@ -2025,30 +2031,30 @@ objectdef obj_Mining inherits obj_StateQueue
 			}
 
 			; Out of preferred type of drones, load fallback(configured) type
-			if ${droneAmountToLoad} > 0 && ${fallbackDroneType.NotNULLOrEmpty}
-			{
-				isLoadingFallbackDrones:Set[TRUE]
-				items:GetIterator[itemIterator]
-				if ${itemIterator:First(exists)}
-				{
-					do
-					{
-						if ${droneAmountToLoad} > 0 && ${itemIterator.Value.Name.Equal[${fallbackDroneType}]}
-						{
-							loadingDroneNumber:Set[${droneAmountToLoad}]
-							if ${itemIterator.Value.Quantity} < ${droneAmountToLoad}
-							{
-								loadingDroneNumber:Set[${itemIterator.Value.Quantity}]
-							}
-							This:LogInfo["Loading ${loadingDroneNumber} \ao${fallbackDroneType}\aws for having no \ao${preferredDroneType}\aw."]
-							itemIterator.Value:MoveTo[${MyShip.ID}, DroneBay, ${loadingDroneNumber}]
-							droneAmountToLoad:Dec[${loadingDroneNumber}]
-							return FALSE
-						}
-					}
-					while ${itemIterator:Next(exists)}
-				}
-			}
+			;if ${droneAmountToLoad} > 0 && ${fallbackDroneType.NotNULLOrEmpty}
+			;{
+			;	isLoadingFallbackDrones:Set[TRUE]
+			;	items:GetIterator[itemIterator]
+			;	if ${itemIterator:First(exists)}
+			;	{
+			;		do
+			;		{
+			;			if ${droneAmountToLoad} > 0 && ${itemIterator.Value.Name.Equal[${fallbackDroneType}]}
+			;			{
+			;				loadingDroneNumber:Set[${droneAmountToLoad}]
+			;				if ${itemIterator.Value.Quantity} < ${droneAmountToLoad}
+			;				{
+			;					loadingDroneNumber:Set[${itemIterator.Value.Quantity}]
+			;				}
+			;				This:LogInfo["Loading ${loadingDroneNumber} \ao${fallbackDroneType}\aws for having no \ao${preferredDroneType}\aw."]
+			;				itemIterator.Value:MoveTo[${MyShip.ID}, DroneBay, ${loadingDroneNumber}]
+			;				droneAmountToLoad:Dec[${loadingDroneNumber}]
+			;				return FALSE
+			;			}
+			;		}
+			;		while ${itemIterator:Next(exists)}
+			;	}
+			;}
 		}
 		if ${crystalsToLoad} > 0 && ${Config.UseMiningCrystals}
 		{
@@ -2088,6 +2094,7 @@ objectdef obj_Mining inherits obj_StateQueue
 		}
 		else
 		{
+			This:LogInfo["Checkpoint 2, loading complete"]
 			This:QueueState["CheckForWork"]
 			This:InsertState["StackShip"]
 			return TRUE
@@ -2104,7 +2111,13 @@ objectdef obj_Mining inherits obj_StateQueue
 		EVE:RefreshBookmarks
 		return TRUE
 	}
-
+	
+	member:bool StackShip()
+	{
+		EVEWindow[Inventory].ChildWindow[${Me.ShipID}, ShipCargo]:StackAll
+		return TRUE
+	}
+	
 	member:bool StackHangars()
 	{
 		if !${Me.InStation}
@@ -2496,7 +2509,8 @@ objectdef obj_Mining inherits obj_StateQueue
 			}
 			while ${itemIterator:Next(exists)}
 		}
-		This:InsertState["StackHangars", 3000]
+		This:QueueState["StackHangars", 3000]
+		This:QueueState["CheckForWork"]
 		return TRUE
 	}
 
