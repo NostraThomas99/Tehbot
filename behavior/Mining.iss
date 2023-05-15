@@ -1579,8 +1579,6 @@ objectdef obj_Mining inherits obj_StateQueue
 	
 		MyShip.Scanners.System:GetAnomalies[MyAnomalies]
 		MyAnomalies:GetIterator[MyAnomalies_Iterator]	
-		echo ${ValidAnomalies.Used} Valid Anoms
-		echo ${MyAnomalies.Used} Anom Index
 		if ${MyAnomalies_Iterator:First(exists)}
 		{
 			do
@@ -1596,7 +1594,7 @@ objectdef obj_Mining inherits obj_StateQueue
 				
 				}
 				; I'm too lazy to add like 50 gas sites to this sorry
-				elseif ${ValidAnomalies.Contains[Nebula]} && ${MyAnomalies_Iterator.Value.Name.Find["Nebula"]} && ${MyAnomalies_Iterator.Value.ID} != ${Config.PersistentAnomID}
+				elseif ${ValidAnomalies.Contains[Nebula]} && ${MyAnomalies_Iterator.Value.DungeonName.Find["Nebula"]} && ${MyAnomalies_Iterator.Value.ID} != ${Config.PersistentAnomID}
 				{
 					Script[Tehbot].VariableScope.Mining.Config:SetPersistentAnomID[${MyAnomalies_Iterator.Value.ID}]
 					MyAnomalies_Iterator.Value:WarpTo[${Config.WarpInDistance}, FALSE]
@@ -1605,7 +1603,7 @@ objectdef obj_Mining inherits obj_StateQueue
 					This:QueueState["StartWorking", 5000]
 					return TRUE
 				}
-				elseif ${ValidAnomalies.Contains[Reservoir]} && ${MyAnomalies_Iterator.Value.Name.Find["Reservoir"]} && ${MyAnomalies_Iterator.Value.ID} != ${Config.PersistentAnomID}
+				elseif ${ValidAnomalies.Contains[Reservoir]} && ${MyAnomalies_Iterator.Value.DungeonName.Find["Reservoir"]} && ${MyAnomalies_Iterator.Value.ID} != ${Config.PersistentAnomID}
 				{
 					Script[Tehbot].VariableScope.Mining.Config:SetPersistentAnomID[${MyAnomalies_Iterator.Value.ID}]
 					MyAnomalies_Iterator.Value:WarpTo[${Config.WarpInDistance}, FALSE]
@@ -1615,7 +1613,7 @@ objectdef obj_Mining inherits obj_StateQueue
 					return TRUE
 				}
 				; Everything else goes here
-				elseif ${ValidAnomalies.Contains[${MyAnomalies_Iterator.Value.Name}]} && ${MyAnomalies_Iterator.Value.ID} != ${Config.PersistentAnomID}
+				elseif ${ValidAnomalies.Contains[${MyAnomalies_Iterator.Value.DungeonName}]} && ${MyAnomalies_Iterator.Value.ID} != ${Config.PersistentAnomID}
 				{
 					Script[Tehbot].VariableScope.Mining.Config:SetPersistentAnomID[${MyAnomalies_Iterator.Value.ID}]
 					MyAnomalies_Iterator.Value:WarpTo[${Config.WarpInDistance}, FALSE]
@@ -1627,7 +1625,6 @@ objectdef obj_Mining inherits obj_StateQueue
 				else
 				{
 					Config.PersistentAnomID:Set[0]
-					continue
 				}
 			
 			}
