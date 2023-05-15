@@ -49,7 +49,7 @@
 #include behavior/Mission.iss
 #include behavior/Abyssal.iss
 #include behavior/Mining.iss
-;#include behavior/CombatAnoms.iss
+#include behavior/CombatAnoms.iss
 
 #include minimode/Automate.iss
 #include minimode/AutoModule.iss
