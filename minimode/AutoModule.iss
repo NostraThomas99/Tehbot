@@ -96,7 +96,7 @@ objectdef obj_AutoModule inherits obj_StateQueue
 		variable index:module modules
 		variable iterator m
 
-		if !${Client.InSpace} || ${SafetyOveride}
+		if !${Client.InSpace} || ${SafetyOveride || Tehbot.Paused}
 		{
 			return FALSE
 		}

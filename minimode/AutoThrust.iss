@@ -54,7 +54,7 @@ objectdef obj_AutoThrust inherits obj_StateQueue
 	{
 		variable bool TurnOff=TRUE
 
-		if !${Client.InSpace} || ${Me.ToEntity.IsCloaked}
+		if !${Client.InSpace} || ${Me.ToEntity.IsCloaked || Tehbot.Paused}
 		{
 			return FALSE
 		}
