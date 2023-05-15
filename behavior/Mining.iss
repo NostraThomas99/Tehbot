@@ -949,11 +949,17 @@ objectdef obj_Mining inherits obj_StateQueue
 			This:LogInfo["Need to be Undocked for this part"]
 			Move:Undock
 		}
-		if ${Client.InSpace}
+		if ${Client.InSpace} && ${ValidAnomalies.Used} > 0
 		{
 			This:LogInfo["Updating Anomalies"]
 			This:QueueState["UpdateAnoms"]
 			return TRUE
+		}
+		if ${Client.InSpace} && ${ValidAnomalies.Used} <= 0
+		{
+			This:LogInfo["Building Anoms List"]
+			This:InsertState["BuildAnomaliesList", 5000]
+			return FALSE
 		}
 	}
 	; This is how we will pick an asteroid belt, still cant believe this.
@@ -1547,6 +1553,7 @@ objectdef obj_Mining inherits obj_StateQueue
 	member:bool BuildAnomaliesList()
 	{
 		ValidAnomalies:Clear
+		echo ${AnomalyMasterCollection.Used} Anomaly Master Collection
 		
 		if ${AnomalyMasterCollection.FirstValue}
 		{
@@ -1572,7 +1579,8 @@ objectdef obj_Mining inherits obj_StateQueue
 	
 		MyShip.Scanners.System:GetAnomalies[MyAnomalies]
 		MyAnomalies:GetIterator[MyAnomalies_Iterator]	
-
+		echo ${ValidAnomalies.Used} Valid Anoms
+		echo ${MyAnomalies.Used} Anom Index
 		if ${MyAnomalies_Iterator:First(exists)}
 		{
 			do

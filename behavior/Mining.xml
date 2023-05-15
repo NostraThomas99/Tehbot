@@ -1804,6 +1804,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.AverageDarkOchreandGneissDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Average Dark Ochre and Gneiss Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -1822,6 +1823,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.AverageFrontierDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Average Frontier Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -1840,6 +1842,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.AverageGneissDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Average Gneiss Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -1858,6 +1861,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.AverageHedbergiteHemorphiteandJaspetDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Average Hedbergite, Hemorphite, and Jaspet Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -1876,6 +1880,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.AverageHemorphiteJaspetandKerniteDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Average Hemorphite, Jaspet, and Kernite Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -1894,6 +1899,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.AverageJaspetKerniteandOmberDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Average Jaspet, Kernite and Omber Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -1912,6 +1918,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.AverageKerniteandOmberDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Average Kernite and Omber Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -1930,6 +1937,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.Average Omber Deposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Average Omber Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -1948,6 +1956,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.AverageSpodumainCrokiteandDarkOchrerDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Average Spodumain, Crokite, and Dark Ochre Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -1966,6 +1975,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.ColossalAsteroidCluster}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Colossal Asteroid Cluster",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -1984,6 +1994,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.CommonPerimeterDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Common Perimeter Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2002,6 +2013,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.Enormous Asteroid Cluster}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Enormous Asteroid Cluster",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2020,6 +2032,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.ExceptionalCoreDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Exceptional Core Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2038,6 +2051,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.InfrequentCoreDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Infrequent Core Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2056,6 +2070,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.IsolatedCoreDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Isolated Core Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2074,6 +2089,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.LargeAsteroidCluster}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Large Asteroid Cluster",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2092,6 +2108,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.LargeDarkOchreandGneissDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Large Dark Ochre and Gneiss Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2110,6 +2127,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.LargeGneissDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Large Gneiss Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2128,6 +2146,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.LargeHedbergiteHemorphiteandJaspetDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Large Hedbergite, Hemorphite, and Jaspet Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2146,6 +2165,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.LargeHemorphiteJaspetandKerniteDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Large Hemorphite, Jaspet, and Kernite Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2164,6 +2184,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.LargeJaspetKerniteandOmberDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Large Jaspet, Kernite and Omber Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2182,6 +2203,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.LargeKerniteandOmberDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Large Kernite and Omber Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2200,6 +2222,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.LargeOmberDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Large Omber Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2218,6 +2241,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.MediumAsteroidCluster}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Medium Asteroid Cluster",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2236,6 +2260,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.OrdinaryPerimeterDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Ordinary Perimeter Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2254,6 +2279,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.RarifiedCoreDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Rarified Core Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2272,6 +2298,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.ShatteredDebrisField}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Shattered Debris Field",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2290,6 +2317,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.SmallArkonorandBistotDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Small Arkonor and Bistot Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2308,6 +2336,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.SmallAsteroidCluster}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Small Asteroid Cluster",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2326,6 +2355,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.SmallDarkOchreandGneissDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Small Dark Ochre and Gneiss Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2344,6 +2374,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.SmallGneissDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Small Gneiss Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2362,6 +2393,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.SmallHedbergiteHemorphiteandJaspetDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Small Hedbergite, Hemorphite, and Jaspet Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2380,6 +2412,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.SmallHemorphiteJaspetandKerniteDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Small Hemorphite, Jaspet, and Kernite Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2398,6 +2431,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.SmallJaspetKerniteandOmberDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Small Jaspet, Kernite, and Omber Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2416,6 +2450,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.SmallKerniteandOmberDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Small Kernite and Omber Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2434,6 +2469,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.SmallOmberDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Small Omber Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2452,6 +2488,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.SmallSpodumainCrokieandDarkOchreDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Small Spodumain, Crokite, and Dark Ochre Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2470,6 +2507,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.UncommonCoreDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Uncommon Core Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2488,6 +2526,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.UnexceptionalFrontierDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Unexceptional Frontier Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2506,6 +2545,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.UnusualCoreDeposit}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Unusual Core Deposit",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2524,6 +2564,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.BlueIceBelt}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Blue Ice Belt",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2542,6 +2583,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.ClearIcicleBelt}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Clear Icicle Belt",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2560,6 +2602,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.WhiteGlazeBelt}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["White Glaze Belt",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2578,6 +2621,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.GlacialMassBelt}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Glacial Mass Belt",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2596,6 +2640,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.GlareCrustBelt}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Glare Crust Belt",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2614,6 +2659,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.DarkGlitterBelt}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Dark Glitter Belt",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2632,6 +2678,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.GelidusBelt}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Gelidus Belt",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2650,6 +2697,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.KrystallosBelt}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Krystallos Belt",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2668,6 +2716,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.ShatteredIceField}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Shattered Ice Field",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2686,6 +2735,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.Nebula}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Nebula",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
@@ -2704,6 +2754,7 @@
 								if ${Script[Tehbot].VariableScope.Mining.Config.Reservoir}
 								{
 									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Reservoir",${This.Checked}]
 								}
 							</OnLoad>
 							<OnLeftClick>
