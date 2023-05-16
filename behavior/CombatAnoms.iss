@@ -96,31 +96,132 @@ objectdef obj_Configuration_CombatAnoms inherits obj_Configuration_Base
 	; This is going to be a 0 - 3 priorities list like in MinerWorker.
 	; 0 is ignore, 1 is highest priority, 2  is middle, 3 is lowest.
 	; We ignore the 0s, if there are any 1s we do those, any 2s (but no 1s) we do those, any 3s (but no 1s or 2s) we do those.
-	Setting(int, ArkonorPriority, SetArkonorPriority)
-	Setting(int, ArkonorPriority, SetArkonorPriority)	
-	Setting(int, ArkonorPriority, SetArkonorPriority)	
-	Setting(int, ArkonorPriority, SetArkonorPriority)	
-	Setting(int, ArkonorPriority, SetArkonorPriority)	
-	Setting(int, ArkonorPriority, SetArkonorPriority)	
-	Setting(int, ArkonorPriority, SetArkonorPriority)	
-	Setting(int, ArkonorPriority, SetArkonorPriority)	
-	Setting(int, ArkonorPriority, SetArkonorPriority)	
-	Setting(int, ArkonorPriority, SetArkonorPriority)	
-	Setting(int, ArkonorPriority, SetArkonorPriority)	
-	Setting(int, ArkonorPriority, SetArkonorPriority)
-	Setting(int, ArkonorPriority, SetArkonorPriority)	
-	Setting(int, ArkonorPriority, SetArkonorPriority)	
-	Setting(int, ArkonorPriority, SetArkonorPriority)	
-	Setting(int, ArkonorPriority, SetArkonorPriority)
-	Setting(int, ArkonorPriority, SetArkonorPriority)	
-	Setting(int, ArkonorPriority, SetArkonorPriority)	
-	Setting(int, ArkonorPriority, SetArkonorPriority)	
-	Setting(int, ArkonorPriority, SetArkonorPriority)	
-	Setting(int, ArkonorPriority, SetArkonorPriority)	
-	Setting(int, ArkonorPriority, SetArkonorPriority)	
-	Setting(int, ArkonorPriority, SetArkonorPriority)	
-	Setting(int, ArkonorPriority, SetArkonorPriority)	
-
+	; Angels Section
+	Setting(int, AngelHideawayPriority, SetAngelHideawayPriority)
+	Setting(int, AngelHiddenHideawayPriority, SetAngelHiddenHideawayPriority)	
+	Setting(int, AngelForsakenHideawayPriority, SetAngelForsakenHideawayPriority)	
+	Setting(int, AngelForlornHideawayPriority, SetAngelForlornHideawayPriority)	
+	Setting(int, AngelBurrowPriority, SetAngelBurrowPriority)	
+	Setting(int, AngelRefugePriority, SetAngelRefugePriority)	
+	Setting(int, AngelDenPriority, SetAngelDenPriority)	
+	Setting(int, AngelHiddenDenPriority, SetAngelHiddenDenPriority)	
+	Setting(int, AngelForsakenDenPriority, SetAngelForsakenDenPriority)	
+	Setting(int, AngelForlornDenPriority, SetAngelForlornDenPriority)	
+	Setting(int, AngelYardPriority, SetAngelYardPriority)	
+	Setting(int, AngelRallyPointPriority, SetAngelRallyPointPriority)
+	Setting(int, AngelHiddenRallyPointPriority, SetAngelHiddenRallyPointPriority)	
+	Setting(int, AngelForsakenRallyPointPriority, SetAngelForsakenRallyPointPriority)	
+	Setting(int, AngelForlornRallyPointPriority, SetAngelForlornRallyPointPriority)	
+	Setting(int, AngelPortPriority, SetAngelPortPriority)
+	Setting(int, AngelHubPriority, SetAngelHubPriority)	
+	Setting(int, AngelHiddenHubPriority, SetAngelHiddenHubPriority)	
+	Setting(int, AngelForsakenHubPriority, SetAngelForsakenHubPriority)	
+	Setting(int, AngelForlornHubPriority, SetAngelForlornHubPriority)	
+	Setting(int, AngelHavenPriority, SetAngelHavenPriority)	
+	Setting(int, AngelSanctumPriority, SetAngelSanctumPriority)	
+	; Blood Raiders Section
+	Setting(int, BloodHideawayPriority, SetBloodHideawayPriority)
+	Setting(int, BloodHiddenHideawayPriority, SetBloodHiddenHideawayPriority)	
+	Setting(int, BloodForsakenHideawayPriority, SetBloodForsakenHideawayPriority)	
+	Setting(int, BloodForlornHideawayPriority, SetBloodForlornHideawayPriority)	
+	Setting(int, BloodBurrowPriority, SetBloodBurrowPriority)	
+	Setting(int, BloodRefugePriority, SetBloodRefugePriority)	
+	Setting(int, BloodDenPriority, SetBloodDenPriority)	
+	Setting(int, BloodHiddenDenPriority, SetBloodHiddenDenPriority)	
+	Setting(int, BloodForsakenDenPriority, SetBloodForsakenDenPriority)	
+	Setting(int, BloodForlornDenPriority, SetBloodForlornDenPriority)	
+	Setting(int, BloodYardPriority, SetBloodYardPriority)	
+	Setting(int, BloodRallyPointPriority, SetBloodRallyPointPriority)
+	Setting(int, BloodHiddenRallyPointPriority, SetBloodHiddenRallyPointPriority)	
+	Setting(int, BloodForsakenRallyPointPriority, SetBloodForsakenRallyPointPriority)	
+	Setting(int, BloodForlornRallyPointPriority, SetBloodForlornRallyPointPriority)	
+	Setting(int, BloodPortPriority, SetBloodPortPriority)
+	Setting(int, BloodHubPriority, SetBloodHubPriority)	
+	Setting(int, BloodHiddenHubPriority, SetBloodHiddenHubPriority)	
+	Setting(int, BloodForsakenHubPriority, SetBloodForsakenHubPriority)	
+	Setting(int, BloodForlornHubPriority, SetBloodForlornHubPriority)	
+	Setting(int, BloodHavenPriority, SetBloodHavenPriority)	
+	Setting(int, BloodSanctumPriority, SetBloodSanctumPriority)	
+	; Guristas Section
+	Setting(int, GuristasHideawayPriority, SetGuristasHideawayPriority)
+	Setting(int, GuristasHiddenHideawayPriority, SetGuristasHiddenHideawayPriority)	
+	Setting(int, GuristasForsakenHideawayPriority, SetGuristasForsakenHideawayPriority)	
+	Setting(int, GuristasForlornHideawayPriority, SetGuristasForlornHideawayPriority)	
+	Setting(int, GuristasBurrowPriority, SetGuristasBurrowPriority)	
+	Setting(int, GuristasRefugePriority, SetGuristasRefugePriority)	
+	Setting(int, GuristasDenPriority, SetGuristasDenPriority)	
+	Setting(int, GuristasHiddenDenPriority, SetGuristasHiddenDenPriority)	
+	Setting(int, GuristasForsakenDenPriority, SetGuristasForsakenDenPriority)	
+	Setting(int, GuristasForlornDenPriority, SetGuristasForlornDenPriority)	
+	Setting(int, GuristasYardPriority, SetGuristasYardPriority)	
+	Setting(int, GuristasRallyPointPriority, SetGuristasRallyPointPriority)
+	Setting(int, GuristasHiddenRallyPointPriority, SetGuristasHiddenRallyPointPriority)	
+	Setting(int, GuristasForsakenRallyPointPriority, SetGuristasForsakenRallyPointPriority)	
+	Setting(int, GuristasForlornRallyPointPriority, SetGuristasForlornRallyPointPriority)	
+	Setting(int, GuristasPortPriority, SetGuristasPortPriority)
+	Setting(int, GuristasHubPriority, SetGuristasHubPriority)	
+	Setting(int, GuristasHiddenHubPriority, SetGuristasHiddenHubPriority)	
+	Setting(int, GuristasForsakenHubPriority, SetGuristasForsakenHubPriority)	
+	Setting(int, GuristasForlornHubPriority, SetGuristasForlornHubPriority)	
+	Setting(int, GuristasHavenPriority, SetGuristasHavenPriority)	
+	Setting(int, GuristasSanctumPriority, SetGuristasSanctumPriority)	
+	; Sansha Section
+	Setting(int, SanshaHideawayPriority, SetSanshaHideawayPriority)
+	Setting(int, SanshaHiddenHideawayPriority, SetSanshaHiddenHideawayPriority)	
+	Setting(int, SanshaForsakenHideawayPriority, SetSanshaForsakenHideawayPriority)	
+	Setting(int, SanshaForlornHideawayPriority, SetSanshaForlornHideawayPriority)	
+	Setting(int, SanshaBurrowPriority, SetSanshaBurrowPriority)	
+	Setting(int, SanshaRefugePriority, SetSanshaRefugePriority)	
+	Setting(int, SanshaDenPriority, SetSanshaDenPriority)	
+	Setting(int, SanshaHiddenDenPriority, SetSanshaHiddenDenPriority)	
+	Setting(int, SanshaForsakenDenPriority, SetSanshaForsakenDenPriority)	
+	Setting(int, SanshaForlornDenPriority, SetSanshaForlornDenPriority)	
+	Setting(int, SanshaYardPriority, SetSanshaYardPriority)	
+	Setting(int, SanshaRallyPointPriority, SetSanshaRallyPointPriority)
+	Setting(int, SanshaHiddenRallyPointPriority, SetSanshaHiddenRallyPointPriority)	
+	Setting(int, SanshaForsakenRallyPointPriority, SetSanshaForsakenRallyPointPriority)	
+	Setting(int, SanshaForlornRallyPointPriority, SetSanshaForlornRallyPointPriority)	
+	Setting(int, SanshaPortPriority, SetSanshaPortPriority)
+	Setting(int, SanshaHubPriority, SetSanshaHubPriority)	
+	Setting(int, SanshaHiddenHubPriority, SetSanshaHiddenHubPriority)	
+	Setting(int, SanshaForsakenHubPriority, SetSanshaForsakenHubPriority)	
+	Setting(int, SanshaForlornHubPriority, SetSanshaForlornHubPriority)	
+	Setting(int, SanshaHavenPriority, SetSanshaHavenPriority)	
+	Setting(int, SanshaSanctumPriority, SetSanshaSanctumPriority)	
+	; Serpentis Section
+	Setting(int, SerpentisHideawayPriority, SetSerpentisHideawayPriority)
+	Setting(int, SerpentisHiddenHideawayPriority, SetSerpentisHiddenHideawayPriority)	
+	Setting(int, SerpentisForsakenHideawayPriority, SetSerpentisForsakenHideawayPriority)	
+	Setting(int, SerpentisForlornHideawayPriority, SetSerpentisForlornHideawayPriority)	
+	Setting(int, SerpentisBurrowPriority, SetSerpentisBurrowPriority)	
+	Setting(int, SerpentisRefugePriority, SetSerpentisRefugePriority)	
+	Setting(int, SerpentisDenPriority, SetSerpentisDenPriority)	
+	Setting(int, SerpentisHiddenDenPriority, SetSerpentisHiddenDenPriority)	
+	Setting(int, SerpentisForsakenDenPriority, SetSerpentisForsakenDenPriority)	
+	Setting(int, SerpentisForlornDenPriority, SetSerpentisForlornDenPriority)	
+	Setting(int, SerpentisYardPriority, SetSerpentisYardPriority)	
+	Setting(int, SerpentisRallyPointPriority, SetSerpentisRallyPointPriority)
+	Setting(int, SerpentisHiddenRallyPointPriority, SetSerpentisHiddenRallyPointPriority)	
+	Setting(int, SerpentisForsakenRallyPointPriority, SetSerpentisForsakenRallyPointPriority)	
+	Setting(int, SerpentisForlornRallyPointPriority, SetSerpentisForlornRallyPointPriority)	
+	Setting(int, SerpentisPortPriority, SetSerpentisPortPriority)
+	Setting(int, SerpentisHubPriority, SetSerpentisHubPriority)	
+	Setting(int, SerpentisHiddenHubPriority, SetSerpentisHiddenHubPriority)	
+	Setting(int, SerpentisForsakenHubPriority, SetSerpentisForsakenHubPriority)	
+	Setting(int, SerpentisForlornHubPriority, SetSerpentisForlornHubPriority)	
+	Setting(int, SerpentisHavenPriority, SetSerpentisHavenPriority)	
+	Setting(int, SerpentisSanctumPriority, SetSerpentisSanctumPriority)	
+	; Drone Section 
+	Setting(int, DroneClusterPriority, SetDroneClusterPriority)
+	Setting(int, DroneCollectionPriority, SetDroneCollectionPriority)	
+	Setting(int, DroneAssemblyPriority, SetDroneAssemblyPriority)	
+	Setting(int, DroneGatheringPriority, SetDroneGatheringPriority)	
+	Setting(int, DroneSurveillancePriority, SetDroneSurveillancePriority)	
+	Setting(int, DroneMenageriePriority, SetDroneMenageriePriority)	
+	Setting(int, DroneHerdPriority, SetDroneHerdPriority)	
+	Setting(int, DroneSquadPriority, SetDroneSquadPriority)	
+	Setting(int, DronePatrolPriority, SetDronePatrolPriority)	
+	Setting(int, DroneHordePriority, SetDroneHordePriority)
 	
 	; Need to keep track of what Anom we are running in a way that persists 
 	Setting(int64, PersistentAnomID, setPersistentAnomID)
@@ -380,7 +481,7 @@ objectdef obj_CombatAnoms inherits obj_StateQueue
 		; We are in a Combat Anomaly, local is safe (if we care about such things), run the anomaly.
 		if ${Client.InSpace} && ${This.InAnom}
 		{
-			This:LogInfo["We appear to be in The Abyss"]
+			This:LogInfo["We appear to be in The Anom"]
 			This:QueueState["RunTheAnom"]
 			return TRUE
 		}
@@ -650,7 +751,7 @@ objectdef obj_CombatAnoms inherits obj_StateQueue
 	; This will mostly be recycled code from my Miner Mainmode so it should work. Should.
 	member:bool GoToAnom()
 	{
-	
+		This:ReCalculatePriorities
 		MyShip.Scanners.System:GetAnomalies[MyAnomalies]
 		MyAnomalies:GetIterator[MyAnomalies_Iterator]	
 
@@ -669,10 +770,9 @@ objectdef obj_CombatAnoms inherits obj_StateQueue
 					return TRUE
 				
 				}
-				; I'm too lazy to add like 50 gas sites to this sorry
-				elseif ${HighPriorityAnomalies.Contains[${MyAnomalies_Iterator.Value.Name}]}
+				elseif ${HighPriorityAnomalies.Contains[${MyAnomalies_Iterator.Value.DungeonName}]}
 				{
-					Config.PersistentAnomID:Set[${MyAnomalies_Iterator.Value.ID}]
+					Script[Tehbot].VariableScope.CombatAnoms.Config:setPersistentAnomID[${MyAnomalies_Iterator.Value.ID}]
 					CurrentAnomCoords:Set[${MyAnomalies_Iterator.Value.X},${MyAnomalies_Iterator.Value.Y},${MyAnomalies_Iterator.Value.Z}]
 					MyAnomalies_Iterator.Value:WarpTo[${Config.WarpInDistance}, FALSE]
 					This:LogInfo["Anomaly Found - ${MyAnomalies_Iterator.Value.Name} - Warping]
@@ -680,9 +780,9 @@ objectdef obj_CombatAnoms inherits obj_StateQueue
 					This:QueueState["StartWorking", 5000]
 					return TRUE
 				}
-				elseif ${MediumPriorityAnomalies.Contains[${MyAnomalies_Iterator.Value.Name}]}
+				elseif ${MediumPriorityAnomalies.Contains[${MyAnomalies_Iterator.Value.DungeonName}]}
 				{
-					Config.PersistentAnomID:Set[${MyAnomalies_Iterator.Value.ID}]
+					Script[Tehbot].VariableScope.CombatAnoms.Config:setPersistentAnomID[${MyAnomalies_Iterator.Value.ID}]
 					CurrentAnomCoords:Set[${MyAnomalies_Iterator.Value.X},${MyAnomalies_Iterator.Value.Y},${MyAnomalies_Iterator.Value.Z}]
 					MyAnomalies_Iterator.Value:WarpTo[${Config.WarpInDistance}, FALSE]
 					This:LogInfo["Anomaly Found - ${MyAnomalies_Iterator.Value.Name} - Warping]
@@ -691,9 +791,9 @@ objectdef obj_CombatAnoms inherits obj_StateQueue
 					return TRUE
 				}
 				; Everything else goes here
-				elseif ${LowPriorityAnomalies.Contains[${MyAnomalies_Iterator.Value.Name}]}
+				elseif ${LowPriorityAnomalies.Contains[${MyAnomalies_Iterator.Value.DungeonName}]}
 				{
-					Config.PersistentAnomID:Set[${MyAnomalies_Iterator.Value.ID}]
+					Script[Tehbot].VariableScope.CombatAnoms.Config:setPersistentAnomID[${MyAnomalies_Iterator.Value.ID}]
 					CurrentAnomCoords:Set[${MyAnomalies_Iterator.Value.X},${MyAnomalies_Iterator.Value.Y},${MyAnomalies_Iterator.Value.Z}]
 					MyAnomalies_Iterator.Value:WarpTo[${Config.WarpInDistance}, FALSE]
 					This:LogInfo["Anomaly Found - ${MyAnomalies_Iterator.Value.Name} - Warping]

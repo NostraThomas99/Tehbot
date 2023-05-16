@@ -4760,15 +4760,15 @@
 						</OnSelect>
 						</combobox>
 
-					<Text name='DroneAssemblyComboboxLabel'>
+					<Text name='DroneGatheringComboboxLabel'>
 							<X>4%</X>
 							<Y>15%</Y>
 							<Width>50%</Width>
 							<Height>5%</Height>
 							<Alignment>Left</Alignment>
-							<Text>DroneAssembly</Text>
+							<Text>DroneGathering</Text>
 						</Text>
-						<combobox name='DroneAssemblyCombobox'>
+						<combobox name='DroneGatheringCombobox'>
 							<X>1%</X>
 							<Y>15%</Y>
 							<Width>40</Width> 
@@ -4782,13 +4782,13 @@
 								<Item Value='3'>3</Item>
 							</Items>
 						<OnLoad>
-							if ${Script[Tehbot].VariableScope.CombatAnoms.Config.DroneAssemblyPriority} > -1
-								This.ItemByText[${Script[Tehbot].VariableScope.CombatAnoms.Config.DroneAssemblyPriority}]:Select
+							if ${Script[Tehbot].VariableScope.CombatAnoms.Config.DroneGatheringPriority} > -1
+								This.ItemByText[${Script[Tehbot].VariableScope.CombatAnoms.Config.DroneGatheringPriority}]:Select
 
 						</OnLoad>
 						<OnSelect>
-							Script[Tehbot].VariableScope.CombatAnoms.Config:SetDroneAssemblyPriority[${This.SelectedItem.Value}]
-							Script[Tehbot].VariableScope.CombatAnoms.PriorityCollection:Set["Drone Assemblyy",${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.CombatAnoms.Config:SetDroneGatheringPriority[${This.SelectedItem.Value}]
+							Script[Tehbot].VariableScope.CombatAnoms.PriorityCollection:Set["Drone Gathering",${This.SelectedItem.Value}]
 						</OnSelect>
 						</combobox>
 

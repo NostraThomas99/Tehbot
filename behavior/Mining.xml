@@ -2116,6 +2116,25 @@
 								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Large Dark Ochre and Gneiss Deposit",${This.Checked}]
 							</OnLeftClick>
 						</Checkbox>	
+						
+						<Checkbox name='MediumArkonorandBistotDeposit'>
+							<X>1%</X>
+							<Y>71%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Medium Arkonor and Bistot Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.MediumArkonorandBistotDeposit}
+								{
+									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Medium Arkonor and Bistot Deposit",${This.Checked}]
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setMediumArkonorandBistotDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Medium Arkonor and Bistot Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
 
 						<Checkbox name='LargeGneissDeposit'>
 							<X>40%</X>
@@ -2233,7 +2252,7 @@
 
 						<Checkbox name='MediumAsteroidCluster'>
 							<X>1%</X>
-							<Y>73%</Y>
+							<Y>74%</Y>
 							<Width>25%</Width>
 							<Height>5%</Height>
 							<Text>Medium Asteroid Cluster</Text>
@@ -2250,6 +2269,25 @@
 							</OnLeftClick>
 						</Checkbox>	
 
+						<Checkbox name='MediumJaspetDeposit'>
+							<X>1%</X>
+							<Y>77%</Y>
+							<Width>25%</Width>
+							<Height>5%</Height>
+							<Text>Medium Jaspet Deposit</Text>
+							<OnLoad>
+								if ${Script[Tehbot].VariableScope.Mining.Config.MediumJaspetDeposit}
+								{
+									This:SetChecked
+									Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Medium Jaspet Deposit",${This.Checked}]
+								}
+							</OnLoad>
+							<OnLeftClick>
+								Script[Tehbot].VariableScope.Mining.Config:setMediumJaspetDeposit[${This.Checked}]
+								Script[Tehbot].VariableScope.Mining.AnomalyMasterCollection:Set["Medium Jaspet Deposit",${This.Checked}]
+							</OnLeftClick>
+						</Checkbox>	
+						
 						<Checkbox name='OrdinaryPerimeterDeposit'>
 							<X>40%</X>
 							<Y>27%</Y>
@@ -2767,9 +2805,9 @@
 						<Font template='Button.Font' />
 						<BackgroundColor>FF000000</BackgroundColor>
 						<X>1%</X>
-						<Y>80%</Y>
+						<Y>90%</Y>
 						<Width>25%</Width>
-						<Height>15%</Height>
+						<Height>10%</Height>
 						<Text>Recalculate Allowed Anomalies</Text>
 						<OnLeftClick>
 							Script[Tehbot].VariableScope.Mining.RebuildAnomList:Set[TRUE]

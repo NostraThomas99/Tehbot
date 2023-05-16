@@ -220,7 +220,7 @@ objectdef obj_MinerWorker inherits obj_StateQueue
 
 		This.NonGameTiedPulse:Set[TRUE]
 		
-		if !${PriorityCollection.FirstValue}
+		if !${PriorityCollection.FirstValue} && ${CommonConfig.Tehbot_Mode.Equal["Mining"]}
 		{
 			timedcommand 0 "ui -load \"${Script.CurrentDirectory}/minimode/MinerWorker.xml\""
 			

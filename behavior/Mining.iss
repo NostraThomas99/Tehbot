@@ -318,6 +318,14 @@ objectdef obj_Mining inherits obj_StateQueue
 		Event[Tehbot_ScheduleHalt]:AttachAtom[This:ScheduleHalt]
 		LavishScript:RegisterEvent[Tehbot_ScheduleResume]
 		Event[Tehbot_ScheduleResume]:AttachAtom[This:ScheduleResume]
+	
+		if ${CommonConfig.Tehbot_Mode.Equal["Mining"]}
+		{
+			timedcommand 0 "ui -load \"${Script.CurrentDirectory}/behavior/Mining.xml\""
+			
+			timedcommand 30 "ui -unload \"${Script.CurrentDirectory}/behavior/Mining.xml\""		
+		
+		}
 
 	}
 
