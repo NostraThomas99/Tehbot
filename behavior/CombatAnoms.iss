@@ -20,7 +20,7 @@ objectdef obj_Configuration_CombatAnoms inherits obj_Configuration_Base
 		This.ConfigRef:AddSetting[OverloadThrust, FALSE]
 		This.ConfigRef:AddSetting[Overheat, FALSE]
 		This.ConfigRef:AddSetting[NanitesToLoad, 100]
-		This.ConfigRef:AddSetting[HomeBase, ""]
+		This.ConfigRef:AddSetting[HomeStructure, ""]
 		This.ConfigRef:AddSetting[FilamentSite, ""]
 		This.ConfigRef:AddSetting[LogLevelBar, LOG_INFO]
 	}
@@ -53,7 +53,7 @@ objectdef obj_Configuration_CombatAnoms inherits obj_Configuration_Base
 	; How many nanites should we carry with us
 	Setting(int, NanitesToLoad, SetNanitesToLoad)
 	; What structure are we basing out of
-	Setting(string, HomeBase, SetHomeBase)
+	Setting(string, HomeStructure, SetHomeStructure)
 	; Are we using our personal hangar or a corp hangar?
 	Setting(string, MunitionStorage, SetMunitionStorage)
 	; What folder in the corp hangar?
@@ -82,6 +82,8 @@ objectdef obj_Configuration_CombatAnoms inherits obj_Configuration_Base
 	Setting(string, WeirdBookmarkPrefix, SetWeirdBookmarkPrefix)
 	; How long shall we hide for? Integer in minutes. If blank or 0, we will never resume unless done so manually.
 	Setting(int, HideHowLong, SetHideHowLong)
+	; We want to always be aligned towards our home station
+	Setting(bool, AlignHomeStructure, SetAlignHomeStructure)
 
 	; I am going to attempt to make things more random by taking the number from the setting after this one, and using it to control a delay before
 	; We undertake certain actions. Tehbot naturally adds delta to things but with enough clients and a small enough pulse time, things will begin
@@ -457,6 +459,70 @@ objectdef obj_CombatAnoms inherits obj_StateQueue
 			This:LogInfo["We dead"]
 			This:Stop
 		}
+		; People with neutral standings or worse are in local, and we are configured to run. Run.
+		if !${FriendlyLocal} && ${Config.RunFromBads} && !${Me.InStation} && !${Bookmark[${Config.POSBookmarkName}].Distance} < 50000
+		{
+			This:LogInfo["Jerks in Local, lets get out of here"]
+			; If we are set to run to a POS
+			if ${Config.UsePOSHidingSpot} && ${Config.POSBookmarkName.NotNULLOrEmpty}
+			{
+				if ${Config.HideHowLong} == 0
+				{
+					ClearToAnom:Set[${Math.Calc[${LavishScript.RunningTime} + 999999999999999999999999999999999999]}]	
+				}
+				else
+				{
+					ClearToAnom:Set[${Math.Calc[${LavishScript.RunningTime} + (${Config.HideHowLong} * 60000)]}]
+				}
+				This:LogInfo["Hope there is actually a POS here"]
+				This:InsertState["FleeToPOS"]
+				return TRUE
+			}
+			if ${Config.UseWeirdNavigation} && ${Config.WeirdBookmarkPrefix.NotNULLOrEmpty}
+			{
+				if ${Config.HideHowLong} == 0
+				{
+					ClearToAnom:Set[${Math.Calc[${LavishScript.RunningTime} + 999999999999999999999999999999999999]}]	
+				}
+				else
+				{
+					ClearToAnom:Set[${Math.Calc[${LavishScript.RunningTime} + (${Config.HideHowLong} * 60000)]}]
+				}			
+				This:LogInfo["Commence Weird Navigation"]
+				This:InsertState["WeirdNavigation"]
+				return TRUE
+			}
+			
+			if ${Config.HideHowLong} == 0
+			{
+				ClearToAnom:Set[${Math.Calc[${LavishScript.RunningTime} + 999999999999999999999999999999999999]}]	
+			}
+			else
+			{
+				ClearToAnom:Set[${Math.Calc[${LavishScript.RunningTime} + (${Config.HideHowLong} * 60000)]}]
+			}
+			Move:Bookmark["${Config.HomeStructure}"]
+			This:InsertState["Traveling"]
+			return TRUE
+		}
+		; We are in a station (or in a POS), there are jerks, and we are set to run. Update the wait timer.
+		if (!${FriendlyLocal} && ${Config.RunFromBads}) && (${Me.InStation} || ${Bookmark[${Config.POSBookmarkName}].Distance} < 50000)
+		{
+			if ${Config.HideHowLong} == 0
+			{
+				This:Stop
+				return TRUE
+			}
+			else
+			{
+				ClearToAnom:Set[${Math.Calc[${LavishScript.RunningTime} + (${Config.HideHowLong} * 60000)]}]
+			}			
+		}
+		; We are in a station, we are still inside the time set by a Fleeing Event
+		if ${LavishScript.RunningTime} < ${ClearToAnom}
+		{
+			return FALSE
+		}
 		; We are in space, but not the abyss, we have time to see if we need anything.
 		if ${Client.InSpace} && !${This.InAnom} && !${StatusChecked}
 		{
@@ -694,16 +760,16 @@ objectdef obj_CombatAnoms inherits obj_StateQueue
 	; We need to go to station to dropoff or repair or refill consumables
 	member:bool GoToStation()
 	{
-		if ${Config.HomeBase.NotNULLOrEmpty}
+		if ${Config.HomeStructure.NotNULLOrEmpty}
 		{
-			Move:Bookmark["${Config.HomeBase}"]
+			Move:Bookmark["${Config.HomeStructure}"]
 			This:InsertState["Traveling"]
 			This:QueueState["CheckForWork", 5000]
 			return TRUE
 		}
 		else
 		{
-			This:LogInfo["HomeBase BM not found, stopping"]
+			This:LogInfo["HomeStructure BM not found, stopping"]
 			This:Stop
 		}
 	}
@@ -834,6 +900,54 @@ objectdef obj_CombatAnoms inherits obj_StateQueue
 			This:QueueState["CheckForWork", 10000]
 			return TRUE
 		}
+		if (!${FriendlyLocal} && ${Config.RunFromBads})
+		{
+			MinerForeman.InhibitBursts:Set[TRUE]
+			MinerWorker.MiningTime:Set[FALSE]
+			relay all -event LeaderSummoning FALSE
+			This:LogInfo["Jerks in Local, lets get out of here"]
+			; If we are set to run to a POSBookmarkName
+			if ${Config.UsePOSHidingSpot} && ${Config.POSBookmarkName.NotNULLOrEmpty}
+			{
+				if ${Config.HideHowLong} == 0
+				{
+					ClearToAnom:Set[${Math.Calc[${LavishScript.RunningTime} + 999999999999999999999999999999999999]}]	
+				}
+				else
+				{
+					ClearToAnom:Set[${Math.Calc[${LavishScript.RunningTime} + (${Config.HideHowLong} * 60000)]}]
+				}
+				This:LogInfo["Hope there is actually a POS here"]
+				This:InsertState["FleeToPOS"]
+				return TRUE
+			}
+			if ${Config.UseWeirdNavigation} && ${Config.WeirdBookmarkPrefix.NotNULLOrEmpty}
+			{
+				if ${Config.HideHowLong} == 0
+				{
+					ClearToAnom:Set[${Math.Calc[${LavishScript.RunningTime} + 999999999999999999999999999999999999]}]	
+				}
+				else
+				{
+					ClearToAnom:Set[${Math.Calc[${LavishScript.RunningTime} + (${Config.HideHowLong} * 60000)]}]
+				}			
+				This:LogInfo["Commence Weird Navigation"]
+				This:InsertState["WeirdNavigation"]
+				return TRUE
+			}
+			
+			if ${Config.HideHowLong} == 0
+			{
+				ClearToAnom:Set[${Math.Calc[${LavishScript.RunningTime} + 999999999999999999999999999999999999]}]	
+			}
+			else
+			{
+				ClearToAnom:Set[${Math.Calc[${LavishScript.RunningTime} + (${Config.HideHowLong} * 60000)]}]
+			}
+			This:InsertState["GoToStation", 3000]
+			return TRUE
+			
+		}
 		; We're Stormbringing it up but we didnt have enough time to repair, and waiting for repairs will cost more damage than not overheating. Cancel the repair.
 		; Also I swear if you don't put your SINGLE WEAPON in the very first slot you're crazy.
 		if ${Config.Overheat} && ${MyShip.Module[HiSlot0].IsBeingRepaired}
@@ -923,10 +1037,8 @@ objectdef obj_CombatAnoms inherits obj_StateQueue
 			; and warp in at some distance and orbit either an MTU or some object.
 			; Maybe a third case for just chasing shit around the anom but that sounds rather exceptionally stupid in 0.0
 			; So maybe not.
-			This:InsertState["RunTheAnom"]
-			return TRUE
+			return FALSE
 		}
-		; Enemies are gone, cleanup and move on to the next Anom
 		
 	}
 	; This one tells us if another player is present (ignoring fleet members), intended to be used on arriving at an anom.
@@ -957,6 +1069,24 @@ objectdef obj_CombatAnoms inherits obj_StateQueue
 		{
 			return FALSE
 		}
+	}
+	; We use this to flee to a POS and hang out there until the heat is gone.
+	member:bool FleeToPOS()
+	{
+		if !${Config.UseWeirdNavigation}
+		{
+			Move:Bookmark["${POSBookmarkName}"]
+			This:InsertState["Traveling"]
+			This:InsertState["CheckForWork", 5000]
+		}
+		
+	}
+	; This is Weird Navigation, we use it to bounce around a bit before going to our fleeing destination
+	; Not done yet.
+	member:bool WeirdNavigation()
+	{
+		
+	
 	}
 	; This one tells us if an MTU is present. Returns TRUE if we have an MTU still out there. Returns FALSE if not.
 	member:bool MTUDeployed()

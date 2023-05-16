@@ -64,3 +64,8 @@ I am FAIRLY SURE that if you are in a citadel, the station hangar inventory is c
 
 Look forward to:
 I am working on combat anomalies next after this. Using the stuff from the abyssal mode, and what I learned/implemented in the Mining mode, we should be able to slam this out in record time.
+_______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+May 16th, Mining is pretty well done. We can mine in anoms, as a fleet, by ourselves, whatever you like.  A few UI buttons don't do anything yet. We'll get there some day.
+
+Next up is combat anomalies. Most UI elements and some of the mode are done.

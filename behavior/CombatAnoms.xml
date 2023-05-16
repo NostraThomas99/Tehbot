@@ -998,7 +998,7 @@
 									UIElement[Information@InformationFrame@CombatAnomMainTab@CombatAnomTabs@Tehbot_CombatAnoms_Frame@Tehbot_CombatAnoms]:SetText[""]
 								</OnMouseExit>
 							</listbox>
-							<Textentry Name="HomeBase">
+							<Textentry Name="HomeStructure">
 								<Font template='Information.Font' />
 								<BackgroundColor>FF000000</BackgroundColor>
 								<Border>1</Border>
@@ -1008,10 +1008,10 @@
 								<Width>30%</Width>
 								<Height>5%</Height>
 								<OnLoad>
-									This:SetText[${Script[Tehbot].VariableScope.CombatAnoms.Config.HomeBase}]
+									This:SetText[${Script[Tehbot].VariableScope.CombatAnoms.Config.HomeStructure}]
 								</OnLoad>
 								<OnChange>
-									Script[Tehbot].VariableScope.CombatAnoms.Config:SetHomeBase[${This.Text}]
+									Script[Tehbot].VariableScope.CombatAnoms.Config:SetHomeStructure[${This.Text}]
 								</OnChange>
 								<OnMouseEnter>
 									UIElement[Information@InformationFrame@CombatAnomMainTab@CombatAnomTabs@Tehbot_CombatAnoms_Frame@Tehbot_CombatAnoms]:SetText["What BM is home?"]
