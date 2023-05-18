@@ -69,3 +69,19 @@ ________________________________________________________________________________
 May 16th, Mining is pretty well done. We can mine in anoms, as a fleet, by ourselves, whatever you like.  A few UI buttons don't do anything yet. We'll get there some day.
 
 Next up is combat anomalies. Most UI elements and some of the mode are done.
+_______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+May 17th, my head hurts. Anyways, ISXIM is now a required part of my Tehbot fork. Why? Because IRC integration is where its at baby here in the year 2023.
+
+Grab it at http://updates.isxgames.com/isxim/ISXIM.exe . This is integral to the next main mode I am creating which just observes and reports sightings of pilots (local, or on grid).
+The Minimode "ChatRelay" is where the config for the IRC stuff is. Server/Port/Channel/Username/Password. Don't turn that on if you aren't using ISXIM something bad will probably happen.
+You can also just leave ISXIM disabled, I guess. in Defines.ISS look at the last line and turn that 1 to a 0. I may be using ISXIM for this mainmode but there is nothing stopping you from using
+It to report things to you via IRC if you are into that. I will return to coding the combat anomaly module before too long.
+
+_______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+May 18th, 2:50 AM. What if we also wanted the observer(s) to keep track of everyone they see in some kind of persistent database? That might require something horrible like SQL.
+Did you know that there is an ISXSQLite extension in existence? Not only that, it actually works? The observer will have a config option for Persistent Database Storage and Lookup
+so we can have slightly more information available. Details aren't worked out fully yet but it will be amusing, assuming I have what it takes to code it. Anyways.
+https://github.com/isxGames/isxSQLite/releases/tag/20200812.0001  is where the extension can be found. Just download the x64 release there and drop it in the
+InnerSpace\x64\Extensions\ISXDK35 folder. Tehbot will do the rest.

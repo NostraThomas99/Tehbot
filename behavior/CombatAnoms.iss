@@ -1163,6 +1163,7 @@ objectdef obj_CombatAnoms inherits obj_StateQueue
 	}
 	
 	; Just returns a bool for if we are in an Anom currently. Going to be a little weird to figure out. Distance To anoms doesn't work.
+	; Not sure why we can't just easily do distance when we have X,Y,Z coords but fine we'll do the math instead. 
 	member:bool InAnom()
 	{
 		if !${Client.InSpace}

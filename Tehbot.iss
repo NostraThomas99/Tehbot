@@ -50,6 +50,7 @@
 #include behavior/Abyssal.iss
 #include behavior/Mining.iss
 #include behavior/CombatAnoms.iss
+;#include behavior/Observer.iss
 
 #include minimode/Automate.iss
 #include minimode/AutoModule.iss
@@ -66,6 +67,7 @@
 #include minimode/MinerWorker.iss
 #include minimode/LocalCheck.iss
 #include minimode/LavishNavTest.iss
+#include minimode/ChatRelay
 
 function atexit()
 {
@@ -101,6 +103,7 @@ function main(string Character="")
 	declarevariable Abyssal obj_Abyssal script
 	declarevariable Mining obj_Mining script
 	declarevariable CombatAnoms obj_CombatAnoms script
+	;declarevariable Observer obj_Observer script
 
 	declarevariable Automate obj_Automate script
 	declarevariable AutoModule obj_AutoModule script
@@ -116,7 +119,8 @@ function main(string Character="")
 	declarevariable MinerForeman obj_MinerForeman script
 	declarevariable MinerWorker obj_MinerWorker script
 	declarevariable LocalCheck obj_LocalCheck script
-	declarevariable LavishNavTest	obj_LavishNavTest script
+	declarevariable LavishNavTest obj_LavishNavTest script
+	declarevariable ChatRelay obj_ChatRelay script
 
 	Dynamic:PopulateBehaviors
 	Dynamic:PopulateMiniModes

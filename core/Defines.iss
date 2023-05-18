@@ -127,3 +127,7 @@
 #define MOVE_STOPPED                                                                                            2
 #define MOVE_WARPING                                                                                            3
 #define MOVE_ORBITING                                                                                           4
+
+; Do not set this to 1 unless you have downloaded and installed ISXIM extension from http://updates.isxgames.com/isxim/ISXIM.exe
+; Allows logging to IRC and Jabber, etc
+#define USE_ISXIM 1
