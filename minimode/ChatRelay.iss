@@ -362,7 +362,7 @@ objectdef obj_ChatRelay inherits obj_StateQueue
 	function Say(string msg)
 	{
 		This:QueueMessage["${msg}"]
-		if !${This.IsConnected}
+		if !${IRCUser[${Config.IRCUsername}].IsConnected}
 		{
 			call This.Connect
 		}
